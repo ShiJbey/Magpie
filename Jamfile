@@ -80,6 +80,8 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
+	#Files added for Magpie:
+	Grid
 	;
 
 if $(OS) = NT {
