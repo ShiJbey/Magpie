@@ -7,6 +7,15 @@
 #include <iostream>
 #include <fstream>
 
+Scene::Transform* Scene::look_up(std::string const &name){
+	for (Scene::Transform *t = first_transform; t != nullptr; t = t->alloc_next) {
+		if (t->name == name) {
+			return t;
+		}
+	}
+	return nullptr;
+};
+
 glm::mat4 Scene::Transform::make_local_to_parent() const {
 	return glm::mat4( //translate
 		glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
