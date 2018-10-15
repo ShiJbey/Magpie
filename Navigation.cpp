@@ -26,7 +26,7 @@ Path* Navigation::findPath(Grid::Coordinate from, Grid::Coordinate to) {
 
     uint32_t x_direction = from.x - to.x;
     uint32_t y_direction = from.y - to.y;
-    
+
     return nullptr;
 }
 
