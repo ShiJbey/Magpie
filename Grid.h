@@ -11,16 +11,6 @@
 
 class Grid {
 public:
-    /*
-    class Coordinate{
-        public:
-            Coordinate();
-            Coordinate(uint32_t x, uint32_t y);
-            uint32_t x;
-            uint32_t y;
-    };
-    */
-    
     // Grid is initialized afterward.
     Grid();
     ~Grid();
@@ -35,8 +25,6 @@ public:
 
     // Grid is only readable. It can't be modified after being initialized
     // Grid grid;
-    // grid.at(Coordinate(x, y)) 
-    //glm::uvec2 is more straightforward than coordinate
     char at(glm::uvec2 coor);
 
 private:

@@ -9,15 +9,19 @@
 class Path {
 public:
     Path(){}
-    Path(std::vector<Grid::Coordinate>);
-    Grid::Coordinate* next();
+    Path(std::vector<glm::uvec2> path);
+    glm::uvec2* next();
     void reset_iterator();
 
 private:
-    std::vector<Grid::Coordinate> path;
+    std::vector<glm::uvec2> path;
+    std::vector<glm::uvec2>::iterator it = path.begin();
 };
 
 class Navigation {
     void loadGrid(Grid* map);
-    Path* findPath(Grid::Coordinate from, Grid::Coordinate to);
+    Path* findPath(glm::uvec2 from, glm::uvec2 to);
+
+private:
+    Grid* map;
 };
