@@ -19,9 +19,19 @@ private:
 };
 
 class Navigation {
+public:
+    static Navigation& getInstance() {
+        static Navigation instance;
+        return instance;
+    }
+
+    Navigation(Navigation const&) = delete;
+    void operator=(Navigation const&) = delete;
+
     void loadGrid(Grid* map);
     Path* findPath(glm::uvec2 from, glm::uvec2 to);
 
 private:
+    Navigation() = default;
     Grid* map;
 };
