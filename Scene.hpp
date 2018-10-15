@@ -179,6 +179,7 @@ struct Scene {
 	//(you shouldn't be manipulating these pointers directly
 
 	//------ functions to traverse the scene ------
+	Transform* look_up(std::string const &name);
 
 	//Draw the scene from a given camera by computing appropriate matrices and sending all objects to OpenGL:
 	//"camera" must be non-null!

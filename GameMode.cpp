@@ -1,3 +1,5 @@
+#include "KeyFrameAnimation.hpp"
+#include "Player.hpp"
 #include "GameMode.hpp"
 
 #include "MenuMode.hpp"
@@ -12,6 +14,7 @@
 #include "draw_text.hpp" //helper to... um.. draw text
 #include "load_save_png.hpp"
 #include "texture_program.hpp"
+#include "vertex_color_program.hpp"
 #include "depth_program.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -34,6 +37,15 @@ Load< GLuint > meshes_for_texture_program(LoadTagDefault, [](){
 Load< GLuint > meshes_for_depth_program(LoadTagDefault, [](){
 	return new GLuint(meshes->make_vao_for_program(depth_program->program));
 });
+
+Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
+	return new MeshBuffer(data_path("magpi.pnc"));
+});
+
+Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
+	return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
+});
+
 
 //used for fullscreen passes:
 Load< GLuint > empty_vao(LoadTagDefault, [](){
@@ -135,14 +147,24 @@ Load< GLuint > white_tex(LoadTagDefault, [](){
 	return new GLuint(tex);
 });
 
-
+Scene::Transform *player_transform = nullptr;
 Scene::Transform *camera_parent_transform = nullptr;
 Scene::Camera *camera = nullptr;
 Scene::Transform *spot_parent_transform = nullptr;
 Scene::Lamp *spot = nullptr;
+Scene *scene_ref = nullptr;
+Player* player = nullptr;
 
 Load< Scene > scene(LoadTagDefault, [](){
 	Scene *ret = new Scene;
+	scene_ref = ret;
+
+	Scene::Object::ProgramInfo vertex_color_program_info;
+	vertex_color_program_info.program = vertex_color_program->program;
+	vertex_color_program_info.vao = *meshes_for_vertex_color_program;
+	vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+	vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+	vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
 
 	//pre-build some program info (material) blocks to assign to each object:
 	Scene::Object::ProgramInfo texture_program_info;
@@ -158,6 +180,7 @@ Load< Scene > scene(LoadTagDefault, [](){
 	depth_program_info.mvp_mat4  = depth_program->object_to_clip_mat4;
 
 
+	
 	//load transform hierarchy:
 	ret->load(data_path("vignette.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
 		Scene::Object *obj = s.new_object(t);
@@ -181,6 +204,16 @@ Load< Scene > scene(LoadTagDefault, [](){
 		obj->programs[Scene::Object::ProgramTypeShadow].count = mesh.count;
 	});
 
+	ret->load(data_path("magpi.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+		Scene::Object *obj = s.new_object(t);
+		
+		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+
+		MeshBuffer::Mesh const &mesh = magpie_meshes->lookup(m);
+		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+	});
+
 	//look up camera parent transform:
 	for (Scene::Transform *t = ret->first_transform; t != nullptr; t = t->alloc_next) {
 		if (t->name == "CameraParent") {
@@ -191,6 +224,11 @@ Load< Scene > scene(LoadTagDefault, [](){
 			if (spot_parent_transform) throw std::runtime_error("Multiple 'SpotParent' transforms in scene.");
 			spot_parent_transform = t;
 		}
+
+		if (t->name == "body_MSH") {
+			player_transform = t;
+		}
+		std::cout << t->name << std::endl;
 
 	}
 	if (!camera_parent_transform) throw std::runtime_error("No 'CameraParent' transform in scene.");
@@ -219,6 +257,20 @@ Load< Scene > scene(LoadTagDefault, [](){
 });
 
 GameMode::GameMode() {
+	printf("Loading Animation\n");
+	Magpie::KeyFrameAnimation anim;
+	anim.load_model(data_path("magpi.kani"));
+	player = new Player();
+	player->anim = anim;
+	std::cout << anim.frames["body_MSH"].size() << std::endl;
+	anim.print_frames("L_arm_MSH");
+	
+	if (player_transform == nullptr) {
+		printf("Problem\n");
+	} else {
+		player_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		player_transform->position = glm::vec3(2.0f,-1.0f,1.0f);
+	}
 }
 
 GameMode::~GameMode() {
@@ -240,6 +292,11 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			return true;
 		}
 
+	}
+
+	if (evt.type == SDL_KEYUP) {
+		Scene::Transform *player_head = scene_ref->look_up("L_arm_MSH");
+		player_head->rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	return false;
@@ -331,6 +388,10 @@ struct Framebuffers {
 } fbs;
 
 void GameMode::draw(glm::uvec2 const &drawable_size) {
+	// Update the animations
+	player->anim.update(scene_ref);
+
+
 	fbs.allocate(drawable_size, glm::uvec2(512, 512));
 
 	//Draw scene to shadow map for spotlight:
@@ -345,6 +406,13 @@ void GameMode::draw(glm::uvec2 const &drawable_size) {
 	//render only back faces to shadow map (prevent shadow speckles on fronts of objects):
 	glCullFace(GL_FRONT);
 	glEnable(GL_CULL_FACE);
+
+	// Set light uniformsS
+	glUseProgram(vertex_color_program->program);
+	glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform3fv(vertex_color_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(-0.2f, 0.2f, 1.0f))));
+	glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.3f)));
+	glUniform3fv(vertex_color_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	scene->draw(spot, Scene::Object::ProgramTypeShadow);
 
