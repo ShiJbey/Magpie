@@ -8,8 +8,12 @@
 class Grid {
 public:
     class Coordinate{
+    public:
         Coordinate();
         Coordinate(uint32_t x, uint32_t y);
+
+        uint32_t x;
+        uint32_t y;
     };
 
     // Grid is initialized afterward.
@@ -22,7 +26,7 @@ public:
 
     // Grid is only readable. It can't be modified after being initialized
     // Grid grid;
-    // grid.at(Coordinate(x, y)) 
+    // grid.at(Coordinate(x, y))
     char at(Coordinate coor);
 
 private:
