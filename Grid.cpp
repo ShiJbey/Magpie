@@ -43,7 +43,7 @@ void Grid::initGrid(std::string floorPlan) {
 }
 
 //getter function
-char Grid::at(Coordinate coord){
+char Grid::at(glm::uvec2 coord){
     if (coord.x>rows or coord.x<0 or coord.y>cols or coord.y<0) {
         return 1; //err return
     }
