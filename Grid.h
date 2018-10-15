@@ -4,17 +4,10 @@
 #pragma once
 
 #include <cstdint>
+#include <glm/glm.hpp>
 
 class Grid {
 public:
-    class Coordinate{
-    public:
-        Coordinate();
-        Coordinate(uint32_t x, uint32_t y);
-
-        uint32_t x;
-        uint32_t y;
-    };
 
     // Grid is initialized afterward.
     Grid();
@@ -27,7 +20,7 @@ public:
     // Grid is only readable. It can't be modified after being initialized
     // Grid grid;
     // grid.at(Coordinate(x, y))
-    char at(Coordinate coor);
+    char at(glm::uvec2 coor);
 
 private:
     char** map;
