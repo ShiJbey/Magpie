@@ -80,7 +80,7 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
-	#Files added for Magpie:
+	KeyFrameAnimation
 	Grid
 	;
 
