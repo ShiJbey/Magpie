@@ -27,7 +27,7 @@
 
 
 Load< MeshBuffer > meshes(LoadTagDefault, [](){
-	return new MeshBuffer(data_path("vignette.pnct"));
+	return new MeshBuffer(data_path("meshes.pnct"));
 });
 
 Load< GLuint > meshes_for_texture_program(LoadTagDefault, [](){
@@ -124,6 +124,7 @@ GLuint load_texture(std::string const &filename) {
 	return tex;
 }
 
+/*
 Load< GLuint > wood_tex(LoadTagDefault, [](){
 	return new GLuint(load_texture(data_path("textures/wood.png")));
 });
@@ -147,7 +148,8 @@ Load< GLuint > white_tex(LoadTagDefault, [](){
 	return new GLuint(tex);
 });
 
-Scene::Transform *player_transform = nullptr;
+*/
+
 Scene::Transform *camera_parent_transform = nullptr;
 Scene::Camera *camera = nullptr;
 Scene::Transform *spot_parent_transform = nullptr;
@@ -185,6 +187,7 @@ Load< Scene > scene(LoadTagDefault, [](){
 	ret->load(data_path("vignette.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
 		Scene::Object *obj = s.new_object(t);
 
+		/*
 		obj->programs[Scene::Object::ProgramTypeDefault] = texture_program_info;
 		if (t->name == "Platform") {
 			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *wood_tex;
@@ -193,6 +196,20 @@ Load< Scene > scene(LoadTagDefault, [](){
 		} else {
 			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *white_tex;
 		}
+		*/
+
+		/*
+		obj->programs[Scene::Object::ProgramTypeDefault] = texture_program_info;
+		if (t->name == "Doll") {
+			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *wood_tex;
+		}
+		else if (t->name == "Tile") {
+			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *marble_tex;
+		}
+		else {
+			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *white_tex;
+		}
+		*/
 
 		obj->programs[Scene::Object::ProgramTypeShadow] = depth_program_info;
 
@@ -257,23 +274,27 @@ Load< Scene > scene(LoadTagDefault, [](){
 });
 
 GameMode::GameMode() {
-	printf("Loading Animation\n");
-	Magpie::KeyFrameAnimation anim;
-	anim.load_model(data_path("magpi.kani"));
-	player = new Player();
-	player->anim = anim;
-	std::cout << anim.frames["body_MSH"].size() << std::endl;
-	anim.print_frames("L_arm_MSH");
-	
-	if (player_transform == nullptr) {
-		printf("Problem\n");
-	} else {
-		player_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		player_transform->position = glm::vec3(2.0f,-1.0f,1.0f);
-	}
+	Grid::initGrid("prototype");
 }
 
 GameMode::~GameMode() {
+}
+
+//from this tutorial: http://antongerdelan.net/opengl/raycasting.html
+glm::uvec2 GameMode::mousePick(int mouseX, int mouseY) {
+	glm::uvec2 pickedTile = glm::uvec2(0, 0);
+	/*
+	//3d Normalized device coords
+	float normDeviceX = (2.0f * mouseX) / screenWidth - 1.0f;
+	float normDeviceY = 1.0f - (2.0f * mouseY) / screenHeight;
+	//4d homogenous clip coordinates
+	//4d eye coordinates
+	*/
+	t = -()/();
+	if (t<=0) { //miss
+		return glm::uvec2(-1, -1);
+	}
+	return pickedTile;
 }
 
 bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -281,7 +302,16 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	if (evt.type == SDL_KEYDOWN && evt.key.repeat) {
 		return false;
 	}
+	if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
+		if (evt.button.button == SDL_BUTTON_LEFT) {
+			//TODO: get x and y of mouse click and figure out which tile it is
+			glm::uvec2 clickedTile = mousePick(mouseX, mouseY);
+			magpieEndpt = clickedTile; //PASS THIS INTO PATHFINDING ALGORITHM
+			return true;
+		}
+	}
 
+/*
 	if (evt.type == SDL_MOUSEMOTION) {
 		if (evt.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 			camera_spin += 5.0f * evt.motion.xrel / float(window_size.x);
@@ -291,20 +321,33 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			spot_spin += 5.0f * evt.motion.xrel / float(window_size.x);
 			return true;
 		}
-
 	}
 
-	if (evt.type == SDL_KEYUP) {
-		Scene::Transform *player_head = scene_ref->look_up("L_arm_MSH");
-		player_head->rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-
+*/
 	return false;
 }
+
+
+void GameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
+	for (uint32_t i=0; i<path.size(); i++) {
+		if (character == 'm' and magMoveCountdown<=0.0f) { //magpie
+			magpie = path[i]; //set new position
+			//MAYBE WALKING ANIMATION HERE
+			magMoveCountdown = 5.0f;
+		}
+	}
+}
+
 
 void GameMode::update(float elapsed) {
 	camera_parent_transform->rotation = glm::angleAxis(camera_spin, glm::vec3(0.0f, 0.0f, 1.0f));
 	spot_parent_transform->rotation = glm::angleAxis(spot_spin, glm::vec3(0.0f, 0.0f, 1.0f));
+	magMoveCountdown -= elapsed;
+	//framework for updating characters' positions
+	//update magpie's position
+	//updatePosition('m', );
+	//update the guard's position
+	//updatePosition('g', );
 }
 
 //GameMode will render to some offscreen framebuffer(s).
