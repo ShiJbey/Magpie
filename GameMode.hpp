@@ -31,7 +31,7 @@ struct GameMode : public Mode {
 
 	//mouse pick sends a raycast from where the mouse has clicked and returns which tile
 	//the user has landed in
-	glm::uvec2 mousePick(int mouseX, int mouseY, );
+	glm::uvec2 mousePick(int mouseX, int mouseY);
 
 	//draw is called after update:
 	virtual void draw(glm::uvec2 const &drawable_size) override;
