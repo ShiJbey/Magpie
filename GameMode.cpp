@@ -25,21 +25,20 @@
 #include <cstddef>
 #include <random>
 
-
+/*
 Load< MeshBuffer > meshes(LoadTagDefault, [](){
 	return new MeshBuffer(data_path("meshes.pnct"));
 });
-
 Load< GLuint > meshes_for_texture_program(LoadTagDefault, [](){
 	return new GLuint(meshes->make_vao_for_program(texture_program->program));
 });
-
 Load< GLuint > meshes_for_depth_program(LoadTagDefault, [](){
 	return new GLuint(meshes->make_vao_for_program(depth_program->program));
 });
+*/
 
 Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
-	return new MeshBuffer(data_path("magpi.pnc"));
+	return new MeshBuffer(data_path("prototype_scene.pnct"));
 });
 
 Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
@@ -124,7 +123,7 @@ GLuint load_texture(std::string const &filename) {
 	return tex;
 }
 
-/*
+
 Load< GLuint > wood_tex(LoadTagDefault, [](){
 	return new GLuint(load_texture(data_path("textures/wood.png")));
 });
@@ -148,7 +147,6 @@ Load< GLuint > white_tex(LoadTagDefault, [](){
 	return new GLuint(tex);
 });
 
-*/
 
 Scene::Transform *camera_parent_transform = nullptr;
 Scene::Camera *camera = nullptr;
@@ -171,57 +169,20 @@ Load< Scene > scene(LoadTagDefault, [](){
 	//pre-build some program info (material) blocks to assign to each object:
 	Scene::Object::ProgramInfo texture_program_info;
 	texture_program_info.program = texture_program->program;
-	texture_program_info.vao = *meshes_for_texture_program;
+	//texture_program_info.vao = *meshes_for_texture_program;
 	texture_program_info.mvp_mat4  = texture_program->object_to_clip_mat4;
 	texture_program_info.mv_mat4x3 = texture_program->object_to_light_mat4x3;
 	texture_program_info.itmv_mat3 = texture_program->normal_to_light_mat3;
 
 	Scene::Object::ProgramInfo depth_program_info;
 	depth_program_info.program = depth_program->program;
-	depth_program_info.vao = *meshes_for_depth_program;
+	//depth_program_info.vao = *meshes_for_depth_program;
 	depth_program_info.mvp_mat4  = depth_program->object_to_clip_mat4;
 
 
 	
 	//load transform hierarchy:
-	ret->load(data_path("vignette.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
-		Scene::Object *obj = s.new_object(t);
-
-		/*
-		obj->programs[Scene::Object::ProgramTypeDefault] = texture_program_info;
-		if (t->name == "Platform") {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *wood_tex;
-		} else if (t->name == "Pedestal") {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *marble_tex;
-		} else {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *white_tex;
-		}
-		*/
-
-		/*
-		obj->programs[Scene::Object::ProgramTypeDefault] = texture_program_info;
-		if (t->name == "Doll") {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *wood_tex;
-		}
-		else if (t->name == "Tile") {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *marble_tex;
-		}
-		else {
-			obj->programs[Scene::Object::ProgramTypeDefault].textures[0] = *white_tex;
-		}
-		*/
-
-		obj->programs[Scene::Object::ProgramTypeShadow] = depth_program_info;
-
-		MeshBuffer::Mesh const &mesh = meshes->lookup(m);
-		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-
-		obj->programs[Scene::Object::ProgramTypeShadow].start = mesh.start;
-		obj->programs[Scene::Object::ProgramTypeShadow].count = mesh.count;
-	});
-
-	ret->load(data_path("magpi.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+	ret->load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
 		Scene::Object *obj = s.new_object(t);
 		
 		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
@@ -231,6 +192,7 @@ Load< Scene > scene(LoadTagDefault, [](){
 		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 	});
 
+/*
 	//look up camera parent transform:
 	for (Scene::Transform *t = ret->first_transform; t != nullptr; t = t->alloc_next) {
 		if (t->name == "CameraParent") {
@@ -242,14 +204,12 @@ Load< Scene > scene(LoadTagDefault, [](){
 			spot_parent_transform = t;
 		}
 
-		if (t->name == "body_MSH") {
-			player_transform = t;
-		}
 		std::cout << t->name << std::endl;
 
 	}
 	if (!camera_parent_transform) throw std::runtime_error("No 'CameraParent' transform in scene.");
 	if (!spot_parent_transform) throw std::runtime_error("No 'SpotParent' transform in scene.");
+*/
 
 	//look up the camera:
 	for (Scene::Camera *c = ret->first_camera; c != nullptr; c = c->alloc_next) {
@@ -274,42 +234,51 @@ Load< Scene > scene(LoadTagDefault, [](){
 });
 
 GameMode::GameMode() {
-	Grid::initGrid("prototype");
+	Grid currFloor = Grid();
+	currFloor.initGrid("prototype");
 }
 
 GameMode::~GameMode() {
 }
 
 //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
+/*
 glm::uvec2 GameMode::mousePick(int mouseX, int mouseY) {
 	glm::uvec2 pickedTile = glm::uvec2(0, 0);
-	/*
-	//3d Normalized device coords
+	//3d Normalized device coords (z is not necessary right now)
 	float normDeviceX = (2.0f * mouseX) / screenWidth - 1.0f;
 	float normDeviceY = 1.0f - (2.0f * mouseY) / screenHeight;
 	//4d homogenous clip coordinates
+	glm::uvec4 rayClip = glm::uvec4(normDeviceX, normDeviceY, -1.0f, 1.0f);
 	//4d eye coordinates
-	*/
+	glm::uvec4 rayEye = *rayClip;
+	//4d world coordinates
 	t = -()/();
-	if (t<=0) { //miss
+	if (t<=0) { //not clicking on anything
 		return glm::uvec2(-1, -1);
 	}
 	return pickedTile;
 }
+*/
 
 bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
 	//ignore any keys that are the result of automatic key repeat:
 	if (evt.type == SDL_KEYDOWN && evt.key.repeat) {
 		return false;
 	}
+	/*
 	if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
 		if (evt.button.button == SDL_BUTTON_LEFT) {
 			//TODO: get x and y of mouse click and figure out which tile it is
-			glm::uvec2 clickedTile = mousePick(mouseX, mouseY);
-			magpieEndpt = clickedTile; //PASS THIS INTO PATHFINDING ALGORITHM
+			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y);
+			if (clickedTile.x>=0 and clickedTile.y>=0) { //ignore (-1, -1)/error
+				//PASS THIS INTO PATHFINDING ALGORITHM
+				magpieEndpt = clickedTile;
+			}
 			return true;
 		}
 	}
+	*/
 
 /*
 	if (evt.type == SDL_MOUSEMOTION) {
@@ -324,6 +293,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	}
 
 */
+
 	return false;
 }
 
@@ -340,9 +310,10 @@ void GameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
 
 
 void GameMode::update(float elapsed) {
-	camera_parent_transform->rotation = glm::angleAxis(camera_spin, glm::vec3(0.0f, 0.0f, 1.0f));
-	spot_parent_transform->rotation = glm::angleAxis(spot_spin, glm::vec3(0.0f, 0.0f, 1.0f));
+	//camera_parent_transform->rotation = glm::angleAxis(camera_spin, glm::vec3(0.0f, 0.0f, 1.0f));
+	//spot_parent_transform->rotation = glm::angleAxis(spot_spin, glm::vec3(0.0f, 0.0f, 1.0f));
 	magMoveCountdown -= elapsed;
+	
 	//framework for updating characters' positions
 	//update magpie's position
 	//updatePosition('m', );
@@ -431,9 +402,10 @@ struct Framebuffers {
 } fbs;
 
 void GameMode::draw(glm::uvec2 const &drawable_size) {
-	// Update the animations
-	player->anim.update(scene_ref);
 
+	// Update the animations
+	//SEGFAULTING WHY?
+	//player->anim.update(scene_ref);
 
 	fbs.allocate(drawable_size, glm::uvec2(512, 512));
 
@@ -545,4 +517,5 @@ void GameMode::draw(glm::uvec2 const &drawable_size) {
 	glUseProgram(0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
 }
