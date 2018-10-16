@@ -9,6 +9,11 @@
 #include <cassert>
 #include <glm/glm.hpp>
 
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 class Agent {
 public:
     Agent()= default;
@@ -22,6 +27,9 @@ public:
         DOWN,
         LEFT
     };
+
+    glm::vec2 getDirectionVec2();
+    void turnTo(glm::vec2 destination);
 
     DIRECTION orientation;
     glm::vec2 coordinate;
