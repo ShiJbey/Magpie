@@ -42,7 +42,7 @@ TransformAnimation::TransformAnimation(std::string const &filename) {
 	}
 }
 
-TransformAnimationPlayer::TransformAnimationPlayer(TransformAnimation const &animation_, std::vector< Scene::Transform * > const &transforms_, float speed) : animation(animation_), transforms(transforms_) {
+TransformAnimationPlayer::TransformAnimationPlayer(TransformAnimation const &animation_, std::vector< Scene::Transform * > const &transforms_, float speed, bool loop_) : animation(animation_), transforms(transforms_), loop(loop_) {
 	if (transforms.size() != animation.names.size()) {
 		std::cerr << "WARNING: TransformAnimationPlayer was passed a list of " << transforms.size() << " transforms for an animation on " << animation.names.size() << " objects. Will trim / pad with null." << std::endl;
 		while (transforms.size() > animation.names.size()) {
@@ -72,10 +72,17 @@ void TransformAnimationPlayer::update(float elapsed) {
 		iframe2 = iframe;
 		amt = 0.0f;
 	}
-	if (iframe2 >= animation.frames) { 
-		iframe = int32_t(animation.frames) - 1;
-		iframe2 = iframe;
-		amt = 0.0f;
+	if (iframe2 >= animation.frames) {
+		if (loop) {
+			iframe = int32_t(animation.frames) - 1;
+			iframe2 = 0;
+			float amt = frame - iframe; 
+			frame = 0;
+		} else {
+			iframe = int32_t(animation.frames) - 1;
+			iframe2 = iframe;
+			amt = 0.0f;
+		}
 	}
 	assert(iframe >= 0 && iframe < animation.frames);
 	assert(iframe2 >= 0 && iframe2 < animation.frames);

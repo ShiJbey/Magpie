@@ -58,11 +58,13 @@ for object_name in object_names:
 		#write index entry for object:
 		begin = len(strings_data)
 		strings_data += bytes(current_obj.name, 'utf8')
-		if current_obj.name not in object_names:
-			object_names.append(current_obj.name)
 		end = len(strings_data)
 		index_data += struct.pack('II', begin, end)
 
+		#Keep track of what we export
+		if current_obj.name not in object_names:
+			object_names.append(current_obj.name)
+		
 		# Place this object children on to the queue
 		for child in current_obj.children:
 			objects_to_add.put(child)

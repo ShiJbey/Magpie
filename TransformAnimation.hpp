@@ -30,17 +30,18 @@ struct TransformAnimation {
 
 //copies frame data from TransformAnimation to scene transforms:
 struct TransformAnimationPlayer {
-	TransformAnimationPlayer(TransformAnimation const &animation, std::vector< Scene::Transform * > const &transforms, float speed = 1.0f);
+	TransformAnimationPlayer(TransformAnimation const &animation, std::vector< Scene::Transform * > const &transforms, float speed = 1.0f, bool loop = false);
 
 	TransformAnimation const &animation;
 	std::vector< Scene::Transform * > transforms;
 
 	float frame = 0.0f;
 	float frames_per_second = 24.0f;
+	bool loop = false;
 
 	//advance playback by 'elapsed' seconds, set transforms:
 	void update(float elapsed);
 
-	bool done() const { return frame >= animation.frames; }
+	bool done() const { return !loop && frame >= animation.frames; }
 
 };

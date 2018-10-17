@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Mode.hpp"
+#include "TransformAnimation.hpp"
 
 #include "MeshBuffer.hpp"
 #include "GL.hpp"
@@ -31,4 +32,8 @@ struct TestAnimationMode : public Mode {
 
     Scene *scene;
     Scene::Camera *camera = nullptr;
+	std::vector< Scene::Transform *> player_model_walk_transforms;
+	std::vector< Scene::Transform *> player_model_idle_transforms;
+	std::vector< Scene::Transform *> player_model_steal_transforms;
+	std::list< TransformAnimationPlayer > current_animations;
 };
