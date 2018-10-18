@@ -80,8 +80,9 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
-	KeyFrameAnimation
 	Grid
+	TransformAnimation
+	TestAnimationMode
 	;
 
 if $(OS) = NT {

@@ -26,12 +26,12 @@
 #include <unordered_map>
 
 
-Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
+Load< MeshBuffer > magpie_player_meshes(LoadTagDefault, [](){
 	return new MeshBuffer(data_path("magpie.pnc"));
 });
 
-Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
-	return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
+Load< GLuint > magpie_player_meshes_for_vertex_color_program(LoadTagDefault, [](){
+	return new GLuint(magpie_player_meshes->make_vao_for_program(vertex_color_program->program));
 });
 
 Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
@@ -51,7 +51,7 @@ TestAnimationMode::TestAnimationMode() {
 
     Scene::Object::ProgramInfo vertex_color_program_info;
 	vertex_color_program_info.program = vertex_color_program->program;
-	vertex_color_program_info.vao = *meshes_for_vertex_color_program;
+	vertex_color_program_info.vao = *magpie_player_meshes_for_vertex_color_program;
 	vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
 	vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
 	vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
@@ -62,7 +62,7 @@ TestAnimationMode::TestAnimationMode() {
 		
 		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
 
-		MeshBuffer::Mesh const &mesh = magpie_meshes->lookup(m);
+		MeshBuffer::Mesh const &mesh = magpie_player_meshes->lookup(m);
 		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
 		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 	});

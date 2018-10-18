@@ -1,5 +1,3 @@
-#include "KeyFrameAnimation.hpp"
-#include "Player.hpp"
 #include "GameMode.hpp"
 
 #include "MenuMode.hpp"
@@ -152,12 +150,9 @@ Scene::Transform *camera_parent_transform = nullptr;
 Scene::Camera *camera = nullptr;
 Scene::Transform *spot_parent_transform = nullptr;
 Scene::Lamp *spot = nullptr;
-Scene *scene_ref = nullptr;
-Player* player = nullptr;
 
 Load< Scene > scene(LoadTagDefault, [](){
 	Scene *ret = new Scene;
-	scene_ref = ret;
 
 	Scene::Object::ProgramInfo vertex_color_program_info;
 	vertex_color_program_info.program = vertex_color_program->program;
@@ -300,7 +295,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 
 void GameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
 	for (uint32_t i=0; i<path.size(); i++) {
-		if (character == 'm' and magMoveCountdown<=0.0f) { //magpie
+		if (character == 'm' && magMoveCountdown<=0.0f) { //magpie
 			magpie = path[i]; //set new position
 			//MAYBE WALKING ANIMATION HERE
 			magMoveCountdown = 5.0f;
