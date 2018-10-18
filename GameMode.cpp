@@ -421,7 +421,6 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
 			if (clickedTile.x>=0 && clickedTile.y>=0) { //ignore (-1, -1)/error
 				//pass into pathfinding algorithm
-				;
 				magpieEndpt = clickedTile;
 			}
 			return true;
