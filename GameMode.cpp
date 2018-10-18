@@ -1,6 +1,5 @@
 #include "KeyFrameAnimation.hpp"
 #include "Player.hpp"
-#include "Ray.h"
 #include "GameMode.hpp"
 
 #include "MenuMode.hpp"
@@ -235,8 +234,11 @@ Load< Scene > scene(LoadTagDefault, [](){
 });
 
 GameMode::GameMode() {
+	//initialize first floor plan and navigation for magpie
 	Grid currFloor = Grid();
 	currFloor.initGrid("prototype");
+	//Navigation.getInstance();
+
 }
 
 GameMode::~GameMode() {
@@ -300,6 +302,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
 			if (clickedTile.x>=0 and clickedTile.y>=0) { //ignore (-1, -1)/error
 				//pass into pathfinding algorithm
+				;
 				magpieEndpt = clickedTile;
 			}
 			return true;
@@ -448,7 +451,7 @@ void GameMode::draw(glm::uvec2 const &drawable_size) {
 	glCullFace(GL_FRONT);
 	glEnable(GL_CULL_FACE);
 
-	// Set light uniformsS
+	// Set light uniforms
 	glUseProgram(vertex_color_program->program);
 	glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	glUniform3fv(vertex_color_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(-0.2f, 0.2f, 1.0f))));

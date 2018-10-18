@@ -82,6 +82,9 @@ CLIENT_NAMES =
 	Sound
 	KeyFrameAnimation
 	Grid
+	GuardAgent
+	Agent
+	Navigation
 	;
 
 if $(OS) = NT {

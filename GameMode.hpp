@@ -2,6 +2,7 @@
 
 #include "Mode.hpp"
 #include "Grid.h"
+#include "Navigation.h"
 #include "Scene.hpp"
 
 #include "MeshBuffer.hpp"
@@ -43,10 +44,12 @@ struct GameMode : public Mode {
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
 	Grid currFloor;
+	//Navigation magpieNav;
 	float camera_spin = 0.0f;
 	float spot_spin = 0.0f;
 	float magMoveCountdown = 5.0f;
 	glm::uvec2 magpie = glm::uvec2(0, 0);
 	glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
+	std::vector<glm::uvec2> magpieWalkPath;
 	
 };
