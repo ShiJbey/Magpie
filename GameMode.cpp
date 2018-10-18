@@ -353,51 +353,80 @@ Load< Scene > scene(LoadTagDefault, [](){
 });
 
 GameMode::GameMode() {
+	//initialize first floor plan and navigation for magpie
 	Grid currFloor = Grid();
 	currFloor.initGrid("prototype");
+	//Navigation.getInstance();
+
 }
 
 GameMode::~GameMode() {
 }
 
-//from this tutorial: http://antongerdelan.net/opengl/raycasting.html
-/*
-glm::uvec2 GameMode::mousePick(int mouseX, int mouseY) {
-	glm::uvec2 pickedTile = glm::uvec2(0, 0);
-	//3d Normalized device coords (z is not necessary right now)
-	float normDeviceX = (2.0f * mouseX) / screenWidth - 1.0f;
-	float normDeviceY = 1.0f - (2.0f * mouseY) / screenHeight;
-	//4d homogenous clip coordinates
-	glm::uvec4 rayClip = glm::uvec4(normDeviceX, normDeviceY, -1.0f, 1.0f);
-	//4d eye coordinates
-	glm::uvec4 rayEye = *rayClip;
-	//4d world coordinates
-	t = -()/();
-	if (t<=0) { //not clicking on anything
+glm::uvec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
+	float r = std::floor(isect.x);
+	float c = std::floor(isect.y);
+	bool negative = (r<0.0f or c<0.0f);
+	bool outOfRange = (r>=currFloor.rows or c>=currFloor.cols);
+	if (negative or outOfRange) {
+		//click is negative and impossible or is greater than dims of row and cols of given map
 		return glm::uvec2(-1, -1);
 	}
+	return glm::uvec2(r, c);
+}
+
+//from this tutorial: http://antongerdelan.net/opengl/raycasting.html
+glm::uvec2 GameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
+							   int floorHeight, const Scene::Camera* cam, std::string flPlan) {
+	//cam from scene::
+	//const Scene::Camera* cam = ;
+	glm::mat4 camLocalToWorld = cam->transform->make_local_to_world(); 
+
+	float halfImageHeight = cam->near*std::tan(cam->fovy/2.0f);
+	float halfImageWidth = cam->aspect*halfImageHeight;
+
+	//3d Normalized device coords
+	float normDeviceX = (2.0f * mouseX) / screenWidth - 1.0f;
+	float normDeviceY = 1.0f - (2.0f * mouseY) / screenHeight;
+	glm::vec3 localOrigin = glm::vec3(normDeviceX*halfImageWidth, normDeviceY*halfImageHeight, -cam->near);
+	glm::vec3 worldOrigin = camLocalToWorld*glm::vec4(localOrigin, 1.0f);
+	glm::vec3 worldDir = camLocalToWorld*glm::vec4(localOrigin, 0.0f); //unnormalized dir
+
+	//float dist = worldOrigin.z - floorHeight;
+
+	if (worldDir.z>=0.0f) { //discard all rays going away from floor
+		return glm::uvec2(-1,-1);
+	}
+	//want to solve s.t. floorHeight = origin.z + t*worldDir.z
+	float t = (floorHeight-worldOrigin.z)/worldDir.z;
+
+	glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
+
+	glm::uvec2 pickedTile = tileMap(pointOfIntersect, flPlan);
+
 	return pickedTile;
 }
-*/
 
 bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
 	//ignore any keys that are the result of automatic key repeat:
 	if (evt.type == SDL_KEYDOWN && evt.key.repeat) {
 		return false;
 	}
-	/*
-	if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
+
+	if (evt.type == SDL_MOUSEBUTTONDOWN) {
 		if (evt.button.button == SDL_BUTTON_LEFT) {
 			//TODO: get x and y of mouse click and figure out which tile it is
-			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y);
+			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
+									 window_size.x, window_size.y, 0, camera, "prototype");
+			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
 			if (clickedTile.x>=0 and clickedTile.y>=0) { //ignore (-1, -1)/error
-				//PASS THIS INTO PATHFINDING ALGORITHM
+				//pass into pathfinding algorithm
+				;
 				magpieEndpt = clickedTile;
 			}
 			return true;
 		}
 	}
-	*/
 
 /*
 	if (evt.type == SDL_MOUSEMOTION) {
@@ -548,7 +577,7 @@ void GameMode::draw(glm::uvec2 const &drawable_size) {
 	glCullFace(GL_FRONT);
 	glEnable(GL_CULL_FACE);
 
-	// Set light uniformsS
+	// Set light uniforms
 	glUseProgram(vertex_color_program->program);
 	glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	glUniform3fv(vertex_color_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(-0.2f, 0.2f, 1.0f))));

@@ -82,6 +82,9 @@ CLIENT_NAMES =
 	Sound
 	Grid
 	TransformAnimation
+	GuardAgent
+	Agent
+	Navigation
 	;
 
 if $(OS) = NT {
