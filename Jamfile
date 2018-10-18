@@ -80,11 +80,12 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
-	KeyFrameAnimation
 	Grid
+	TransformAnimation
 	GuardAgent
 	Agent
 	Navigation
+	MagpieGameMode
 	;
 
 if $(OS) = NT {

@@ -4,6 +4,7 @@
 
 #include "Grid.h"
 #include <vector>
+#include <iostream>
 
 //hardcoded floorplan for prototype
 std::string example = "prototype";
@@ -24,10 +25,10 @@ void Grid::initGrid(std::string floorPlan) {
         for (uint32_t i=0; i<rows; i++) {
             std::vector< char > r;
             for (uint32_t j=0; j<cols; j++) {
-                if (i == 8 and j == 3) { //long table part 1
+                if (i == 8 && j == 3) { //long table part 1
                     r.push_back('t');
                 }
-                else if (i == 8 and j == 4) { //long table part 2
+                else if (i == 8 && j == 4) { //long table part 2
                     r.push_back('t');
                 }
                 else {
@@ -44,7 +45,7 @@ void Grid::initGrid(std::string floorPlan) {
 
 //getter function
 char Grid::at(glm::uvec2 coord){
-    if (coord.x>rows or coord.x<0 or coord.y>cols or coord.y<0) {
+    if (coord.x>rows || coord.x<0 || coord.y>cols || coord.y<0) {
         return 1; //err return
     }
     char item = map[coord.x][coord.y];

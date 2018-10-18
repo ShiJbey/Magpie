@@ -10,3 +10,7 @@ dist/SDL2.dll
 kit-libs-win
 kit-libs-osx
 kit-libs-linux
+.vscode
+.idea
+dist/main.ilk
+dist/main.pdb

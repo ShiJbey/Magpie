@@ -156,6 +156,9 @@ for obj in bpy.data.objects:
 		write_camera(obj)
 	elif obj.type == 'LAMP':
 		write_lamp(obj)
+	elif obj.type == 'EMPTY':
+		print("group: " + obj.name)
+		write_xfh(obj)
 	else:
 		print('Skipping ' + obj.type)
 
