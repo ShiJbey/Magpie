@@ -76,7 +76,7 @@ void TransformAnimationPlayer::update(float elapsed) {
 		if (loop) {
 			iframe = int32_t(animation.frames) - 1;
 			iframe2 = 0;
-			float amt = frame - iframe; 
+			//float amt = frame - iframe; 
 			frame = 0;
 		} else {
 			iframe = int32_t(animation.frames) - 1;

@@ -82,7 +82,6 @@ CLIENT_NAMES =
 	Sound
 	Grid
 	TransformAnimation
-	TestAnimationMode
 	;
 
 if $(OS) = NT {
