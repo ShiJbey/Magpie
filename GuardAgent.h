@@ -11,7 +11,10 @@
 #include <vector>
 
 class GuardAgent : Agent {
-    // patrol
+
+    GuardAgent() = default;
+    GuardAgent(Agent* player);
+
     void update(float elapsed) override;
 
 private:

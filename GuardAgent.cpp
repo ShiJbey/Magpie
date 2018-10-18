@@ -4,6 +4,9 @@
 
 #include "GuardAgent.h"
 
+GuardAgent::GuardAgent(Agent *player) {
+    this->player = player;
+}
 
 void GuardAgent::update(float elapsed) {
     if (destination == route_point.end()) {
