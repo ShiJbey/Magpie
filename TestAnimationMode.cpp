@@ -25,7 +25,7 @@
 #include <random>
 #include <unordered_map>
 
-
+/*
 Load< MeshBuffer > magpie_player_meshes(LoadTagDefault, [](){
 	return new MeshBuffer(data_path("magpie.pnc"));
 });
@@ -45,6 +45,7 @@ Load< TransformAnimation > player_idle_tanim(LoadTagDefault, []() {
 Load< TransformAnimation > player_steal_tanim(LoadTagDefault, []() {
 	return new TransformAnimation(data_path("player_steal.tanim"));
 });
+*/
 
 TestAnimationMode::TestAnimationMode() {
 	scene = new Scene();

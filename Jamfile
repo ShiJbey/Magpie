@@ -85,6 +85,7 @@ CLIENT_NAMES =
 	GuardAgent
 	Agent
 	Navigation
+	MagpieGameMode
 	;
 
 if $(OS) = NT {

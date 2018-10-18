@@ -53,17 +53,21 @@ for object_name in object_names:
 	while not objects_to_add.empty():
 		# Get an object off the queue
 		current_obj = objects_to_add.get()
-		objs.append(current_obj)
 		
-		#write index entry for object:
-		begin = len(strings_data)
-		strings_data += bytes(current_obj.name, 'utf8')
-		end = len(strings_data)
-		index_data += struct.pack('II', begin, end)
 
-		#Keep track of what we export
-		if current_obj.name not in object_names:
-			object_names.append(current_obj.name)
+		if (current_obj.type != 'EMPTY'):
+			
+			objs.append(current_obj)
+		
+			#write index entry for object:
+			begin = len(strings_data)
+			strings_data += bytes(current_obj.name, 'utf8')
+			end = len(strings_data)
+			index_data += struct.pack('II', begin, end)
+
+			#Keep track of what we export
+			if current_obj.name not in object_names:
+				object_names.append(current_obj.name)
 		
 		# Place this object children on to the queue
 		for child in current_obj.children:

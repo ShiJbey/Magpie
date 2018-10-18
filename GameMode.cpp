@@ -366,9 +366,9 @@ GameMode::~GameMode() {
 glm::uvec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
 	float r = std::floor(isect.x);
 	float c = std::floor(isect.y);
-	bool negative = (r<0.0f or c<0.0f);
-	bool outOfRange = (r>=currFloor.rows or c>=currFloor.cols);
-	if (negative or outOfRange) {
+	bool negative = (r<0.0f || c<0.0f);
+	bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
+	if (negative || outOfRange) {
 		//click is negative and impossible or is greater than dims of row and cols of given map
 		return glm::uvec2(-1, -1);
 	}
@@ -419,7 +419,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
 									 window_size.x, window_size.y, 0, camera, "prototype");
 			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-			if (clickedTile.x>=0 and clickedTile.y>=0) { //ignore (-1, -1)/error
+			if (clickedTile.x>=0 && clickedTile.y>=0) { //ignore (-1, -1)/error
 				//pass into pathfinding algorithm
 				;
 				magpieEndpt = clickedTile;
