@@ -1,7 +1,5 @@
-//#include "KeyFrameAnimation.hpp"
-//#include "Player.hpp"
-#include "TransformAnimation.hpp"
 #include "GameMode.hpp"
+#include "TransformAnimation.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -25,6 +23,7 @@
 #include <map>
 #include <cstddef>
 #include <random>
+#include <unordered_map>
 
 /*
 Load< MeshBuffer > meshes(LoadTagDefault, [](){
@@ -37,6 +36,41 @@ Load< GLuint > meshes_for_depth_program(LoadTagDefault, [](){
 	return new GLuint(meshes->make_vao_for_program(depth_program->program));
 });
 */
+Load< MeshBuffer > magpie_player_idle_mesh(LoadTagDefault, [](){
+	return new MeshBuffer(data_path("magpie_idle.pnc"));
+});
+
+Load< GLuint > magpie_player_idle_mesh_for_vertex_color_program(LoadTagDefault, [](){
+	return new GLuint(magpie_player_idle_mesh->make_vao_for_program(vertex_color_program->program));
+});
+
+Load< MeshBuffer > magpie_player_walk_mesh(LoadTagDefault, [](){
+	return new MeshBuffer(data_path("magpie_walk.pnc"));
+});
+
+Load< GLuint > magpie_player_walk_for_vertex_color_program(LoadTagDefault, [](){
+	return new GLuint(magpie_player_walk_mesh->make_vao_for_program(vertex_color_program->program));
+});
+
+Load< MeshBuffer > magpie_player_steal_mesh(LoadTagDefault, [](){
+	return new MeshBuffer(data_path("magpie.pnc"));
+});
+
+Load< GLuint > magpie_player_steal_mesh_for_vertex_color_program(LoadTagDefault, [](){
+	return new GLuint(magpie_player_steal_mesh->make_vao_for_program(vertex_color_program->program));
+});
+
+Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
+	return new TransformAnimation(data_path("player_walk.tanim"));
+});
+
+Load< TransformAnimation > player_idle_tanim(LoadTagDefault, []() {
+	return new TransformAnimation(data_path("player_idle.tanim"));
+});
+
+Load< TransformAnimation > player_steal_tanim(LoadTagDefault, []() {
+	return new TransformAnimation(data_path("player_steal.tanim"));
+});
 
 Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
 	return new MeshBuffer(data_path("prototype_scene.pnct"));
@@ -153,12 +187,13 @@ Scene::Transform *camera_parent_transform = nullptr;
 Scene::Camera *camera = nullptr;
 Scene::Transform *spot_parent_transform = nullptr;
 Scene::Lamp *spot = nullptr;
-Scene *scene_ref = nullptr;
-//Player* player = nullptr;
+std::vector< Scene::Transform* > player_model_walk_transforms;
+std::vector< Scene::Transform* > player_model_steal_transforms;
+std::vector< Scene::Transform* > player_model_idle_transforms;
+std::list< TransformAnimationPlayer > current_animations;
 
 Load< Scene > scene(LoadTagDefault, [](){
 	Scene *ret = new Scene;
-	scene_ref = ret;
 
 	Scene::Object::ProgramInfo vertex_color_program_info;
 	vertex_color_program_info.program = vertex_color_program->program;
@@ -181,6 +216,17 @@ Load< Scene > scene(LoadTagDefault, [](){
 	depth_program_info.mvp_mat4  = depth_program->object_to_clip_mat4;
 
 
+
+
+	ret->load(data_path("magpie_walk.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+		Scene::Object *obj = s.new_object(t);
+		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+		obj->programs[Scene::Object::ProgramTypeDefault].vao = *magpie_player_walk_for_vertex_color_program;
+
+		MeshBuffer::Mesh const &mesh = magpie_player_walk_mesh->lookup(m);
+		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+	});
 	
 	//load transform hierarchy:
 	ret->load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
@@ -193,6 +239,78 @@ Load< Scene > scene(LoadTagDefault, [](){
 		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 	});
 
+	
+
+	
+
+	/*
+	ret->load(data_path("magpie_idle.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+		Scene::Object *obj = s.new_object(t);
+		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+
+		MeshBuffer::Mesh const &mesh = magpie_player_idle_mesh->lookup(m);
+		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+	});
+
+	ret->load(data_path("magpie_steal.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+		Scene::Object *obj = s.new_object(t);
+		obj->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+
+		MeshBuffer::Mesh const &mesh = magpie_player_steal_mesh->lookup(m);
+		obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+		obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+	});
+	*/
+
+	//look up various transforms:
+	std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+	for (Scene::Transform *t = ret->first_transform; t != nullptr; t = t->alloc_next) {
+		auto ret = name_to_transform.insert(std::make_pair(t->name, t));
+		if (!ret.second) {
+			std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
+		}
+	}
+
+	for (auto const &name : player_walk_tanim->names) {
+		auto f = name_to_transform.find(name);
+		if (f == name_to_transform.end()) {
+			std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+			player_model_walk_transforms.emplace_back(nullptr);
+		} else {
+			player_model_walk_transforms.emplace_back(f->second);
+		}
+	}
+
+	/*
+	for (auto const &name : player_idle_tanim->names) {
+		auto f = name_to_transform.find(name);
+		if (f == name_to_transform.end()) {
+			std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+			player_model_idle_transforms.emplace_back(nullptr);
+		} else {
+			player_model_idle_transforms.emplace_back(f->second);
+		}
+	}
+
+	for (auto const &name : player_steal_tanim->names) {
+		auto f = name_to_transform.find(name);
+		if (f == name_to_transform.end()) {
+			std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+			player_model_steal_transforms.emplace_back(nullptr);
+		} else {
+			player_model_steal_transforms.emplace_back(f->second);
+		}
+	}
+	*/
+
+	current_animations.emplace_back(*player_walk_tanim, player_model_walk_transforms, 1.0f, true);
+
+	//current_animations.emplace_back(*player_idle_tanim, player_model_idle_transforms, 1.0f, true);
+
+	//ret->look_up("magpieIdle_GRP")->position.x += 3.0f;
+	//ret->look_up("magpieWalk_GRP")->position.z += 3.0f;
+	//ret->look_up("magpieWalk_GRP")->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 /*
 	//look up camera parent transform:
 	for (Scene::Transform *t = ret->first_transform; t != nullptr; t = t->alloc_next) {
@@ -248,9 +366,9 @@ GameMode::~GameMode() {
 glm::uvec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
 	float r = std::floor(isect.x);
 	float c = std::floor(isect.y);
-	bool negative = (r<0.0f or c<0.0f);
-	bool outOfRange = (r>=currFloor.rows or c>=currFloor.cols);
-	if (negative or outOfRange) {
+	bool negative = (r<0.0f || c<0.0f);
+	bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
+	if (negative || outOfRange) {
 		//click is negative and impossible or is greater than dims of row and cols of given map
 		return glm::uvec2(-1, -1);
 	}
@@ -301,7 +419,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
 									 window_size.x, window_size.y, 0, camera, "prototype");
 			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-			if (clickedTile.x>=0 and clickedTile.y>=0) { //ignore (-1, -1)/error
+			if (clickedTile.x>=0 && clickedTile.y>=0) { //ignore (-1, -1)/error
 				//pass into pathfinding algorithm
 				magpieEndpt = clickedTile;
 			}
@@ -329,7 +447,7 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 
 void GameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
 	for (uint32_t i=0; i<path.size(); i++) {
-		if (character == 'm' and magMoveCountdown<=0.0f) { //magpie
+		if (character == 'm' && magMoveCountdown<=0.0f) { //magpie
 			magpie = path[i]; //set new position
 			//MAYBE WALKING ANIMATION HERE
 			magMoveCountdown = 5.0f;
@@ -348,6 +466,17 @@ void GameMode::update(float elapsed) {
 	//updatePosition('m', );
 	//update the guard's position
 	//updatePosition('g', );
+
+	for (auto ca = current_animations.begin(); ca != current_animations.end(); /* later */ ) {
+		ca->update(elapsed);
+		if (ca->done()) {
+			auto old = ca;
+			++ca;
+			current_animations.erase(old);
+		} else {
+			++ca;
+		}
+	}
 }
 
 //GameMode will render to some offscreen framebuffer(s).
@@ -431,10 +560,6 @@ struct Framebuffers {
 } fbs;
 
 void GameMode::draw(glm::uvec2 const &drawable_size) {
-
-	// Update the animations
-	//SEGFAULTING WHY?
-	//player->anim.update(scene_ref);
 
 	fbs.allocate(drawable_size, glm::uvec2(512, 512));
 

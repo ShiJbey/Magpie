@@ -9,6 +9,7 @@
 #include "Navigation.h"
 
 #include <vector>
+#include <algorithm>
 
 class GuardAgent : Agent {
     // patrol

@@ -6,6 +6,7 @@
 
 //The 'GameMode' mode plays the game:
 #include "GameMode.hpp"
+#include "MagpieGamemode.hpp"
 
 //The 'Sound' header has functions for managing sound:
 #include "Sound.hpp"
@@ -118,7 +119,7 @@ int main(int argc, char **argv) {
 
 	//------------ create game mode + make current --------------
 
-	Mode::set_current(std::make_shared< GameMode >(/*client*/));
+	Mode::set_current(std::make_shared< Magpie::MagpieGameMode >(/*client*/));
 
 	//------------ main loop ------------
 
