@@ -37,6 +37,7 @@ namespace Magpie {
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
 
+    // PLAYER IDLE
     Load< MeshBuffer > magpie_player_idle_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("magpie_idle.pnc"));
     });
@@ -44,6 +45,12 @@ namespace Magpie {
     Load< GLuint > magpie_player_idle_mesh_for_vertex_color_program(LoadTagDefault, [](){
         return new GLuint(magpie_player_idle_mesh->make_vao_for_program(vertex_color_program->program));
     });
+
+    Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("player_walk.tanim"));
+    });
+
+
 
     Load< MeshBuffer > magpie_player_walk_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("magpie_walk.pnc"));
@@ -61,9 +68,8 @@ namespace Magpie {
         return new GLuint(magpie_player_steal_mesh->make_vao_for_program(vertex_color_program->program));
     });
 
-    Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
-        return new TransformAnimation(data_path("player_walk.tanim"));
-    });
+    // PLAYER ANIMS
+    
 
     Load< TransformAnimation > player_idle_tanim(LoadTagDefault, []() {
         return new TransformAnimation(data_path("player_idle.tanim"));
@@ -73,6 +79,8 @@ namespace Magpie {
         return new TransformAnimation(data_path("player_steal.tanim"));
     });
 
+    // ENV
+
     Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
         return new MeshBuffer(data_path("prototype_scene.pnct"));
     });
@@ -80,6 +88,21 @@ namespace Magpie {
     Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
         return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
     });
+
+    // GUARD
+    
+    Load< MeshBuffer > magpie_guard_patrol_mesh(LoadTagDefault, [](){
+        return new MeshBuffer(data_path("guardDog_patrol.pnc"));
+    });
+
+    Load< GLuint > magpie_guard_patrol_mesh_for_vertex_color_program(LoadTagDefault, [](){
+        return new GLuint(magpie_guard_patrol_mesh->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< TransformAnimation > guard_patrol_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("guardDog_patrol.tanim"));
+    });
+
 
     Load< Scene > scene(LoadTagDefault, [](){
         Scene *ret = new Scene;
@@ -93,26 +116,30 @@ namespace Magpie {
 
         Scene::Object::ProgramInfo walk_vertex_color_program_info;
         walk_vertex_color_program_info.program = vertex_color_program->program;
-        walk_vertex_color_program_info.vao = *magpie_player_walk_mesh_for_vertex_color_program;
+        walk_vertex_color_program_info.vao = *magpie_player_idle_mesh_for_vertex_color_program;
         walk_vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
         walk_vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
         walk_vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
-
+        
+        Scene::Object::ProgramInfo patrol_vertex_color_program_info;
+        walk_vertex_color_program_info.program = vertex_color_program->program;
+        walk_vertex_color_program_info.vao = *magpie_guard_patrol_mesh_for_vertex_color_program;
+        walk_vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+        walk_vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+        walk_vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
         
 
-        ret->load(data_path("magpie_walk.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+        ret->load(data_path("magpie_idle.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             obj->programs[Scene::Object::ProgramTypeDefault] = walk_vertex_color_program_info;
 
-            MeshBuffer::Mesh const &mesh = magpie_player_walk_mesh->lookup(m);
+            MeshBuffer::Mesh const &mesh = magpie_player_idle_mesh->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
 
-        player_trans = ret->look_up("magpieWalk_GRP");
+        player_trans = ret->look_up("magpieIdle_GRP");
         assert(player_trans != nullptr);
-        //ret->look_up("magpieWalk_GRP")->position.x += 1.0f;
-
         
         //load transform hierarchy:
         ret->load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
@@ -121,6 +148,16 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault] = scene_vertex_color_program_info;
 
             MeshBuffer::Mesh const &mesh = magpie_meshes->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
+
+        
+        ret->load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            Scene::Object *obj = s.new_object(t);
+            obj->programs[Scene::Object::ProgramTypeDefault] = patrol_vertex_color_program_info;
+
+            MeshBuffer::Mesh const &mesh = magpie_guard_patrol_mesh->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
@@ -143,9 +180,20 @@ namespace Magpie {
                 player_model_walk_transforms.emplace_back(f->second);
             }
         }
+
+        for (auto const &name : player_idle_tanim->names) {
+            auto f = name_to_transform.find(name);
+            if (f == name_to_transform.end()) {
+                std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+                player_model_idle_transforms.emplace_back(nullptr);
+            } else {
+                player_model_idle_transforms.emplace_back(f->second);
+            }
+        }
         
         // Start walk animation
         current_animations.emplace_back(*player_walk_tanim, player_model_walk_transforms, 1.0f, true);
+        current_animations.emplace_back(*player_idle_tanim, player_model_idle_transforms, 1.0f, true);
 
         //look up the camera:
         for (Scene::Camera *c = ret->first_camera; c != nullptr; c = c->alloc_next) {
@@ -190,6 +238,12 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
         magMoveCountdown -= elapsed;
+
+        glm::vec2 vel(((float)magpieEndpt.x - player_trans->position.x), ((float)magpieEndpt.y - player_trans->position.y));
+        //vel = vel / glm::length(vel);
+        //vel *= 5.0;
+        player_trans->position.x += elapsed * vel.x;
+        player_trans->position.y += elapsed * vel.y;
 
         //player_trans->position.z += 0.1f;
 
@@ -265,8 +319,8 @@ namespace Magpie {
                     //pass into pathfinding algorithm
                     ;
                     magpieEndpt = clickedTile;
-                    player_trans->position.x = (float)clickedTile.x;
-                    player_trans->position.y = (float)clickedTile.y;
+                    //player_trans->position.x = (float)clickedTile.x;
+                    //player_trans->position.y = (float)clickedTile.y;
                 }
             }
         }
