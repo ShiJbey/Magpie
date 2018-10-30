@@ -31,7 +31,7 @@ MESH_ID = {
 COLLIDABLE_MESH_MASK = int('11110000', 2)
 COLLIDABLE_MESH_OFFSET = 4
 
-NONCOLLIDABLE_MESH_MASK = int('11110000', 2)
+NONCOLLIDABLE_MESH_MASK = int('00001111', 2)
 NONCOLLIDABLE_MESH_OFFSET = 0
 
 ROOM_NUMBER_MASK = int('11110000', 2)
@@ -103,8 +103,6 @@ class SingleMeshValidator(AbstractValidator):
 class GuardPathValidator(AbstractValidator):
 
     def check(self, pixel_data):
-        global COLOR_CHANNELS
-        global MESH_ID
         super().check(pixel_data)
         # Check if this tile is part of a guard path
         # if it is, then make sure that the mesh is a floor tile
@@ -120,19 +118,17 @@ class GuardPathValidator(AbstractValidator):
 
 if (__name__ == "__main__"):
     parser = argparse.ArgumentParser()
-    parser.add_argument("img_file", help="path to the bitmap being exported",
-    type=str)
-    parser.add_argument("out_file", help="path to the directory where the level file will be exported",
-    type=str)
+    parser.add_argument("img_file", help="path to the bitmap being exported", type=str)
+    parser.add_argument("out_file", help="path to the directory where the level file will be exported", type=str)
     parser.add_argument("--stride", help="how many cells to skip", type=int, default=1)
+    parser.add_argument("--validate", help="should this script validate the pixel data", action="store_true")
     args = parser.parse_args()
 
     img_file = args.img_file
     img = cv2.imread(img_file, cv2.IMREAD_COLOR)
     img_shape = img.shape
 
-    # Validators are classes that ensure that the level
-    # encoding doesn't have errors
+    # Validators to run while exporting data
     validators = [ SingleMeshValidator(), GuardPathValidator() ]
 
     # Byte stream to hold output
@@ -146,8 +142,9 @@ if (__name__ == "__main__"):
             pixel = np.flip(img[row, col], axis=0)
 
             # Run validators on the level encoding
-            for validator in validators:
-                validator.check(pixel)
+            if (args.validate):
+                for validator in validators:
+                    validator.check(pixel)
 
             # Write this pixel to a binary file
             output += struct.pack('B', pixel[0])
@@ -156,7 +153,8 @@ if (__name__ == "__main__"):
 
 
     blob = open(args.out_file, 'wb')
-    blob.write(output)
+    blob.write(struct.pack('4s', b'levl'))       # Header
+    blob.write(struct.pack('i', img_shape[0]))  # Length of the image
+    blob.write(struct.pack('i', img_shape[1]))  # Width of the image
+    blob.write(output)                          # Pixel Data
     blob.close()
-
-    print("Done")
