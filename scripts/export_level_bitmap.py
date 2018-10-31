@@ -1,5 +1,8 @@
 # Exports a bitmap file containing the level data
 # to a bindary format to be imported by c++
+#
+# Example Usage
+# python export_level_bitmap.py level_image.png ../dist/level1.lvl --validate
 
 import argparse
 import cv2
@@ -51,14 +54,11 @@ GUARD_PATH_OFFSET = 1
 ITEM_LOCATION_MASK = int('00000001', 2)
 ITEM_LOCATION_OFFSET = 0
 
-OBJECT_ID_MASK = int('01110000', 2)
-OBJECT_ID_OFFSET = 4
+GROUP_ID_MASK = int('1111000', 2)
+GROUP_ID_OFFSET = 4
 
-INTERACTION_FUNC_ID_MASK = int('00001100', 2)
-INTERACTION_FUNC_ID_OFFSET = 2
-
-INTERACTION_FLAG_MASK = int('00000011', 2)
-INTERACTION_FLAG_OFFSET = 0
+OBJECT_ID_MASK = int('00001111', 2)
+OBJECT_ID_OFFSET = 0
 
 def get_mesh_id(red_channel_data):
     return int((red_channel_data & MESH_MASK) >> MESH_OFFSET)
@@ -78,11 +78,8 @@ def is_item_location(green_channel_data):
 def get_object_id(blue_channel_data):
     return int((blue_channel_data & OBJECT_ID_MASK) >> OBJECT_ID_OFFSET)
 
-def get_interaction_func_id(blue_channel_data):
-    return int((blue_channel_data & INTERACTION_FUNC_ID_MASK) >> INTERACTION_FUNC_ID_OFFSET)
-
-def get_interaction_flag(blue_channel_data):
-    return int((blue_channel_data & INTERACTION_FLAG_MASK) >> INTERACTION_FLAG_OFFSET)
+def get_group_id(blue_channel_data):
+    return int((blue_channel_data & GROUP_ID_MASK) >> GROUP_ID_OFFSET)
 
 
 #############################################################
@@ -115,7 +112,7 @@ class GuardPathValidator(AbstractValidator):
         if (is_guard_path(pixel_data[COLOR_CHANNELS['GREEN']])):
             mesh_id = get_mesh_id(pixel_data[COLOR_CHANNELS['RED']])
             # 0 is the value for a floor tile
-            (mesh_id == 0)
+            (mesh_id == 3)
 
 #############################################################
 #                                                           #
