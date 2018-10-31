@@ -30,17 +30,10 @@ MESH_ID = {
     5: 'PAINTING',
     6: 'GEM',
     16: 'WALL',
-    17: 'WALL_90',
-    18: '4_CORNER',
-    19: '3_CORNER',
-    20: '3_CORNER_90',
-    21: '3_CORNER_180',
-    22: '3_CORNER_270',
-    23: '2_CORNER',
-    24: '2_CORNER_90',
-    25: '2_CORNER_180',
-    26: '2_CORNER_270',
-    27: 'PEDESTAL'
+    17: '4_CORNER',
+    18: '3_CORNER',
+    19: '2_CORNER',
+    20: 'PEDESTAL'
 }
 
 MESH_MASK = int('11111000', 2)
@@ -49,17 +42,17 @@ MESH_OFFSET = 3
 MESH_CUSTOMIZATION_MASK = int('00000111', 2)
 MESH_CUSTOMIZATION_OFFSET = 0
 
-ROOM_NUMBER_MASK = int('11110000', 2)
-ROOM_NUMBER_OFFSET = 4
+ROOM_NUMBER_MASK = int('11111000', 2)
+ROOM_NUMBER_OFFSET = 3
 
-GUARD_PATH_MASK = int('00001000', 2)
-GUARD_PATH_OFFSET = 3
+GUARD_PATH_MASK = int('00000110', 2)
+GUARD_PATH_OFFSET = 1
+
+ITEM_LOCATION_MASK = int('00000001', 2)
+ITEM_LOCATION_OFFSET = 0
 
 OBJECT_ID_MASK = int('01110000', 2)
 OBJECT_ID_OFFSET = 4
-
-POTENTIAL_PLACEHOLDER_MASK = int('10000000', 2)
-POTENTIAL_PLACEHOLDER_OFFSET = 7
 
 INTERACTION_FUNC_ID_MASK = int('00001100', 2)
 INTERACTION_FUNC_ID_OFFSET = 2
@@ -79,8 +72,8 @@ def is_guard_path(green_channel_data):
 def get_room_number(green_channel_data):
     return int((green_channel_data & ROOM_NUMBER_MASK) >> ROOM_NUMBER_OFFSET)
 
-def is_potential_placeholder(blue_channel_data):
-    return bool((blue_channel_data & POTENTIAL_PLACEHOLDER_MASK) >> POTENTIAL_PLACEHOLDER_OFFSET)
+def is_item_location(green_channel_data):
+    return bool((green_channel_data & ITEM_LOCATION_MASK) >> ITEM_LOCATION_OFFSET)
 
 def get_object_id(blue_channel_data):
     return int((blue_channel_data & OBJECT_ID_MASK) >> OBJECT_ID_OFFSET)

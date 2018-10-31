@@ -23,7 +23,7 @@ namespace Magpie {
         // Room number this tile belongs to
         uint8_t get_room_number();
         // Can we place either a gem or a painting at this tile
-        bool is_potential_placeholder();
+        bool is_item_location();
         // Will the guard use this postion to navigate
         bool is_guard_path();
 
@@ -40,7 +40,7 @@ namespace Magpie {
         static uint8_t MESH_CUSTOMIZATION_MASK;
         static uint8_t ROOM_NUMBER_MASK;
         static uint8_t GUARD_PATH_MASK;
-        static uint8_t POTENTIAL_PLACEHOLDER_MASK;
+        static uint8_t ITEM_LOCATION_MASK;
         static uint8_t OBJECT_ID_MASK;
         static uint8_t INTERACTION_FUNC_ID_MASK;
         static uint8_t INTERACTION_FLAG_MASK;
@@ -50,7 +50,7 @@ namespace Magpie {
         static uint8_t MESH_CUSTOMIZATION_OFFSET;
         static uint8_t ROOM_NUMBER_OFFSET;
         static uint8_t GUARD_PATH_OFFSET;
-        static uint8_t POTENTIAL_PLACEHOLDER_OFFSET;
+        static uint8_t ITEM_LOCATION_OFFSET;
         static uint8_t OBJECT_ID_OFFSET;
         static uint8_t INTERACTION_FUNC_ID_OFFSET;
         static uint8_t INTERACTION_FLAG_OFFSET;
@@ -59,7 +59,15 @@ namespace Magpie {
 
     class LevelLoader {
     public:
-        static std::map<uint8_t, std::string> mesh_id;
+
+        // just making each map static for now
+        static std::map<uint8_t, std::string> purple_meshes;
+
+        // maps customization numbers to maps of mesh IDs
+        // mapped to the name of the mesh
+        std::map <uint8_t, std::map<uint8_t, std::string>> mesh_names;
+
+        LevelLoader();
 
         void load(std::string const &level_filename);
     };

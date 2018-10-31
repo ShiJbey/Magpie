@@ -5,18 +5,18 @@
 
 uint8_t Magpie::PixelData::MESH_MASK = 0b11111000;
 uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_MASK = 0b00000111;
-uint8_t Magpie::PixelData::ROOM_NUMBER_MASK = 0b11110000;
-uint8_t Magpie::PixelData::GUARD_PATH_MASK = 0b00001000;
-uint8_t Magpie::PixelData::POTENTIAL_PLACEHOLDER_MASK = 0b10000000;
+uint8_t Magpie::PixelData::ROOM_NUMBER_MASK = 0b11111000;
+uint8_t Magpie::PixelData::GUARD_PATH_MASK = 0b00000110;
+uint8_t Magpie::PixelData::ITEM_LOCATION_MASK = 0b00000001;
 uint8_t Magpie::PixelData::OBJECT_ID_MASK = 0b01110000;
 uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_MASK = 0b00001100;
 uint8_t Magpie::PixelData::INTERACTION_FLAG_MASK = 0b00000011;
 
 uint8_t Magpie::PixelData::MESH_OFFSET = 3;
 uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_OFFSET = 0;
-uint8_t Magpie::PixelData::ROOM_NUMBER_OFFSET = 4;
-uint8_t Magpie::PixelData::GUARD_PATH_OFFSET = 3;
-uint8_t Magpie::PixelData::POTENTIAL_PLACEHOLDER_OFFSET = 7;
+uint8_t Magpie::PixelData::ROOM_NUMBER_OFFSET = 3;
+uint8_t Magpie::PixelData::GUARD_PATH_OFFSET = 1;
+uint8_t Magpie::PixelData::ITEM_LOCATION_OFFSET = 0;
 uint8_t Magpie::PixelData::OBJECT_ID_OFFSET = 4;
 uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_OFFSET = 2;
 uint8_t Magpie::PixelData::INTERACTION_FLAG_OFFSET = 0;
@@ -55,8 +55,8 @@ bool Magpie::PixelData::is_guard_path() {
     return (bool)((green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET);
 }
 
-bool Magpie::PixelData::is_potential_placeholder() {
-    return (bool)((blue_channel_data & POTENTIAL_PLACEHOLDER_MASK) >> POTENTIAL_PLACEHOLDER_OFFSET);
+bool Magpie::PixelData::is_item_location() {
+    return (bool)((green_channel_data & ITEM_LOCATION_MASK) >> ITEM_LOCATION_OFFSET);
 }
 
 uint8_t Magpie::PixelData::get_object_id() {
@@ -69,6 +69,25 @@ uint8_t Magpie::PixelData::get_interaction_func_id() {
 
 uint8_t Magpie::PixelData::get_interaction_flag() {
     return (blue_channel_data & INTERACTION_FLAG_MASK) >> INTERACTION_FLAG_OFFSET;
+}
+
+
+static std::map<uint8_t, std::string> purple_meshes = {
+    // Non Collidable
+    {3, "floor_purple_MSH"},
+    {4, "door_purple_MSH"},
+    {5, "painting_yellow_MSH"},
+    {6, "gem_red_MSH"},
+    // Collidable
+    {16, "wall_purple_MSH"},
+    {17, "4-corner_purple_MSH"},
+    {18, "3-corner_purple_MSH"},
+    {19, "2-corner_purple_MSH"},
+    {20, "pedestal_basic_MSH"}
+};
+
+Magpie::LevelLoader::LevelLoader() {
+    mesh_names.insert({0, purple_meshes});
 }
 
 void Magpie::LevelLoader::load(std::string const &filename) {
@@ -102,15 +121,4 @@ void Magpie::LevelLoader::load(std::string const &filename) {
     if (file.peek() != EOF) {
 		std::cerr << "WARNING: trailing data in level file '" << filename << "'" << std::endl;
 	}
-
-    
-}
-
-int main(int argc, char** argv) {
-    Magpie::LevelLoader loader;
-    loader.load("./scripts/out/test.lvl");
-
-    std::cout << "Hello, World" << std::endl;
-    std::cout << sizeof(Magpie::PixelData) << std::endl;
-    return 0;
 }
