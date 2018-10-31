@@ -9,8 +9,8 @@
 
 class Model {
 public:
-    void draw(Agent* agent);
-    void update(float elapsed);
+//    void draw(Agent* agent ;
+    virtual void update(float elapsed, Agent* agent) = 0;
 };
 
 
