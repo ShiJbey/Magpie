@@ -103,8 +103,8 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
     char level_file_header[5] = {'\0', '\0', '\0', '\0', '\0'};
 
-    if(file.read(reinterpret_cast< char* >(&level_file_header), sizeof(char) * 4)) {
-        std::cout << level_file_header << std::endl;
+    if(!file.read(reinterpret_cast< char* >(&level_file_header), sizeof(char) * 4)) {
+        std::cout << "ERROR:: Can't read level file header" << std::endl;
     }
 
     int width;
@@ -112,12 +112,10 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
     if(file.read(reinterpret_cast< char* >(&length), sizeof(int))) {
         this->level_length = length;
-        std::cout << level_length << std::endl;
     }
 
     if(file.read(reinterpret_cast< char* >(&width), sizeof(int))) {
         this->level_width = width;
-        std::cout << level_width << std::endl;
     }
 
     std::vector< Magpie::PixelData > pixel_data;
@@ -173,6 +171,35 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->name = std::string(name);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 game->moveable_tiles.push_back(glm::vec2(col, row));
+
+                // rotate walls on the left side of the room
+                if(col > 0) {
+                    // check for wall to the left
+                    if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                else if (col < level_width - 1) {
+                    if(pixel_data[(row * level_width) + (col + 1)].get_mesh_id() == 16) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                
+                if(row > 0) {
+                    // check for wall to the left
+                    if(pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 16
+                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 4
+                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 19) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                else if (row < level_length - 1) {
+                    if(pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 16
+                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 4
+                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 19) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
             }
 
              // Walls
@@ -192,6 +219,27 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                     if(pixel_data[(row * level_width) + (col + 1)].get_mesh_id() == 16) {
                         temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
+                }
+                
+                if(row > 0) {
+                    // check for wall to the left
+                    if(pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 16
+                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 4
+                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 19) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                else if (row < level_length - 1) {
+                    if(pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 16
+                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 4
+                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 19) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+
+                if (current_pixel.is_item_location()) {
+                    game->potential_wall_locations.push_back(temp_transform);
+                    std::cout << "Added wall to potential item locations" << std::endl;
                 }
             }
 
@@ -214,8 +262,46 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 std::string name = "pedestal_" + std::to_string(i);
                 temp_transform->name = name;
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+                if (current_pixel.is_item_location()) {
+                    game->potential_pedestal_locations.push_back(temp_transform);
+                    std::cout << "Added pedestal to potential item locations" << std::endl;
+                }
             }
-            
+        }
+    }
+
+    for (uint32_t i = 0; i < game->potential_pedestal_locations.size(); i++) {
+        temp_transform = scene->new_transform();
+        temp_transform->name = "gem_" + std::to_string(i);
+        temp_transform->position.x = game->potential_pedestal_locations[i]->position.x;
+        temp_transform->position.y = game->potential_pedestal_locations[i]->position.y;
+        temp_transform->rotation = game->potential_pedestal_locations[i]->rotation;
+        
+
+        auto custom_mesh_grp = mesh_names.find(0);
+        if (custom_mesh_grp != mesh_names.end()) {
+            auto custom_mesh_name = custom_mesh_grp->second.find(6);
+            if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                on_object(*scene, temp_transform, custom_mesh_name->second);
+            }
+        }
+    }
+
+    for (uint32_t i = 0; i < game->potential_wall_locations.size(); i++) {
+        temp_transform = scene->new_transform();
+        temp_transform->name = "painting_" + std::to_string(i);
+        temp_transform->position.x = game->potential_wall_locations[i]->position.x;
+        temp_transform->position.y = game->potential_wall_locations[i]->position.y;
+        temp_transform->rotation = game->potential_wall_locations[i]->rotation;
+        //temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        auto custom_mesh_grp = mesh_names.find(0);
+        if (custom_mesh_grp != mesh_names.end()) {
+            auto custom_mesh_name = custom_mesh_grp->second.find(5);
+            if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                on_object(*scene, temp_transform, custom_mesh_name->second);
+            }
         }
     }
 

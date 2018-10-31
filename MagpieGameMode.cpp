@@ -35,6 +35,7 @@ namespace Magpie {
     std::vector< Scene::Transform* > player_model_walk_transforms;
     std::vector< Scene::Transform* > player_model_steal_transforms;
     std::vector< Scene::Transform* > player_model_idle_transforms;
+    std::vector< Scene::Transform* > guard_model_patrol_transforms;
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
 
@@ -90,6 +91,18 @@ namespace Magpie {
         return new GLuint(scenery_meshes->make_vao_for_program(vertex_color_program->program));
     });
 
+    Load< MeshBuffer > guard_dog_patrol_mesh(LoadTagDefault, []() {
+        return new MeshBuffer(data_path("guardDog_patrol.pnc"));
+    });
+
+    Load< GLuint > guard_dog_patrol_vertex_color_program(LoadTagDefault, []() {
+        return new GLuint(guard_dog_patrol_mesh->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< TransformAnimation > guard_dog_patrol_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("guardDog_patrol.tanim"));
+    });
+
     void MagpieGameMode::init_scene() {
         // Single Program for drawing
         Scene::Object::ProgramInfo vertex_color_program_info;
@@ -101,7 +114,8 @@ namespace Magpie {
         // Vaos that the vertex color program will use
         std::map< std::string, GLuint > vertex_color_vaos = {
             {"scenery", *scenery_meshes_for_vertex_color_program},
-            {"magpieWalk", *magpie_player_walk_mesh_for_vertex_color_program}
+            {"magpieWalk", *magpie_player_walk_mesh_for_vertex_color_program},
+            {"guardPatrol", *guard_dog_patrol_vertex_color_program}
         };
 
         // Get the level loading object
@@ -127,27 +141,39 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
 
+        // Load in the guard walk walk mesh
+        scene.load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            Scene::Object *obj = s.new_object(t);
+            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos.find("guardPatrol")->second;
+            obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+            MeshBuffer::Mesh const &mesh = guard_dog_patrol_mesh->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
+
         player_trans = scene.look_up("magpieWalk_GRP");
+        assert(player_trans != nullptr);
         player_trans->position.x = 1.0f;
         player_trans->position.y = 1.0f;
-        assert(player_trans != nullptr);
+        
+
+        Scene::Transform* guard_trans = scene.look_up("guardDogPatrol_GRP");
+        assert(guard_trans != nullptr);
+        guard_trans->position.x = 3.0f;
+        guard_trans->position.y = 0.0f;
 
         
-        // Dont need this code since the level will be loaded in from pixel data
-        
+        // We are just using this for the camera positioning
         scene.load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
-            //Scene::Object *obj = s.new_object(t);
-            
-            //obj->programs[Scene::Object::ProgramTypeDefault] = scene_vertex_color_program_info;
-
-            //MeshBuffer::Mesh const &mesh = magpie_meshes->lookup(m);
-            //obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-            //obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+            // Save resources
+            scene.delete_transform(t);
         });
         
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+
         for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
             auto ret = name_to_transform.insert(std::make_pair(t->name, t));
             if (!ret.second) {
@@ -164,9 +190,20 @@ namespace Magpie {
                 player_model_walk_transforms.emplace_back(f->second);
             }
         }
+
+        for (auto const &name : guard_dog_patrol_tanim->names) {
+            auto f = name_to_transform.find(name);
+            if (f == name_to_transform.end()) {
+                std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+                guard_model_patrol_transforms.emplace_back(nullptr);
+            } else {
+                guard_model_patrol_transforms.emplace_back(f->second);
+            }
+        }
         
         // Start walk animation
         current_animations.emplace_back(*player_walk_tanim, player_model_walk_transforms, 1.0f, true);
+        current_animations.emplace_back(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
 
         //look up the camera:
         for (Scene::Camera *c = scene.first_camera; c != nullptr; c = c->alloc_next) {

@@ -14,7 +14,8 @@ namespace Magpie {
 
         glm::vec2 player_position;
         
-        std::vector< Scene::Transform* > potential_item_locations;
+        std::vector< Scene::Transform* > potential_pedestal_locations;
+        std::vector< Scene::Transform* > potential_wall_locations;
 
         std::vector< glm::vec2 > moveable_tiles;
 
