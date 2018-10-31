@@ -35,7 +35,7 @@ Magpie::PixelData::PixelData(uint8_t red_channel_data_, uint8_t green_channel_da
 
 std::string Magpie::PixelData::to_string() {
     char buffer[50];
-    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
+    sprintf_s(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
     return std::string(buffer);
 }
 
@@ -72,7 +72,7 @@ uint8_t Magpie::PixelData::get_interaction_flag() {
 }
 
 
-static std::map<uint8_t, std::string> purple_meshes = {
+std::map<uint8_t, std::string> Magpie::LevelLoader::purple_meshes = {
     // Non Collidable
     {3, "floor_purple_MSH"},
     {4, "door_purple_MSH"},
@@ -90,7 +90,13 @@ Magpie::LevelLoader::LevelLoader() {
     mesh_names.insert({0, purple_meshes});
 }
 
-void Magpie::LevelLoader::load(std::string const &filename) {
+void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
+            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+
+    ///////////////////////////////////////////////////////
+    //            READING FROM LEVEL FILE                //
+    ///////////////////////////////////////////////////////
+
     std::ifstream file(filename, std::ios::binary);
 
     std::string magic = "levl";
@@ -101,14 +107,16 @@ void Magpie::LevelLoader::load(std::string const &filename) {
         std::cout << level_file_header << std::endl;
     }
 
-    int level_width;
-    int level_length;
+    int width;
+    int length;
 
-    if(file.read(reinterpret_cast< char* >(&level_length), sizeof(int))) {
+    if(file.read(reinterpret_cast< char* >(&length), sizeof(int))) {
+        this->level_length = length;
         std::cout << level_length << std::endl;
     }
 
-    if(file.read(reinterpret_cast< char* >(&level_width), sizeof(int))) {
+    if(file.read(reinterpret_cast< char* >(&width), sizeof(int))) {
+        this->level_width = width;
         std::cout << level_width << std::endl;
     }
 
@@ -121,4 +129,114 @@ void Magpie::LevelLoader::load(std::string const &filename) {
     if (file.peek() != EOF) {
 		std::cerr << "WARNING: trailing data in level file '" << filename << "'" << std::endl;
 	}
+
+    ///////////////////////////////////////////////////////
+    //             PLACE OBJECTS IN SCENE                //
+    ///////////////////////////////////////////////////////
+
+    for (uint32_t row = 0; row < level_length; row++) {
+        for (uint32_t col = 0; col < level_width; col++) {
+            uint32_t i = (row * level_width) + col;
+            // Get the current pixel
+            PixelData current_pixel = pixel_data[i];
+
+            // Check the mesh value
+            uint8_t mesh_id = current_pixel.get_mesh_id();
+            uint8_t customization_id = current_pixel.get_mesh_customization();
+
+            if (mesh_id == 3) {
+                // All tiles have floor tiles below them
+                Scene::Transform* tile_transform = scene->new_transform();
+                std::string tile_name = "floor_" + std::to_string(i);
+                std::cout << tile_name << std::endl;
+                tile_transform->name = std::string(tile_name);
+                tile_transform->position.x = (float)row;
+                tile_transform->position.y = (float)col;
+                tile_transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+                auto custom_mesh_grp = mesh_names.find(customization_id);
+                if (custom_mesh_grp != mesh_names.end()) {
+                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
+                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                        on_object(*scene, tile_transform, custom_mesh_name->second);
+                    }
+                }
+                game->moveable_tiles.push_back(glm::vec2(col, row));
+            }
+            if (mesh_id == 4) {
+                // All tiles have floor tiles below them
+                Scene::Transform* tile_transform = scene->new_transform();
+                std::string tile_name = "wall_" + std::to_string(i);
+                std::cout << tile_name << std::endl;
+                tile_transform->name = std::string(tile_name);
+                tile_transform->position.x = (float)row;
+                tile_transform->position.y = (float)col;
+                tile_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                
+                
+
+                auto custom_mesh_grp = mesh_names.find(customization_id);
+                if (custom_mesh_grp != mesh_names.end()) {
+                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
+                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                        on_object(*scene, tile_transform, custom_mesh_name->second);
+                    }
+                }
+                game->moveable_tiles.push_back(glm::vec2(col, row));
+            }
+            else if (mesh_id == 16) {
+                // Build the WALL!
+                Scene::Transform* wall_transform = scene->new_transform();
+                std::string wall_name = "wall_" + std::to_string(i);
+                std::cout << wall_name << std::endl;
+                wall_transform->name = std::string(wall_name);
+                wall_transform->position.x = (float)row;
+                wall_transform->position.y = (float)col;
+                wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                // rotate walls on the left side of the room
+                if(col > 0) {
+                    // check for wall to the left
+                    if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
+                        wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                else if (col < level_width - 1) {
+                    if(pixel_data[(row * level_width) + (col + 1)].get_mesh_id() == 16) {
+                        wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                auto custom_mesh_grp = mesh_names.find(customization_id);
+                if (custom_mesh_grp != mesh_names.end()) {
+                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
+                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                        on_object(*scene, wall_transform, custom_mesh_name->second);
+                    }
+                }
+            }
+            else if (mesh_id == 19) {
+                // Build the WALL!
+                Scene::Transform* wall_transform = scene->new_transform();
+                std::string wall_name = "corner_" + std::to_string(i);
+                std::cout << wall_name << std::endl;
+                wall_transform->name = std::string(wall_name);
+                wall_transform->position.x = (float)row;
+                wall_transform->position.y = (float)col;
+                wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                // rotate walls on the left side of the room
+                if(col > 0) {
+                    // check for wall to the left
+                    if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
+                        wall_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                }
+                auto custom_mesh_grp = mesh_names.find(customization_id);
+                if (custom_mesh_grp != mesh_names.end()) {
+                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
+                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                        on_object(*scene, wall_transform, custom_mesh_name->second);
+                    }
+                }
+            }
+        }
+    }
+
 }
