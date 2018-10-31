@@ -1,6 +1,7 @@
 #include "MagpieGamemode.hpp"
 
 #include "TransformAnimation.hpp"
+#include "load_level.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -42,6 +43,7 @@ namespace Magpie {
     std::vector< Scene::Transform* > player_model_walk_transforms;
     std::vector< Scene::Transform* > player_model_steal_transforms;
     std::vector< Scene::Transform* > player_model_idle_transforms;
+    std::vector< Scene::Transform* > guard_model_patrol_transforms;
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
 
@@ -97,6 +99,10 @@ namespace Magpie {
         return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
     });
 
+    Load< MeshBuffer > scenery_meshes(LoadTagDefault, [](){
+        return new MeshBuffer(data_path("building_tiles.pnc"));
+    });
+
     // GUARD
     
     Load< MeshBuffer > magpie_guard_patrol_mesh(LoadTagDefault, [](){
@@ -111,68 +117,96 @@ namespace Magpie {
         return new TransformAnimation(data_path("guardDog_patrol.tanim"));
     });
 
+    Load< GLuint > scenery_meshes_for_vertex_color_program(LoadTagDefault, [](){
+        return new GLuint(scenery_meshes->make_vao_for_program(vertex_color_program->program));
+    });
 
-    Load< Scene > scene(LoadTagDefault, [](){
-        Scene *ret = new Scene;
+    Load< MeshBuffer > guard_dog_patrol_mesh(LoadTagDefault, []() {
+        return new MeshBuffer(data_path("guardDog_patrol.pnc"));
+    });
 
-        Scene::Object::ProgramInfo scene_vertex_color_program_info;
-        scene_vertex_color_program_info.program = vertex_color_program->program;
-        scene_vertex_color_program_info.vao = *meshes_for_vertex_color_program;
-        scene_vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
-        scene_vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
-        scene_vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+    Load< GLuint > guard_dog_patrol_vertex_color_program(LoadTagDefault, []() {
+        return new GLuint(guard_dog_patrol_mesh->make_vao_for_program(vertex_color_program->program));
+    });
 
-        Scene::Object::ProgramInfo walk_vertex_color_program_info;
-        walk_vertex_color_program_info.program = vertex_color_program->program;
-        walk_vertex_color_program_info.vao = *magpie_player_idle_mesh_for_vertex_color_program;
-        walk_vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
-        walk_vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
-        walk_vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
-        
-        Scene::Object::ProgramInfo patrol_vertex_color_program_info;
-        walk_vertex_color_program_info.program = vertex_color_program->program;
-        walk_vertex_color_program_info.vao = *magpie_guard_patrol_mesh_for_vertex_color_program;
-        walk_vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
-        walk_vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
-        walk_vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
-        
+    Load< TransformAnimation > guard_dog_patrol_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("guardDog_patrol.tanim"));
+    });
 
-        ret->load(data_path("magpie_idle.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+    void MagpieGameMode::init_scene() {
+        // Single Program for drawing
+        Scene::Object::ProgramInfo vertex_color_program_info;
+        vertex_color_program_info.program = vertex_color_program->program;
+        vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+        vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+        vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+
+        // Vaos that the vertex color program will use
+        std::map< std::string, GLuint > vertex_color_vaos = {
+            {"scenery", *scenery_meshes_for_vertex_color_program},
+            {"magpieWalk", *magpie_player_walk_mesh_for_vertex_color_program},
+            {"guardPatrol", *guard_dog_patrol_vertex_color_program}
+        };
+
+        // Get the level loading object
+        Magpie::LevelLoader level_pixel_data;
+        level_pixel_data.load(data_path("sample.lvl"), &magpie_game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
-            obj->programs[Scene::Object::ProgramTypeDefault] = walk_vertex_color_program_info;
-
-            MeshBuffer::Mesh const &mesh = magpie_player_idle_mesh->lookup(m);
+            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos.find("scenery")->second;
+            obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+            MeshBuffer::Mesh const &mesh = scenery_meshes->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
 
-        player_trans = ret->look_up("magpieIdle_GRP");
+
+        // Load in the magpie walk mesh
+        scene.load(data_path("magpie_walk.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            Scene::Object *obj = s.new_object(t);
+            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos.find("magpieWalk")->second;
+            obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+            MeshBuffer::Mesh const &mesh = magpie_player_walk_mesh->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
+
+        // Load in the guard walk walk mesh
+        scene.load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+
+            Scene::Object *obj = s.new_object(t);
+            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos.find("guardPatrol")->second;
+            obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+            MeshBuffer::Mesh const &mesh = guard_dog_patrol_mesh->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
+
+
+        player_trans = scene.look_up("magpieWalk_GRP");
         assert(player_trans != nullptr);
+        player_trans->position.x = 1.0f;
+        player_trans->position.y = 1.0f;
         
-        //load transform hierarchy:
-        ret->load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
-            Scene::Object *obj = s.new_object(t);
-            
-            obj->programs[Scene::Object::ProgramTypeDefault] = scene_vertex_color_program_info;
 
-            MeshBuffer::Mesh const &mesh = magpie_meshes->lookup(m);
-            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-        });
+        Scene::Transform* guard_trans = scene.look_up("guardDogPatrol_GRP");
+        assert(guard_trans != nullptr);
+        guard_trans->position.x = 3.0f;
+        guard_trans->position.y = 0.0f;
 
         
-        ret->load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
-            Scene::Object *obj = s.new_object(t);
-            obj->programs[Scene::Object::ProgramTypeDefault] = patrol_vertex_color_program_info;
-
-            MeshBuffer::Mesh const &mesh = magpie_guard_patrol_mesh->lookup(m);
-            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        // We are just using this for the camera positioning
+        scene.load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            // Save resources
+            scene.delete_transform(t);
         });
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
-        for (Scene::Transform *t = ret->first_transform; t != nullptr; t = t->alloc_next) {
+
+        for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
             auto ret = name_to_transform.insert(std::make_pair(t->name, t));
             if (!ret.second) {
                 std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
@@ -189,22 +223,23 @@ namespace Magpie {
             }
         }
 
-        for (auto const &name : player_idle_tanim->names) {
+        for (auto const &name : guard_dog_patrol_tanim->names) {
             auto f = name_to_transform.find(name);
             if (f == name_to_transform.end()) {
                 std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
-                player_model_idle_transforms.emplace_back(nullptr);
+                guard_model_patrol_transforms.emplace_back(nullptr);
             } else {
-                player_model_idle_transforms.emplace_back(f->second);
+                guard_model_patrol_transforms.emplace_back(f->second);
             }
         }
         
         // Start walk animation
         current_animations.emplace_back(*player_walk_tanim, player_model_walk_transforms, 1.0f, true);
-        current_animations.emplace_back(*player_idle_tanim, player_model_idle_transforms, 1.0f, true);
+        current_animations.emplace_back(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
+
 
         //look up the camera:
-        for (Scene::Camera *c = ret->first_camera; c != nullptr; c = c->alloc_next) {
+        for (Scene::Camera *c = scene.first_camera; c != nullptr; c = c->alloc_next) {
             if (c->transform->name == "Camera") {
                 if (camera) throw std::runtime_error("Multiple 'Camera' objects in scene.");
                 camera = c;
@@ -213,7 +248,7 @@ namespace Magpie {
         if (!camera) throw std::runtime_error("No 'Camera' camera in scene.");
 
         //look up the spotlight:
-        for (Scene::Lamp *l = ret->first_lamp; l != nullptr; l = l->alloc_next) {
+        for (Scene::Lamp *l = scene.first_lamp; l != nullptr; l = l->alloc_next) {
             if (l->transform->name == "Spot") {
                 if (spot) throw std::runtime_error("Multiple 'Spot' objects in scene.");
                 if (l->type != Scene::Lamp::Spot) throw std::runtime_error("Lamp 'Spot' is not a spotlight.");
@@ -221,12 +256,11 @@ namespace Magpie {
             }
         }
         if (!spot) throw std::runtime_error("No 'Spot' spotlight in scene.");
-
-        return ret;
-    });
+    };
 
     MagpieGameMode::MagpieGameMode() {
         currFloor.initGrid("prototype");
+        init_scene();
         Navigation::getInstance().loadGrid(&currFloor);
         initEntities();
     };
@@ -256,14 +290,6 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
         magMoveCountdown -= elapsed;
-
-        glm::vec2 vel(((float)magpieEndpt.x - player_trans->position.x), ((float)magpieEndpt.y - player_trans->position.y));
-        //vel = vel / glm::length(vel);
-        //vel *= 5.0;
-        player_trans->position.x += elapsed * vel.x;
-        player_trans->position.y += elapsed * vel.y;
-
-        //player_trans->position.z += 0.1f;
 
         for (auto ca = current_animations.begin(); ca != current_animations.end(); /* later */ ) {
             ca->update(elapsed);
@@ -346,8 +372,6 @@ namespace Magpie {
     void MagpieGameMode::draw(glm::uvec2 const &drawable_size) {
         glViewport(0,0,drawable_size.x, drawable_size.y);
         
-    
-
         glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -369,12 +393,9 @@ namespace Magpie {
             glUniform3fv(vertex_color_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
-            scene->draw(camera);
+            scene.draw(camera);
         }
 
         GL_ERRORS();
     };
-
-
-
 }

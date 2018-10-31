@@ -85,6 +85,7 @@ CLIENT_NAMES =
 	Agent
 	Navigation
 	MagpieGameMode
+	load_level
 	Entity
 	PlayerAgent
 	PlayerModel

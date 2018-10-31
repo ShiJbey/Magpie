@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MagpieGame.hpp"
+
 #include "Mode.hpp"
 #include "TransformAnimation.hpp"
 #include "Grid.h"
@@ -50,19 +52,18 @@ namespace Magpie {
         //and returns that. if not it returns -1, -1
         glm::uvec2 tileMap(glm::vec3 isect, std::string floorPlan);
 
-        Scene::Transform *player_transform = nullptr;
-        /*
-        std::vector< Scene::Transform *> player_model_walk_transforms;
-        std::vector< Scene::Transform *> player_model_idle_transforms;
-        std::vector< Scene::Transform *> player_model_steal_transforms;
-        std::list< TransformAnimationPlayer > current_animations;
-        */
+        // Set up the scene using the level loader and such
+        void init_scene();
 
+        Scene::Transform *player_transform = nullptr;
         Grid currFloor;
         float magMoveCountdown = 5.0f;
         glm::uvec2 magpie = glm::uvec2(0, 0);
         glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
         std::vector<glm::uvec2> magpieWalkPath;
+
+        MagpieGame magpie_game;
+        Scene scene;
 
         std::vector<Entity*> entities;
         Entity* player;
