@@ -170,8 +170,8 @@ namespace Magpie {
     });
 
     MagpieGameMode::MagpieGameMode() {
-        Grid currFloor = Grid();
         currFloor.initGrid("prototype");
+        Navigation::getInstance().loadGrid(&currFloor);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -261,12 +261,12 @@ namespace Magpie {
                 glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
                                         window_size.x, window_size.y, 0, camera, "prototype");
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-                if (clickedTile.x>=0 && clickedTile.y>=0) { //ignore (-1, -1)/error
+                if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
                     //pass into pathfinding algorithm
                     ;
                     magpieEndpt = clickedTile;
-                    player_trans->position.x = (float)clickedTile.x;
-                    player_trans->position.y = (float)clickedTile.y;
+                    player_trans->position.x = (float)clickedTile.x + 0.5f;
+                    player_trans->position.y = (float)clickedTile.y + 0.5f;
                 }
             }
         }

@@ -11,8 +11,8 @@ std::string example = "prototype";
 
 //grid cannot be changed after initialization
 Grid::Grid(){
-    rows = 10;
-    cols = 14;
+    rows = 14;
+    cols = 10;
     initGrid(example);
 }
 

@@ -356,8 +356,7 @@ GameMode::GameMode() {
 	//initialize first floor plan and navigation for magpie
 	Grid currFloor = Grid();
 	currFloor.initGrid("prototype");
-	//Navigation.getInstance();
-
+	Navigation::getInstance().loadGrid(&currFloor);
 }
 
 GameMode::~GameMode() {
