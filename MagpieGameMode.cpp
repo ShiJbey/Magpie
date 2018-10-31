@@ -16,6 +16,9 @@
 #include "vertex_color_program.hpp"
 #include "depth_program.hpp"
 
+#include "PlayerAgent.h"
+#include "PlayerModel.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
@@ -24,6 +27,11 @@
 #include <cstddef>
 #include <random>
 #include <unordered_map>
+
+#define ENTITY_FACTORY(name) \
+[](int object_id, int group_id, Scene::Transform* transform){ \
+ return new Entity(new name##Model(transform), new name##Agent(object_id, group_id));\
+}\
 
 namespace Magpie {
 
@@ -172,11 +180,21 @@ namespace Magpie {
     MagpieGameMode::MagpieGameMode() {
         currFloor.initGrid("prototype");
         Navigation::getInstance().loadGrid(&currFloor);
+        initEntities();
     };
 
     MagpieGameMode::~MagpieGameMode() {
 
     };
+
+    void MagpieGameMode::initEntities() {
+
+        entityFactoryMap = {
+                {1, ENTITY_FACTORY(Player)}
+        };
+
+        player = ENTITY_FACTORY(Player)(0, 0, player_trans);
+    }
 
     void MagpieGameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
         for (uint32_t i=0; i<path.size(); i++) {
@@ -203,18 +221,12 @@ namespace Magpie {
                 ++ca;
             }
         }
-    };
 
-    glm::uvec2 MagpieGameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
-        float r = std::floor(isect.x);
-        float c = std::floor(isect.y);
-        bool negative = (r<0.0f || c<0.0f);
-        bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
-        if (negative || outOfRange) {
-            //click is negative and impossible or is greater than dims of row and cols of given map
-            return glm::uvec2(-1, -1);
+        player->update(elapsed);
+
+        for (Entity* entity: entities) {
+            entity->update(elapsed);
         }
-        return glm::uvec2(r, c);
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
@@ -244,7 +256,7 @@ namespace Magpie {
 
         glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
-        glm::uvec2 pickedTile = tileMap(pointOfIntersect, flPlan);
+        glm::uvec2 pickedTile = currFloor.tileCoord(pointOfIntersect);
 
         return pickedTile;
     };
@@ -262,11 +274,14 @@ namespace Magpie {
                                         window_size.x, window_size.y, 0, camera, "prototype");
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
                 if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
+
                     //pass into pathfinding algorithm
                     ;
-                    magpieEndpt = clickedTile;
-                    player_trans->position.x = (float)clickedTile.x + 0.5f;
-                    player_trans->position.y = (float)clickedTile.y + 0.5f;
+                    player->setDestination(clickedTile);
+//                    magpieEndpt = clickedTile;
+
+//                    player_trans->position.x = (float)clickedTile.x + 0.5f;
+//                    player_trans->position.y = (float)clickedTile.y + 0.5f;
                 }
             }
         }

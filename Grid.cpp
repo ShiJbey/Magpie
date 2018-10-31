@@ -43,6 +43,18 @@ void Grid::initGrid(std::string floorPlan) {
     }
 }
 
+glm::uvec2 Grid::tileCoord(glm::vec3 isect) {
+    float r = std::floor(isect.x);
+    float c = std::floor(isect.y);
+    bool negative = (r<0.0f || c<0.0f);
+    bool outOfRange = (r>=rows || c>=cols);
+    if (negative || outOfRange) {
+        //click is negative and impossible or is greater than dims of row and cols of given map
+        return glm::uvec2(-1, -1);
+    }
+    return glm::uvec2(r, c);
+}
+
 //getter function
 char Grid::at(glm::uvec2 coord){
     if (coord.x>rows || coord.x<0 || coord.y>cols || coord.y<0) {

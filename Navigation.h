@@ -10,8 +10,9 @@ class Path {
 public:
     Path(){}
     Path(std::vector<glm::uvec2> path);
-    glm::uvec2* next();
-    void reset_iterator();
+    glm::uvec2 next();
+    glm::uvec2 top();
+    bool isEmpty();
 
 private:
     std::vector<glm::uvec2> path;
@@ -29,7 +30,7 @@ public:
     void operator=(Navigation const&) = delete;
 
     void loadGrid(Grid* map);
-    Path* findPath(glm::uvec2 from, glm::uvec2 to);
+    Path findPath(glm::uvec2 from, glm::uvec2 to);
 
 private:
     Navigation() = default;

@@ -27,6 +27,8 @@ public:
     // Grid grid;
     char at(glm::uvec2 coor);
 
+    glm::uvec2 tileCoord(glm::vec3 isect);
+
 private:
     std::vector< std::vector< char > > map;
     //char map[rows][cols];

@@ -82,10 +82,12 @@ CLIENT_NAMES =
 	Sound
 	Grid
 	TransformAnimation
-	GuardAgent
 	Agent
 	Navigation
 	MagpieGameMode
+	Entity
+	PlayerAgent
+	PlayerModel
 	;
 
 if $(OS) = NT {
