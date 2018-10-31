@@ -202,17 +202,6 @@ namespace Magpie {
             // Save resources
             scene.delete_transform(t);
         });
-        
-
-        
-        ret->load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
-            Scene::Object *obj = s.new_object(t);
-            obj->programs[Scene::Object::ProgramTypeDefault] = patrol_vertex_color_program_info;
-
-            MeshBuffer::Mesh const &mesh = magpie_guard_patrol_mesh->lookup(m);
-            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-        });
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
