@@ -133,7 +133,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
     ///////////////////////////////////////////////////////
     //             PLACE OBJECTS IN SCENE                //
     ///////////////////////////////////////////////////////
-
+    Scene::Transform *temp_transform;
     for (uint32_t row = 0; row < level_length; row++) {
         for (uint32_t col = 0; col < level_width; col++) {
             uint32_t i = (row * level_width) + col;
@@ -144,98 +144,78 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             uint8_t mesh_id = current_pixel.get_mesh_id();
             uint8_t customization_id = current_pixel.get_mesh_customization();
 
-            if (mesh_id == 3) {
-                // All tiles have floor tiles below them
-                Scene::Transform* tile_transform = scene->new_transform();
-                std::string tile_name = "floor_" + std::to_string(i);
-                std::cout << tile_name << std::endl;
-                tile_transform->name = std::string(tile_name);
-                tile_transform->position.x = (float)row;
-                tile_transform->position.y = (float)col;
-                tile_transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-                auto custom_mesh_grp = mesh_names.find(customization_id);
-                if (custom_mesh_grp != mesh_names.end()) {
-                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
-                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, tile_transform, custom_mesh_name->second);
-                    }
-                }
-                game->moveable_tiles.push_back(glm::vec2(col, row));
-            }
-            if (mesh_id == 4) {
-                // All tiles have floor tiles below them
-                Scene::Transform* tile_transform = scene->new_transform();
-                std::string tile_name = "wall_" + std::to_string(i);
-                std::cout << tile_name << std::endl;
-                tile_transform->name = std::string(tile_name);
-                tile_transform->position.x = (float)row;
-                tile_transform->position.y = (float)col;
-                tile_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                
-                
+            // Create a new transform and position it
+            if (mesh_id != 0) {
+                temp_transform = scene->new_transform();
+                temp_transform->position.x = (float)row;
+                temp_transform->position.y = (float)col;
 
                 auto custom_mesh_grp = mesh_names.find(customization_id);
                 if (custom_mesh_grp != mesh_names.end()) {
                     auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
                     if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, tile_transform, custom_mesh_name->second);
+                        on_object(*scene, temp_transform, custom_mesh_name->second);
                     }
                 }
+            }
+            
+            // Floor Tile
+            if (mesh_id == 3) {
+                std::string name = "floor_" + std::to_string(i);
+                temp_transform->name = name;
+                temp_transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
                 game->moveable_tiles.push_back(glm::vec2(col, row));
             }
-            else if (mesh_id == 16) {
+
+            // Doors
+            if (mesh_id == 4) {
+                std::string name = "Door_" + std::to_string(i);
+                temp_transform->name = std::string(name);
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                game->moveable_tiles.push_back(glm::vec2(col, row));
+            }
+
+             // Walls
+            if (mesh_id == 16) {
                 // Build the WALL!
-                Scene::Transform* wall_transform = scene->new_transform();
-                std::string wall_name = "wall_" + std::to_string(i);
-                std::cout << wall_name << std::endl;
-                wall_transform->name = std::string(wall_name);
-                wall_transform->position.x = (float)row;
-                wall_transform->position.y = (float)col;
-                wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                std::string name = "wall_" + std::to_string(i);
+                temp_transform->name = std::string(name);
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 // rotate walls on the left side of the room
                 if(col > 0) {
                     // check for wall to the left
                     if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
-                        wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                 }
                 else if (col < level_width - 1) {
                     if(pixel_data[(row * level_width) + (col + 1)].get_mesh_id() == 16) {
-                        wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                    }
-                }
-                auto custom_mesh_grp = mesh_names.find(customization_id);
-                if (custom_mesh_grp != mesh_names.end()) {
-                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
-                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, wall_transform, custom_mesh_name->second);
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                 }
             }
-            else if (mesh_id == 19) {
-                // Build the WALL!
-                Scene::Transform* wall_transform = scene->new_transform();
-                std::string wall_name = "corner_" + std::to_string(i);
-                std::cout << wall_name << std::endl;
-                wall_transform->name = std::string(wall_name);
-                wall_transform->position.x = (float)row;
-                wall_transform->position.y = (float)col;
-                wall_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                // rotate walls on the left side of the room
+
+            // Corners
+            if (mesh_id == 19) {
+                std::string name = "corner_" + std::to_string(i);
+                temp_transform->name = std::string(name);
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                // rotate corners
                 if(col > 0) {
                     // check for wall to the left
                     if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
-                        wall_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-                    }
-                }
-                auto custom_mesh_grp = mesh_names.find(customization_id);
-                if (custom_mesh_grp != mesh_names.end()) {
-                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
-                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, wall_transform, custom_mesh_name->second);
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                 }
             }
+
+            // Pedestal
+            if (mesh_id == 20) {
+                std::string name = "pedestal_" + std::to_string(i);
+                temp_transform->name = name;
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            }
+            
         }
     }
 
