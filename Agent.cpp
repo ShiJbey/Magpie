@@ -46,7 +46,7 @@ void Agent::setDestination(glm::uvec2 destination){
     state = WALKING;
     std::cout << "Destination Set to " << destination.x << "," << destination.y << std::endl;
 
-    this->path = std::move(Navigation::getInstance().findPath(position, destination));
+    this->path = Navigation::getInstance().findPath(position, destination);
 
     cur_destination = this->path.top();
 }
