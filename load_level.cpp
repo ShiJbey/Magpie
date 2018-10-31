@@ -3,18 +3,20 @@
 #include <fstream>
 #include <vector>
 
-uint8_t Magpie::PixelData::COLLIDABLE_MESH_MASK = 0b11110000;
-uint8_t Magpie::PixelData::NONCOLLIDABLE_MESH_MASK = 0b00001111;
+uint8_t Magpie::PixelData::MESH_MASK = 0b11111000;
+uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_MASK = 0b00000111;
 uint8_t Magpie::PixelData::ROOM_NUMBER_MASK = 0b11110000;
 uint8_t Magpie::PixelData::GUARD_PATH_MASK = 0b00001000;
-uint8_t Magpie::PixelData::OBJECT_ID_MASK = 0b11110000;
+uint8_t Magpie::PixelData::POTENTIAL_PLACEHOLDER_MASK = 0b10000000;
+uint8_t Magpie::PixelData::OBJECT_ID_MASK = 0b01110000;
 uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_MASK = 0b00001100;
 uint8_t Magpie::PixelData::INTERACTION_FLAG_MASK = 0b00000011;
 
-uint8_t Magpie::PixelData::COLLIDABLE_MESH_OFFSET = 4;
-uint8_t Magpie::PixelData::NONCOLLIDABLE_MESH_OFFSET = 0;
+uint8_t Magpie::PixelData::MESH_OFFSET = 3;
+uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_OFFSET = 0;
 uint8_t Magpie::PixelData::ROOM_NUMBER_OFFSET = 4;
 uint8_t Magpie::PixelData::GUARD_PATH_OFFSET = 3;
+uint8_t Magpie::PixelData::POTENTIAL_PLACEHOLDER_OFFSET = 7;
 uint8_t Magpie::PixelData::OBJECT_ID_OFFSET = 4;
 uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_OFFSET = 2;
 uint8_t Magpie::PixelData::INTERACTION_FLAG_OFFSET = 0;
@@ -38,25 +40,23 @@ std::string Magpie::PixelData::to_string() {
 }
 
 uint8_t Magpie::PixelData::get_mesh_id() {
-    uint8_t collidable_mesh_id = (red_channel_data & COLLIDABLE_MESH_MASK) >> COLLIDABLE_MESH_OFFSET;
-    uint8_t noncollidable_mesh_id = (red_channel_data & NONCOLLIDABLE_MESH_MASK) >> NONCOLLIDABLE_MESH_OFFSET;
-    
-    if (collidable_mesh_id != 0) {
-        return collidable_mesh_id;
-    }
-    else if (noncollidable_mesh_id != 0) {
-        return noncollidable_mesh_id;
-    }
+    return (red_channel_data & MESH_MASK) >> MESH_OFFSET;
+}
 
-    return 0;
+uint8_t Magpie::PixelData::get_mesh_customization() {
+    return (red_channel_data & MESH_CUSTOMIZATION_MASK) >> MESH_CUSTOMIZATION_OFFSET;
 }
 
 uint8_t Magpie::PixelData::get_room_number() {
     return (green_channel_data & ROOM_NUMBER_MASK) >> ROOM_NUMBER_OFFSET;
 }
 
-uint8_t Magpie::PixelData::is_guard_path() {
-    return (green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET;
+bool Magpie::PixelData::is_guard_path() {
+    return (bool)((green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET);
+}
+
+bool Magpie::PixelData::is_potential_placeholder() {
+    return (bool)((blue_channel_data & POTENTIAL_PLACEHOLDER_MASK) >> POTENTIAL_PLACEHOLDER_OFFSET);
 }
 
 uint8_t Magpie::PixelData::get_object_id() {
@@ -103,7 +103,7 @@ void Magpie::LevelLoader::load(std::string const &filename) {
 		std::cerr << "WARNING: trailing data in level file '" << filename << "'" << std::endl;
 	}
 
-    //std::cout << pixel_data[10].to_string() << std::endl;
+    
 }
 
 int main(int argc, char** argv) {
