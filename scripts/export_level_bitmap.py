@@ -20,19 +20,34 @@ COLOR_CHANNELS = {
     'BLUE': 2
 }
 
+# Mesh IDs mapped to mesh names (refer to design document)
 MESH_ID = {
-    0: 'empty',
-    1: 'magpie',
-    2: 'guard',
-    3: 'floor',
-    4: 'wall'
+    0: 'EMPTY',
+    1: 'MAGPIE',
+    2: 'GUARD',
+    3: 'FLOOR',
+    4: 'DOOR',
+    5: 'PAINTING',
+    6: 'GEM',
+    16: 'WALL',
+    17: 'WALL_90',
+    18: '4_CORNER',
+    19: '3_CORNER',
+    20: '3_CORNER_90',
+    21: '3_CORNER_180',
+    22: '3_CORNER_270',
+    23: '2_CORNER',
+    24: '2_CORNER_90',
+    25: '2_CORNER_180',
+    26: '2_CORNER_270',
+    27: 'PEDESTAL'
 }
 
-COLLIDABLE_MESH_MASK = int('11110000', 2)
-COLLIDABLE_MESH_OFFSET = 4
+MESH_MASK = int('11111000', 2)
+MESH_OFFSET = 4
 
-NONCOLLIDABLE_MESH_MASK = int('00001111', 2)
-NONCOLLIDABLE_MESH_OFFSET = 0
+MESH_CUSTOMIZATION_MASK = int('00000111', 2)
+MESH_CUSTOMIZATION_OFFSET = 0
 
 ROOM_NUMBER_MASK = int('11110000', 2)
 ROOM_NUMBER_OFFSET = 4
@@ -40,8 +55,11 @@ ROOM_NUMBER_OFFSET = 4
 GUARD_PATH_MASK = int('00001000', 2)
 GUARD_PATH_OFFSET = 3
 
-OBJECT_ID_MASK = int('11110000', 2)
+OBJECT_ID_MASK = int('01110000', 2)
 OBJECT_ID_OFFSET = 4
+
+POTENTIAL_PLACEHOLDER_MASK = int('10000000', 2)
+POTENTIAL_PLACEHOLDER_OFFSET = 7
 
 INTERACTION_FUNC_ID_MASK = int('00001100', 2)
 INTERACTION_FUNC_ID_OFFSET = 2
@@ -50,24 +68,28 @@ INTERACTION_FLAG_MASK = int('00000011', 2)
 INTERACTION_FLAG_OFFSET = 0
 
 def get_mesh_id(red_channel_data):
-    collidable_mesh_id = (red_channel_data & COLLIDABLE_MESH_MASK) >> COLLIDABLE_MESH_OFFSET
-    noncollidable_mesh_id = (red_channel_data & NONCOLLIDABLE_MESH_MASK) >> NONCOLLIDABLE_MESH_OFFSET
-    return collidable_mesh_id, noncollidable_mesh_id
+    return int((red_channel_data & MESH_MASK) >> MESH_OFFSET)
+
+def get_mesh_customization(red_channel_data):
+    return (red_channel_data & MESH_CUSTOMIZATION_MASK) >> MESH_CUSTOMIZATION_OFFSET
 
 def is_guard_path(green_channel_data):
-    return (green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET
+    return bool((green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET)
 
 def get_room_number(green_channel_data):
-    return (green_channel_data & ROOM_NUMBER_MASK) >> ROOM_NUMBER_OFFSET
+    return int((green_channel_data & ROOM_NUMBER_MASK) >> ROOM_NUMBER_OFFSET)
+
+def is_potential_placeholder(blue_channel_data):
+    return bool((blue_channel_data & POTENTIAL_PLACEHOLDER_MASK) >> POTENTIAL_PLACEHOLDER_OFFSET)
 
 def get_object_id(blue_channel_data):
-    return (blue_channel_data & OBJECT_ID_MASK) >> OBJECT_ID_OFFSET
+    return int((blue_channel_data & OBJECT_ID_MASK) >> OBJECT_ID_OFFSET)
 
 def get_interaction_func_id(blue_channel_data):
-    return (blue_channel_data & INTERACTION_FUNC_ID_MASK) >> INTERACTION_FUNC_ID_OFFSET
+    return int((blue_channel_data & INTERACTION_FUNC_ID_MASK) >> INTERACTION_FUNC_ID_OFFSET)
 
 def get_interaction_flag(blue_channel_data):
-    return (blue_channel_data & INTERACTION_FLAG_MASK) >> INTERACTION_FLAG_OFFSET
+    return int((blue_channel_data & INTERACTION_FLAG_MASK) >> INTERACTION_FLAG_OFFSET)
 
 
 #############################################################
@@ -91,15 +113,6 @@ class AbstractValidator:
 # be sure to add the validator to the validator list created
 # before looping throught the pixels
 
-class SingleMeshValidator(AbstractValidator):
-
-    def check(self, pixel_data):
-        super().check(pixel_data)
-        collidable_mesh_id, noncollidable_mesh_id = get_mesh_id(pixel_data[COLOR_CHANNELS['RED']])
-        # Throws an error if we have both a collidable and a non collidable mesh defined
-        assert(collidable_mesh_id != 0 and noncollidable_mesh_id != 0)
-
-
 class GuardPathValidator(AbstractValidator):
 
     def check(self, pixel_data):
@@ -107,8 +120,9 @@ class GuardPathValidator(AbstractValidator):
         # Check if this tile is part of a guard path
         # if it is, then make sure that the mesh is a floor tile
         if (is_guard_path(pixel_data[COLOR_CHANNELS['GREEN']])):
-            _, noncollidable_mesh_id = get_mesh_id(pixel_data[COLOR_CHANNELS['RED']])
-            assert(noncollidable_mesh_id == MESH_ID['floor'])
+            mesh_id = get_mesh_id(pixel_data[COLOR_CHANNELS['RED']])
+            # 0 is the value for a floor tile
+            (mesh_id == 0)
 
 #############################################################
 #                                                           #
@@ -129,7 +143,7 @@ if (__name__ == "__main__"):
     img_shape = img.shape
 
     # Validators to run while exporting data
-    validators = [ SingleMeshValidator(), GuardPathValidator() ]
+    validators = [ GuardPathValidator() ]
 
     # Byte stream to hold output
     output = b''
