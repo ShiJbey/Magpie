@@ -10,6 +10,7 @@
 #include "MeshBuffer.hpp"
 #include "GL.hpp"
 #include "Scene.hpp"
+#include "Entity.h"
 
 
 #include <SDL.h>
@@ -18,12 +19,15 @@
 
 #include <vector>
 
+typedef Entity*(*EntityFactoryType)(int, int, Scene::Transform*);
 namespace Magpie {
     // Game mode for playing the MagpieGame
     struct MagpieGameMode : public Mode {
 
         MagpieGameMode();
         virtual ~MagpieGameMode();
+
+        void initEntities();
 
         //handle_event is called when new mouse or keyboard events are received:
         // (note that this might be many times per frame or never)
@@ -60,5 +64,9 @@ namespace Magpie {
 
         MagpieGame magpie_game;
         Scene scene;
+
+        std::vector<Entity*> entities;
+        Entity* player;
+        std::map<int, EntityFactoryType> entityFactoryMap;
     };
 }

@@ -12,20 +12,17 @@
  * class Entity is the top-level class of all interactable objects in the game;
  * including Player Character, NPC, Traps and treasures.
  */
+
+
 class Entity {
 public:
     Entity()= default;
-    Entity(Model* model, Agent* agent): model(model), agent(agent){}
+    Entity(Model* model, Agent* agent);
+    void update(float elapsed);
+    void draw();
+    void setDestination(glm::uvec2 destination);
 
-    void update(float elapsed){
-        agent->update(elapsed);
-        model->update(elapsed);
-    };
-    void draw(){
-        model->draw(agent);
-    };
-
-private:
+protected:
     Model* model = nullptr;
     Agent* agent = nullptr;
 };

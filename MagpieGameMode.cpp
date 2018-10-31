@@ -17,6 +17,9 @@
 #include "vertex_color_program.hpp"
 #include "depth_program.hpp"
 
+#include "PlayerAgent.h"
+#include "PlayerModel.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
@@ -25,6 +28,11 @@
 #include <cstddef>
 #include <random>
 #include <unordered_map>
+
+#define ENTITY_FACTORY(name) \
+[](int object_id, int group_id, Scene::Transform* transform){ \
+ return new Entity(new name##Model(transform), new name##Agent(object_id, group_id));\
+}\
 
 namespace Magpie {
 
@@ -39,6 +47,7 @@ namespace Magpie {
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
 
+    // PLAYER IDLE
     Load< MeshBuffer > magpie_player_idle_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("magpie_idle.pnc"));
     });
@@ -46,6 +55,12 @@ namespace Magpie {
     Load< GLuint > magpie_player_idle_mesh_for_vertex_color_program(LoadTagDefault, [](){
         return new GLuint(magpie_player_idle_mesh->make_vao_for_program(vertex_color_program->program));
     });
+
+    Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("player_walk.tanim"));
+    });
+
+
 
     Load< MeshBuffer > magpie_player_walk_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("magpie_walk.pnc"));
@@ -63,9 +78,8 @@ namespace Magpie {
         return new GLuint(magpie_player_steal_mesh->make_vao_for_program(vertex_color_program->program));
     });
 
-    Load< TransformAnimation > player_walk_tanim(LoadTagDefault, []() {
-        return new TransformAnimation(data_path("player_walk.tanim"));
-    });
+    // PLAYER ANIMS
+    
 
     Load< TransformAnimation > player_idle_tanim(LoadTagDefault, []() {
         return new TransformAnimation(data_path("player_idle.tanim"));
@@ -74,6 +88,8 @@ namespace Magpie {
     Load< TransformAnimation > player_steal_tanim(LoadTagDefault, []() {
         return new TransformAnimation(data_path("player_steal.tanim"));
     });
+
+    // ENV
 
     Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
         return new MeshBuffer(data_path("prototype_scene.pnct"));
@@ -85,6 +101,20 @@ namespace Magpie {
 
     Load< MeshBuffer > scenery_meshes(LoadTagDefault, [](){
         return new MeshBuffer(data_path("building_tiles.pnc"));
+    });
+
+    // GUARD
+    
+    Load< MeshBuffer > magpie_guard_patrol_mesh(LoadTagDefault, [](){
+        return new MeshBuffer(data_path("guardDog_patrol.pnc"));
+    });
+
+    Load< GLuint > magpie_guard_patrol_mesh_for_vertex_color_program(LoadTagDefault, [](){
+        return new GLuint(magpie_guard_patrol_mesh->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< TransformAnimation > guard_patrol_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("guardDog_patrol.tanim"));
     });
 
     Load< GLuint > scenery_meshes_for_vertex_color_program(LoadTagDefault, [](){
@@ -130,6 +160,7 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
 
+
         // Load in the magpie walk mesh
         scene.load(data_path("magpie_walk.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
@@ -143,6 +174,7 @@ namespace Magpie {
 
         // Load in the guard walk walk mesh
         scene.load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("guardPatrol")->second;
@@ -151,6 +183,7 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
+
 
         player_trans = scene.look_up("magpieWalk_GRP");
         assert(player_trans != nullptr);
@@ -170,6 +203,16 @@ namespace Magpie {
             scene.delete_transform(t);
         });
         
+
+        
+        ret->load(data_path("guardDog_patrol.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            Scene::Object *obj = s.new_object(t);
+            obj->programs[Scene::Object::ProgramTypeDefault] = patrol_vertex_color_program_info;
+
+            MeshBuffer::Mesh const &mesh = magpie_guard_patrol_mesh->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
@@ -205,6 +248,7 @@ namespace Magpie {
         current_animations.emplace_back(*player_walk_tanim, player_model_walk_transforms, 1.0f, true);
         current_animations.emplace_back(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
 
+
         //look up the camera:
         for (Scene::Camera *c = scene.first_camera; c != nullptr; c = c->alloc_next) {
             if (c->transform->name == "Camera") {
@@ -226,14 +270,24 @@ namespace Magpie {
     };
 
     MagpieGameMode::MagpieGameMode() {
-        Grid currFloor = Grid();
         currFloor.initGrid("prototype");
         init_scene();
+        Navigation::getInstance().loadGrid(&currFloor);
+        initEntities();
     };
 
     MagpieGameMode::~MagpieGameMode() {
 
     };
+
+    void MagpieGameMode::initEntities() {
+
+        entityFactoryMap = {
+                {1, ENTITY_FACTORY(Player)}
+        };
+
+        player = ENTITY_FACTORY(Player)(0, 0, player_trans);
+    }
 
     void MagpieGameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
         for (uint32_t i=0; i<path.size(); i++) {
@@ -258,18 +312,12 @@ namespace Magpie {
                 ++ca;
             }
         }
-    };
 
-    glm::uvec2 MagpieGameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
-        float r = std::floor(isect.x);
-        float c = std::floor(isect.y);
-        bool negative = (r<0.0f || c<0.0f);
-        bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
-        if (negative || outOfRange) {
-            //click is negative and impossible or is greater than dims of row and cols of given map
-            return glm::uvec2(-1, -1);
+        player->update(elapsed);
+
+        for (Entity* entity: entities) {
+            entity->update(elapsed);
         }
-        return glm::uvec2(r, c);
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
@@ -299,7 +347,7 @@ namespace Magpie {
 
         glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
-        glm::uvec2 pickedTile = tileMap(pointOfIntersect, flPlan);
+        glm::uvec2 pickedTile = currFloor.tileCoord(pointOfIntersect);
 
         return pickedTile;
     };
@@ -316,12 +364,15 @@ namespace Magpie {
                 glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
                                         window_size.x, window_size.y, 0, camera, "prototype");
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-                if (clickedTile.x>=0 && clickedTile.y>=0) { //ignore (-1, -1)/error
+                if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
+
                     //pass into pathfinding algorithm
                     ;
-                    magpieEndpt = clickedTile;
-                    player_trans->position.x = (float)clickedTile.x;
-                    player_trans->position.y = (float)clickedTile.y;
+                    player->setDestination(clickedTile);
+//                    magpieEndpt = clickedTile;
+
+//                    player_trans->position.x = (float)clickedTile.x + 0.5f;
+//                    player_trans->position.y = (float)clickedTile.y + 0.5f;
                 }
             }
         }
