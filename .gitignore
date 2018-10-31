@@ -14,3 +14,5 @@ kit-libs-linux
 .idea
 dist/main.ilk
 dist/main.pdb
+*.exe
+*.obj
