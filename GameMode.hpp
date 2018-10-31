@@ -20,6 +20,13 @@ struct GameMode : public Mode {
 	GameMode();
 	virtual ~GameMode();
 
+	//initialize a list of random items to steal
+	void initHitList();
+
+	//checks for game win/loss condition. returns a std::vector where first element
+	//is whether or not the game is over, the second is win or loss
+	std::vector<bool> gameOver();
+
 	//handle_event is called when new mouse or keyboard events are received:
 	// (note that this might be many times per frame or never)
 	//The function should return 'true' if it handled the event.
@@ -29,27 +36,38 @@ struct GameMode : public Mode {
 	virtual void update(float elapsed) override;
 
 	//update position is used to update the magpie or guard's position with pathfinder
-	void updatePosition(char character, std::vector<glm::uvec2> path);
+	void updatePosition(char character, std::vector<glm::vec2> path);
+
+	//update the direction in which the characters are facing as they move automatically
+	char dirFaced(glm::vec2 currPos, glm::vec2 nextPos);
 
 	//mouse pick sends a raycast from where the mouse has clicked and returns which tile
 	//the user has landed in
-	glm::uvec2 mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
+	glm::vec2 mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
 							   int floorHeight, const Scene::Camera* cam, std::string floorPlan);
 
 	//given a point of intersection, tileMap tries to find a matching tile in given floorplan 
 	//and returns that. if not it returns -1, -1
-	glm::uvec2 tileMap(glm::vec3 isect, std::string floorPlan);
+	glm::vec2 tileMap(glm::vec3 isect, std::string floorPlan);
+
+	//steal item sequence (plays magpie steal animation, deletes item from scene)
+	void stealItem(glm::vec2 itemPos);
 
 	//draw is called after update:
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
 	Grid currFloor;
+	std::vector<std::string> allItems; // all items on map
+	uint32_t numItems = 5; //number of items player has to grab to win
+	std::vector<std::string> hitlist;
 	//Navigation magpieNav;
 	float camera_spin = 0.0f;
 	float spot_spin = 0.0f;
 	float magMoveCountdown = 5.0f;
-	glm::uvec2 magpie = glm::uvec2(0, 0);
-	glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
-	std::vector<glm::uvec2> magpieWalkPath;
+	char magpieDir = 'U'; //TODO: CHECK OUT ENUM
+	glm::vec2 guard = glm::vec2(6, 6);
+	glm::vec2 magpie = glm::vec2(0, 0);
+	glm::vec2 magpieEndpt = glm::vec2(0, 0);
+	std::vector<glm::vec2> magpieWalkPath;
 	
 };

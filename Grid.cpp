@@ -19,6 +19,7 @@ Grid::Grid(){
 Grid::~Grid(){
 }
 
+//TODO: change
 void Grid::initGrid(std::string floorPlan) {
     if (floorPlan == "prototype") {
         //fill in floor plan

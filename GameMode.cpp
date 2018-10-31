@@ -352,31 +352,43 @@ Load< Scene > scene(LoadTagDefault, [](){
 	return ret;
 });
 
+
+void GameMode::initHitList(){
+	srand(time(NULL));
+	for (uint32_t i=0; i<numItems; i++) {
+		uint32_t ind = rand()%allItems.size();
+		std::string item = allItems[ind];
+		hitlist.push_back(item); //add to hitlist
+		//remove item from list
+		std::remove(allItems.begin(), allItems.end(), item);
+	}
+}
+
 GameMode::GameMode() {
-	//initialize first floor plan and navigation for magpie
+	//initialize first floor plan and items to get for magpie
 	Grid currFloor = Grid();
 	currFloor.initGrid("prototype");
 	//Navigation.getInstance();
-
+	initHitList();
 }
 
 GameMode::~GameMode() {
 }
 
-glm::uvec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
+glm::vec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
 	float r = std::floor(isect.x);
 	float c = std::floor(isect.y);
 	bool negative = (r<0.0f || c<0.0f);
 	bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
 	if (negative || outOfRange) {
 		//click is negative and impossible or is greater than dims of row and cols of given map
-		return glm::uvec2(-1, -1);
+		return glm::vec2(-1, -1);
 	}
-	return glm::uvec2(r, c);
+	return glm::vec2(r, c);
 }
 
 //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
-glm::uvec2 GameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
+glm::vec2 GameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
 							   int floorHeight, const Scene::Camera* cam, std::string flPlan) {
 	//cam from scene::
 	//const Scene::Camera* cam = ;
@@ -402,20 +414,40 @@ glm::uvec2 GameMode::mousePick(int mouseX, int mouseY, int screenWidth, int scre
 
 	glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
-	glm::uvec2 pickedTile = tileMap(pointOfIntersect, flPlan);
+	glm::vec2 pickedTile = tileMap(pointOfIntersect, flPlan);
 
 	return pickedTile;
+}
+
+//TODO: WRITE THIS
+void stealItem(glm::vec2 itemPos) {
+	//delete item from internal record
+	//magpie steal animation
+	//item disappear from scene
 }
 
 bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
 	//ignore any keys that are the result of automatic key repeat:
 	if (evt.type == SDL_KEYDOWN && evt.key.repeat) {
-		return false;
+		if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
+			if (evt.key.keysym.scancode == SDL_SCANCODE_S) {
+				//s to steal
+				//TODO: FIGURE OUT HOW TO DETECT IF ITEM NEAR MAGPIE
+				/*
+				bool withinRange = (magpie.x - 1 == itemPos.x)||(magpie.x + 1 == itemPos.x)||
+									(magpie.y - 1 == itemPos.y)||(magpie.y + 1 == itemPos.y);
+				if (withinRange) { //magpie is within range of stealable item
+					//steal item sequence
+					stealItem(itemPos);
+				}
+				*/
+				return true;
+			}
+		}
 	}
 
 	if (evt.type == SDL_MOUSEBUTTONDOWN) {
 		if (evt.button.button == SDL_BUTTON_LEFT) {
-			//TODO: get x and y of mouse click and figure out which tile it is
 			glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
 									 window_size.x, window_size.y, 0, camera, "prototype");
 			std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
@@ -445,9 +477,20 @@ bool GameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 }
 
 
-void GameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
+char GameMode::dirFaced(glm::vec2 currPos, glm::vec2 nextPos) {
+	if (currPos.x - nextPos.x == 1) {return 'U';}
+	else if (currPos.x - nextPos.x == -1) {return 'D';}
+	else if (currPos.y - nextPos.y == 1) {return 'L';}
+	else if (currPos.y - nextPos.y == -1) {return 'R';}
+	return magpieDir; //no need to change direction
+}
+
+
+void GameMode::updatePosition(char character, std::vector<glm::vec2> path) {
 	for (uint32_t i=0; i<path.size(); i++) {
 		if (character == 'm' && magMoveCountdown<=0.0f) { //magpie
+			//calculate magpie's new faced direction
+			magpieDir = dirFaced(magpie, path[i]);
 			magpie = path[i]; //set new position
 			//MAYBE WALKING ANIMATION HERE
 			magMoveCountdown = 5.0f;
@@ -477,7 +520,36 @@ void GameMode::update(float elapsed) {
 			++ca;
 		}
 	}
+
+	// check for win lose conditions
+	std::vector<bool> status = gameOver();
+	if (status[0] == true) { //game is over
+		if (status[1] == true) { //game is won.
+			//TODO: play you win animation
+			;
+		}
+		else { //game is lost
+			//TODO: play you lose animation
+			;
+		}
+	}
 }
+
+
+std::vector<bool> GameMode::gameOver() {
+	std::vector<bool> gameCondits;
+	bool playerWin = (hitlist.size()==0) ? true : false;
+	bool playerLose = (magpie.x==guard.x && magpie.y==guard.y) ? true : false;
+	if (playerWin or playerLose) {
+		//game is over
+		gameCondits.push_back(true);
+		if (playerWin) { gameCondits.push_back(true); } //player wins
+		else { gameCondits.push_back(false); } //player loses
+	}
+	else { gameCondits.push_back(false); } //game not over
+	return gameCondits;
+}
+
 
 //GameMode will render to some offscreen framebuffer(s).
 //This code allocates and resizes them as needed:
