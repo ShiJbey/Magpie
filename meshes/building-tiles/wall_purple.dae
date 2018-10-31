@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-10-15T08:04:08Z</created><keywords></keywords><modified>2018-10-15T08:04:08Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-10-31T06:58:30Z</created><keywords></keywords><modified>2018-10-31T06:58:30Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_materials>
     <material id="lambert1" name="lambert1">
       <instance_effect url="#lambert1-fx"/>
@@ -32,18 +32,18 @@
     </effect>
   </library_effects>
   <library_geometries>
-    <geometry id="wall1_MSH-lib" name="wall1_MSHMesh">
+    <geometry id="wall1_MSH1-lib" name="wall1_MSH1Mesh">
       <mesh>
-        <source id="wall1_MSH-POSITION">
-          <float_array id="wall1_MSH-POSITION-array" count="48">
--0.500000 0.000000 0.500000
-0.500000 0.000000 0.500000
--0.500000 0.041667 0.500000
-0.500000 0.041667 0.500000
--0.500000 0.041667 0.250000
-0.500000 0.041667 0.250000
--0.500000 0.000000 0.250000
-0.500000 0.000000 0.250000
+        <source id="wall1_MSH1-POSITION">
+          <float_array id="wall1_MSH1-POSITION-array" count="72">
+-0.500000 0.000000 -0.250000
+0.500000 0.000000 -0.250000
+-0.500000 0.041667 -0.250000
+0.500000 0.041667 -0.250000
+-0.500000 0.041667 -0.500000
+0.500000 0.041667 -0.500000
+-0.500000 0.000000 -0.500000
+0.500000 0.000000 -0.500000
 -0.500250 -0.000000 0.250000
 0.500250 -0.000000 0.250000
 -0.500250 -0.000000 -0.250000
@@ -52,17 +52,25 @@
 0.500250 2.001000 0.250000
 0.500250 2.001000 -0.250000
 -0.500250 2.001000 -0.250000
+-0.500000 0.000000 0.500000
+0.500000 0.000000 0.500000
+-0.500000 0.041667 0.500000
+0.500000 0.041667 0.500000
+-0.500000 0.041667 0.250000
+0.500000 0.041667 0.250000
+-0.500000 0.000000 0.250000
+0.500000 0.000000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#wall1_MSH-POSITION-array" count="16" stride="3">
+            <accessor source="#wall1_MSH1-POSITION-array" count="24" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="wall1_MSH-Normal0">
-          <float_array id="wall1_MSH-Normal0-array" count="216">
+        <source id="wall1_MSH1-Normal0">
+          <float_array id="wall1_MSH1-Normal0-array" count="324">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -129,6 +137,42 @@
 0.000000 0.000000 -1.000000
 0.000000 0.000000 -1.000000
 0.000000 0.000000 -1.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
 -1.000000 0.000000 0.000000
 -1.000000 0.000000 0.000000
 -1.000000 0.000000 0.000000
@@ -137,25 +181,25 @@
 -1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#wall1_MSH-Normal0-array" count="72" stride="3">
+            <accessor source="#wall1_MSH1-Normal0-array" count="108" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="wall1_MSH-UV0">
-          <float_array id="wall1_MSH-UV0-array" count="52">
+        <source id="wall1_MSH1-UV0">
+          <float_array id="wall1_MSH1-UV0-array" count="80">
 0.375000 0.000000
 0.625000 0.000000
-0.375000 0.250000
 0.625000 0.250000
-0.375000 0.500000
+0.375000 0.250000
 0.625000 0.500000
-0.375000 0.750000
+0.375000 0.500000
 0.625000 0.750000
-0.375000 1.000000
+0.375000 0.750000
 0.625000 1.000000
+0.375000 1.000000
 0.875000 0.000000
 0.875000 0.250000
 0.125000 0.000000
@@ -172,16 +216,30 @@
 1.000000 0.000000
 1.000000 1.000000
 0.000000 1.000000
+0.375000 0.000000
+0.625000 0.000000
+0.625000 0.250000
+0.375000 0.250000
+0.625000 0.500000
+0.375000 0.500000
+0.625000 0.750000
+0.375000 0.750000
+0.625000 1.000000
+0.375000 1.000000
+0.875000 0.000000
+0.875000 0.250000
+0.125000 0.000000
+0.125000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#wall1_MSH-UV0-array" count="26" stride="2">
+            <accessor source="#wall1_MSH1-UV0-array" count="40" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="wall1_MSH-VERTEX_COLOR0">
-          <float_array id="wall1_MSH-VERTEX_COLOR0-array" count="192">
+        <source id="wall1_MSH1-VERTEX_COLOR0">
+          <float_array id="wall1_MSH1-VERTEX_COLOR0-array" count="288">
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
@@ -222,6 +280,30 @@
 0.429840 0.358350 0.471421 1.000000
 0.429840 0.358350 0.471421 1.000000
 0.429840 0.358350 0.471421 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
+0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
@@ -232,7 +314,7 @@
 0.310905 0.259160 0.341000 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#wall1_MSH-VERTEX_COLOR0-array" count="48" stride="4">
+            <accessor source="#wall1_MSH1-VERTEX_COLOR0-array" count="72" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -240,20 +322,20 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="wall1_MSH-VERTEX">
-          <input semantic="POSITION" source="#wall1_MSH-POSITION"/>
+        <vertices id="wall1_MSH1-VERTEX">
+          <input semantic="POSITION" source="#wall1_MSH1-POSITION"/>
         </vertices>
-        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#wall1_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#wall1_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#wall1_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#wall1_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 2 6 2 4 3 7 3 5 5 8 5 6 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 5 24 11 18 3 25 3 19 1 26 1 16 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 12 36 14 24 13 37 15 25 14 38 16 26 12 39 14 24 14 40 16 26 15 41 17 27 10 42 19 29 11 43 20 30 8 44 18 28 9 45 21 31 8 46 18 28 11 47 20 30 12 48 14 35 8 49 22 32 13 50 15 34 13 51 15 34 8 52 22 32 9 53 23 33 11 54 24 37 13 55 15 39 9 56 23 36 13 57 15 39 11 58 24 37 14 59 16 38 10 60 25 41 15 61 17 42 11 62 24 40 11 63 24 40 15 64 17 42 14 65 16 43 12 66 14 46 10 67 25 44 8 68 22 45 10 69 25 44 12 70 14 46 15 71 17 47</p></triangles>
+        <triangles count="36" material="lambert1"><input semantic="VERTEX" offset="0" source="#wall1_MSH1-VERTEX"/><input semantic="NORMAL" offset="1" source="#wall1_MSH1-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#wall1_MSH1-UV0"/><input semantic="COLOR" offset="3" set="0" source="#wall1_MSH1-VERTEX_COLOR0"/><p> 3 0 2 2 2 1 3 3 0 2 0 0 3 3 2 2 0 4 0 0 1 5 1 1 2 6 3 4 3 7 2 5 5 8 4 6 2 9 3 4 5 10 4 6 4 11 5 7 7 12 6 10 6 13 7 11 4 14 5 8 7 15 6 10 4 16 5 8 5 17 4 9 1 18 8 14 0 19 9 15 6 20 7 12 1 21 8 14 6 22 7 12 7 23 6 13 5 24 11 18 3 25 2 19 1 26 1 16 1 27 1 16 7 28 10 17 5 29 11 18 2 30 3 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 3 22 4 35 13 23 12 36 14 24 13 37 15 25 14 38 16 26 12 39 14 24 14 40 16 26 15 41 17 27 10 42 19 29 11 43 20 30 8 44 18 28 9 45 21 31 8 46 18 28 11 47 20 30 12 48 14 35 8 49 22 32 13 50 15 34 13 51 15 34 8 52 22 32 9 53 23 33 11 54 24 37 13 55 15 39 9 56 23 36 13 57 15 39 11 58 24 37 14 59 16 38 10 60 25 41 15 61 17 42 11 62 24 40 11 63 24 40 15 64 17 42 14 65 16 43 12 66 14 46 10 67 25 44 8 68 22 45 10 69 25 44 12 70 14 46 15 71 17 47 19 72 28 50 18 73 29 51 16 74 26 48 19 75 28 50 16 76 26 48 17 77 27 49 18 78 29 52 19 79 28 53 21 80 30 54 18 81 29 52 21 82 30 54 20 83 31 55 23 84 32 58 22 85 33 59 20 86 31 56 23 87 32 58 20 88 31 56 21 89 30 57 17 90 34 62 16 91 35 63 22 92 33 60 17 93 34 62 22 94 33 60 23 95 32 61 21 96 37 66 19 97 28 67 17 98 27 64 17 99 27 64 23 100 36 65 21 101 37 66 18 102 29 70 22 103 38 68 16 104 26 69 22 105 38 68 18 106 29 70 20 107 39 71</p></triangles>
       </mesh>
     </geometry>
   </library_geometries>
   <library_visual_scenes>
-    <visual_scene id="wall1" name="wall1">
-      <node name="wall1_MSH" id="wall1_MSH" sid="wall1_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#wall1_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+    <visual_scene id="wallRot0_purple" name="wallRot0_purple">
+      <node name="wall1_MSH1" id="wall1_MSH1" sid="wall1_MSH1"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#wall1_MSH1-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <extra><technique profile="MAX3D"><frame_rate>24.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.041667</start_time><end_time>8.333333</end_time></technique></extra>
     </visual_scene>
   </library_visual_scenes>
   <scene>
-    <instance_visual_scene url="#wall1"></instance_visual_scene>
+    <instance_visual_scene url="#wallRot0_purple"></instance_visual_scene>
   </scene>
 </COLLADA>
