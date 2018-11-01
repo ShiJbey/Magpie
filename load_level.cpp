@@ -33,7 +33,7 @@ Magpie::PixelData::PixelData(uint8_t red_channel_data_, uint8_t green_channel_da
 
 std::string Magpie::PixelData::to_string() {
     char buffer[50];
-    sprintf_s(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
+    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
     return std::string(buffer);
 }
 
@@ -278,7 +278,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                         uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
                         uint8_t mesh_to_right = pixel_data[(row * level_width) + (col + 1)].get_mesh_id();
                         uint8_t mesh_to_top = pixel_data[((row - 1)* level_width) + (col)].get_mesh_id();
-                        uint8_t mesh_to_bottom = pixel_data[((row + 1) * level_width) + (col)].get_mesh_id();
+//                        uint8_t mesh_to_bottom = pixel_data[((row + 1) * level_width) + (col)].get_mesh_id();
 
                         if ((mesh_to_left == 4 || (mesh_to_left >= 16 && mesh_to_left <= 19))) {
                             // Check to the top and bottom
