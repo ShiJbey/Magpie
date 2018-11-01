@@ -9,38 +9,38 @@
 //hardcoded floorplan for prototype
 std::string example = "prototype";
 
+Grid::Grid() {
+    rows = 0;
+    cols = 0;
+};
+
 //grid cannot be changed after initialization
-Grid::Grid(){
-    rows = 14;
-    cols = 10;
-    initGrid(example);
+Grid::Grid(uint32_t rows_, uint32_t columns_){
+    rows = rows_;
+    cols = columns_;
+
+    // Reserve space in the chars
+    for (uint32_t i = 0; i < rows; i++) {
+        std::vector< bool > row;
+        // Set the default value to the empty string
+        for (uint32_t j = 0; j < cols; j++) {
+            row.push_back(false);
+        }
+        map.push_back(row);
+    }
+
+    // Reserve space for the entity pointers
+    for (uint32_t i = 0; i < rows; i++) {
+        std::vector< int* > row;
+        // Set the default value to the empty string
+        for (uint32_t j = 0; j < cols; j++) {
+            row.push_back(nullptr);
+        }
+        interaction_map.push_back(row);
+    }
 }
 
 Grid::~Grid(){
-}
-
-void Grid::initGrid(std::string floorPlan) {
-    if (floorPlan == "prototype") {
-        //fill in floor plan
-        for (uint32_t i=0; i<rows; i++) {
-            std::vector< char > r;
-            for (uint32_t j=0; j<cols; j++) {
-                if (i == 8 && j == 3) { //long table part 1
-                    r.push_back('t');
-                }
-                else if (i == 8 && j == 4) { //long table part 2
-                    r.push_back('t');
-                }
-                else {
-                    r.push_back('e');
-                }
-            }
-            map.push_back(r);
-        }
-    }
-    else {
-        std::cout<< "unexpected floorplan input" << std::endl;
-    }
 }
 
 glm::uvec2 Grid::tileCoord(glm::vec3 isect) {

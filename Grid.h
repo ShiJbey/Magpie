@@ -13,15 +13,12 @@ class Grid {
 public:
     // Grid is initialized afterward.
     Grid();
+    Grid(uint32_t rows_, uint32_t columns_);
     ~Grid();
-
+    
     //number of rows and cols in grid set here
     uint32_t rows;
     uint32_t cols;
-
-    // Init the grid.
-    // Maybe loading from some other files?
-    void initGrid(std::string floorPlan);
 
     // Grid is only readable. It can't be modified after being initialized
     // Grid grid;
@@ -29,8 +26,7 @@ public:
 
     glm::uvec2 tileCoord(glm::vec3 isect);
 
-private:
-    std::vector< std::vector< char > > map;
-    //char map[rows][cols];
+    std::vector< std::vector< bool > > map;
+    std::vector< std::vector< int* > > interaction_map;    
 };
 

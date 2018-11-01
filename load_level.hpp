@@ -6,6 +6,7 @@
 #include "MagpieGame.hpp"
 #include "Scene.hpp"
 #include "MeshBuffer.hpp"
+#include "Grid.h"
 
 namespace Magpie {
     // Pixels are read into this
@@ -76,7 +77,7 @@ namespace Magpie {
 
         LevelLoader();
 
-        void load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
+        Grid load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
     };
 }

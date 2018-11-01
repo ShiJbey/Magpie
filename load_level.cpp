@@ -83,7 +83,7 @@ Magpie::LevelLoader::LevelLoader() {
     mesh_names.insert({0, purple_meshes});
 }
 
-void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
+Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     ///////////////////////////////////////////////////////
@@ -124,12 +124,25 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
     ///////////////////////////////////////////////////////
     //             PLACE OBJECTS IN SCENE                //
     ///////////////////////////////////////////////////////
+    Grid grid(level_length, level_width);
+
     Scene::Transform *temp_transform;
     for (uint32_t row = 0; row < level_length; row++) {
         for (uint32_t col = 0; col < level_width; col++) {
             uint32_t i = (row * level_width) + col;
             // Get the current pixel
             PixelData current_pixel = pixel_data[i];
+
+            // Check if it is part of a guards path
+            if (current_pixel.guard_path()) {
+                auto it = game->guard_paths.find(current_pixel.guard_path());
+                if (it != game->guard_paths.end()) {
+                    it->second.push_back(glm::vec2((float)row, (float)col));
+                }
+                else {
+                    game->guard_paths.insert({current_pixel.guard_path(), {glm::vec2((float)row, (float)col)}});
+                }
+            }
 
             // Check the mesh value
             uint8_t mesh_id = current_pixel.get_mesh_id();
@@ -138,8 +151,8 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             // Create a new transform, give it a position, and attatch a mesh
             if (mesh_id != 0) {
                 temp_transform = scene->new_transform();
-                temp_transform->position.x = (float)row + 0.5;
-                temp_transform->position.y = (float)col + 0.5 ;
+                temp_transform->position.x = (float)row + 0.5f;
+                temp_transform->position.y = (float)col + 0.5f;
 
                 auto custom_mesh_grp = mesh_names.find(customization_id);
                 if (custom_mesh_grp != mesh_names.end()) {
@@ -156,6 +169,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->name = name;
                 temp_transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
                 game->moveable_tiles.push_back(glm::vec2(col, row));
+                grid.map[row][col] = true;
             }
 
             // Doors
@@ -387,5 +401,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             }
         }
     }
+
+    return grid;
 
 }
