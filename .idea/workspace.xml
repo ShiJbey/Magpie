@@ -12,11 +12,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a17ba9b-121c-491d-b181-cd127bf88f73" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/GuardModel.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GuardModel.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Agent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_level.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/load_level.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SignalQueue.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SignalQueue.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -62,8 +59,8 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="cpp" value="41" />
-          <entry key="h" value="20" />
+          <entry key="cpp" value="42" />
+          <entry key="h" value="23" />
           <entry key="hpp" value="9" />
           <entry key="txt" value="6" />
         </counts>
@@ -71,21 +68,21 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="6" />
-          <entry key="ObjectiveC" value="70" />
+          <entry key="ObjectiveC" value="74" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="6022" />
-          <entry key="h" value="6396" />
-          <entry key="txt" value="379" />
+          <entry key="cpp" value="6597" />
+          <entry key="h" value="8275" />
+          <entry key="txt" value="418" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="93" />
-          <entry key="ObjectiveC" value="12418" />
-          <entry key="PLAIN_TEXT" value="286" />
+          <entry key="ObjectiveC" value="14872" />
+          <entry key="PLAIN_TEXT" value="325" />
         </counts>
       </usages-collector>
     </session>
@@ -137,92 +134,69 @@
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Agent.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="760">
-              <caret line="49" selection-start-line="49" selection-end-line="49" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/load_level.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="657">
-              <caret line="148" column="62" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Navigation.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.cpp">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/GameMode.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9683">
-              <caret line="421" column="42" selection-start-line="421" selection-start-column="42" selection-end-line="421" selection-end-column="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MagpieGamemode.hpp">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MagpieGameMode.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7659">
-              <caret line="387" selection-start-line="387" selection-end-line="387" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../Game0/15666Game0-Tilt-Escape/tilt_escape.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="252" column="9" selection-start-line="252" selection-start-column="9" selection-end-line="252" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TestAnimationMode.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#32#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.61642677">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/load_level.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="253">
+                  <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/SignalQueue.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="276">
+                  <caret line="12" column="20" selection-start-line="12" selection-start-column="20" selection-end-line="12" selection-end-column="20" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Navigation.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="322">
+                  <caret line="14" selection-start-line="14" selection-end-line="14" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/main.cpp">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/GameMode.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="658">
+                  <caret line="421" column="42" selection-start-line="421" selection-start-column="42" selection-end-line="421" selection-end-column="42" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/SignalQueue.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="496">
+                  <caret line="39" selection-start-line="39" selection-end-line="39" />
+                  <folding>
+                    <element signature="e#100#114#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -274,6 +248,8 @@
         <option value="$PROJECT_DIR$/Navigation.cpp" />
         <option value="$PROJECT_DIR$/Agent.cpp" />
         <option value="$PROJECT_DIR$/load_level.cpp" />
+        <option value="$PROJECT_DIR$/SignalQueue.h" />
+        <option value="$PROJECT_DIR$/SignalQueue.cpp" />
       </list>
     </option>
   </component>
@@ -311,7 +287,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="Model&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.cpp&#10;entity&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Entity.cpp&#10;agent.h&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.h&#10;Agent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.h&#10;navi&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.cpp&#10;path&#9;null&#9;null&#10;agent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;MAg&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGamemode.hpp&#10;Agent.cpp&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;playermodel&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.cpp&#10;gua&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/GuardAgent.h&#10;model&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Model.cpp&#10;player&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.h&#10;playerage&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.h&#10;playeragent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.cpp&#10;model.cpp&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Model.cpp&#10;Entity&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Entity.h&#10;entityf&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/EntityFactories.h&#10;mag&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGameMode.cpp&#10;playeren&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.cpp&#10;PlayerEn&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.h&#10;game&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGameMode.cpp&#10;a&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;play&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.h&#10;terminal&#9;ACTION&#9;ActivateTerminalToolWindow&#10;na&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.cpp&#10;naviga&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.h&#10;cmake&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/CMakeLists.txt" />
+    <property name="SearchEverywhereHistoryKey" value="Signal&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/SignalQueue.cpp&#10;Model&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.cpp&#10;entity&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Entity.cpp&#10;agent.h&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.h&#10;Agent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.h&#10;navi&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.cpp&#10;path&#9;null&#9;null&#10;agent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;MAg&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGamemode.hpp&#10;Agent.cpp&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;playermodel&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.cpp&#10;gua&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/GuardAgent.h&#10;model&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Model.cpp&#10;player&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerModel.h&#10;playerage&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.h&#10;playeragent&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerAgent.cpp&#10;model.cpp&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Model.cpp&#10;Entity&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Entity.h&#10;entityf&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/EntityFactories.h&#10;mag&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGameMode.cpp&#10;playeren&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.cpp&#10;PlayerEn&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.h&#10;game&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/MagpieGameMode.cpp&#10;a&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Agent.cpp&#10;play&#9;FILE&#9;file://C:/Users/York/GoogleDrive/CMU/2018-Fall/15-666/Magpie/PlayerEntity.h&#10;terminal&#9;ACTION&#9;ActivateTerminalToolWindow&#10;na&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.cpp&#10;naviga&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/Navigation.h&#10;cmake&#9;FILE&#9;file:///Users/york/GoogleDrive/CMU/2018-Fall/15-666/Magpie/CMakeLists.txt" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -528,17 +504,24 @@
       <option name="project" value="LOCAL" />
       <updated>1539651395846</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Add guard model and fix some bugs.">
+      <created>1541029863036</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1541029863036</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34251000" />
+    <option name="totallyTimeSpent" value="35868000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="877" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14469914" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15401146" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -573,7 +556,8 @@
     <MESSAGE value="add classes: Entity, Model, Agent" />
     <MESSAGE value="change Navigation class to singleton pattern." />
     <MESSAGE value="Finish basic Enemy AI." />
-    <option name="LAST_COMMIT_MESSAGE" value="Finish basic Enemy AI." />
+    <MESSAGE value="Add guard model and fix some bugs." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add guard model and fix some bugs." />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Sound.cpp">
@@ -644,16 +628,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="253">
           <caret line="12" column="55" selection-start-line="12" selection-start-column="55" selection-end-line="12" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Navigation.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-          <folding>
-            <element signature="e#52#69#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -752,13 +726,6 @@
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/GameMode.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9683">
-          <caret line="421" column="42" selection-start-line="421" selection-start-column="42" selection-end-line="421" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MagpieGamemode.hpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -799,10 +766,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/GameMode.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="421" column="42" selection-start-line="421" selection-start-column="42" selection-end-line="421" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Navigation.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-84">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+          <folding>
+            <element signature="e#52#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/load_level.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="657">
-          <caret line="148" column="62" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
+        <state relative-caret-position="253">
+          <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SignalQueue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="496">
+          <caret line="39" selection-start-line="39" selection-end-line="39" />
+          <folding>
+            <element signature="e#100#114#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SignalQueue.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="12" column="20" selection-start-line="12" selection-start-column="20" selection-end-line="12" selection-end-column="20" />
         </state>
       </provider>
     </entry>
