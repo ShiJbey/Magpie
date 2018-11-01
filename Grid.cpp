@@ -31,10 +31,10 @@ Grid::Grid(uint32_t rows_, uint32_t columns_){
 
     // Reserve space for the entity pointers
     for (uint32_t i = 0; i < rows; i++) {
-        std::vector< int* > row;
+        std::vector< bool > row;
         // Set the default value to the empty string
         for (uint32_t j = 0; j < cols; j++) {
-            row.push_back(nullptr);
+            row.push_back(false);
         }
         interaction_map.push_back(row);
     }

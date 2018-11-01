@@ -42,6 +42,10 @@ struct TransformAnimationPlayer {
 	//advance playback by 'elapsed' seconds, set transforms:
 	void update(float elapsed);
 
+	void reset() {
+		frame = 0.0f;
+	}
+
 	bool done() const { return !loop && frame >= animation.frames; }
 
 };

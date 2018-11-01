@@ -78,6 +78,6 @@ namespace Magpie {
         LevelLoader();
 
         Grid load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
-            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
     };
 }

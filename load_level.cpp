@@ -84,7 +84,7 @@ Magpie::LevelLoader::LevelLoader() {
 }
 
 Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
-            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     ///////////////////////////////////////////////////////
     //            READING FROM LEVEL FILE                //
@@ -151,7 +151,7 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             // Create a new transform, give it a position, and attatch a mesh
             if (mesh_id != 0) {
                 temp_transform = scene->new_transform();
-                
+
                 temp_transform->position.x = (float)row;
                 temp_transform->position.y = (float)col;
 
@@ -163,6 +163,9 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                         on_object(*scene, temp_transform, custom_mesh_name->second);
                     }
                 }
+            }
+            else {
+                grid.map[row][col] = false;
             }
             
             // Floor Tile
@@ -377,12 +380,13 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
         temp_transform->position.y = game->potential_pedestal_locations[i]->position.y;
         temp_transform->rotation = game->potential_pedestal_locations[i]->rotation;
         
+        grid.interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
 
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
             auto custom_mesh_name = custom_mesh_grp->second.find(6);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                on_object(*scene, temp_transform, custom_mesh_name->second);
+                game->placed_items.push_back(on_object(*scene, temp_transform, custom_mesh_name->second));
             }
         }
     }
@@ -393,13 +397,14 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
         temp_transform->position.x = game->potential_wall_locations[i]->position.x;
         temp_transform->position.y = game->potential_wall_locations[i]->position.y;
         temp_transform->rotation = game->potential_wall_locations[i]->rotation;
-        //temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        grid.interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
 
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
             auto custom_mesh_name = custom_mesh_grp->second.find(5);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                on_object(*scene, temp_transform, custom_mesh_name->second);
+                game->placed_items.push_back(on_object(*scene, temp_transform, custom_mesh_name->second));
             }
         }
     }

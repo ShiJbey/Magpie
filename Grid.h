@@ -27,6 +27,6 @@ public:
     glm::uvec2 tileCoord(glm::vec3 isect);
 
     std::vector< std::vector< bool > > map;
-    std::vector< std::vector< int* > > interaction_map;    
+    std::vector< std::vector< bool > > interaction_map;    
 };
 
