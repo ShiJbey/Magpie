@@ -7,11 +7,14 @@
 #include "MagpieGame.hpp"
 
 GuardAgent::GuardAgent(int object_id, int group_id) {
-    this->position.x = 0;
-    this->position.y = 3;
+    this->position.x = 1;
+    this->position.y = 7;
     this->orientation = DOWN;
     this->object_id = object_id;
     this->group_id = group_id;
+    this->state = WALKING;
+    this->dest_index = 0;
+    setDestination(destinations[dest_index]);
 }
 
 void GuardAgent::consumeSignal() {
@@ -22,19 +25,32 @@ void GuardAgent::consumeSignal() {
 }
 
 void GuardAgent::updateState(float elapsed) {
+//    std::cout << "STATE:" << state << "," << state_duration << std::endl;
     state_duration += elapsed;
     if (state == CHASING) {
         // The guard will chase the player for 20 seconds, then go back to his original point.
-        chace_duration += elapsed;
-        if (state_duration > 2000.0f) {
+        chase_duration += elapsed;
+        if (state_duration > 20.0f) {
             std::cout << "TIRED" << std::endl;
-            state = RETURN;
+            state = WALKING;
+            dest_index = 0;
+            state_duration = 0;
+            setDestination(destinations[0]);
         } else {
-            if (chace_duration > 50.0f) {
-                setDestination(Magpie::game.player->getPosition(), CHASING);
-                std::cout << "Destination Set" << " STATE " << state << std::endl;
-                chace_duration = 0;
+            if (chase_duration > 2.0f || path.isEmpty())  {
+                glm::vec2 p = Magpie::game.player->getPosition();
+                setDestination(p, CHASING);
+                std::cout << "Destination Set" << p.x << "," << p.y <<" STATE " << state << std::endl;
+                chase_duration = 0;
             }
+        }
+    } else if (state == WALKING) {
+        glm::vec2 distance = destinations[dest_index] - position;
+
+        if (glm::length(distance) < 0.1) {
+            position = destinations[dest_index];
+            dest_index = (dest_index + 1) % 4;
+            setDestination(destinations[dest_index]);
         }
     }
 }
@@ -44,12 +60,11 @@ void GuardAgent::interact() {
 
     glm::vec2 distance = position - player_position;
 
-//    std::cout << "(" << distance.x << "," << distance.y << ")" << std::endl;
+//    std::cout << orientation << "(" << distance.x << "," << distance.y << ")" << std::endl;
     if (orientation == RIGHT) {
         if (distance.x >= -2 && distance.x < 0 && distance.y >= -1 && distance.y <= 1) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
-            chace_duration = 100.0f;
         }
     }
 
@@ -57,7 +72,6 @@ void GuardAgent::interact() {
         if (distance.x <= 2 && distance.x > 0 && distance.y >= -1 && distance.y <= 1) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
-            chace_duration = 100.0f;
         }
     }
 
@@ -65,7 +79,6 @@ void GuardAgent::interact() {
         if (distance.x >= -1 && distance.x <= 1 && distance.y > 0 && distance.y <= 2) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
-            chace_duration = 100.0f;
         }
     }
 
@@ -73,7 +86,6 @@ void GuardAgent::interact() {
         if (distance.x >= -1 && distance.x <= 1 && distance.y < 0 && distance.y >= -2) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
-            chace_duration = 100.0f;
         }
     }
 

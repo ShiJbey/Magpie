@@ -47,6 +47,7 @@ void Agent::setDestination(glm::uvec2 destination, Agent::STATE state) {
     this->path = Navigation::getInstance().findPath(position, destination);
 
     cur_destination = this->path.top();
+
     turnTo(cur_destination);
 }
 
@@ -58,21 +59,21 @@ void Agent::walk(float elapsed) {
 
     if (state == IDLE) return;
 
-
     float distance = elapsed * velocity;
 
     glm::vec2 vector_to =  cur_destination - position;
 
-    std::cout << "Walking to " << cur_destination.x << "," << cur_destination.y << "from" << position.x << ","
-              << position.y << "Direction" << orientation << ":" << getDirectionVec2().x << "," << getDirectionVec2().y << std::endl;
+//    std::cout << "Walking to " << cur_destination.x << "," << cur_destination.y << "from" << position.x << ","
+//              << position.y << "Direction" << orientation << ":" << getDirectionVec2().x << "," << getDirectionVec2().y << std::endl;
 
     if (glm::length(vector_to) < distance || glm::dot(vector_to, getDirectionVec2()) < 0) {
 
         position = cur_destination;
         if (path.isEmpty()) {
             std::cout << "EMPTY" << std::endl;
-            state = IDLE;
+            if (state != CHASING) state = IDLE;
         } else {
+            std::cout << "NEXT" << std::endl;
             cur_destination = path.next();
             turnTo(cur_destination);
         }

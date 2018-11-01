@@ -30,7 +30,7 @@ public:
     void operator=(Navigation const&) = delete;
 
     void loadGrid(Grid* map);
-    Path findPath(glm::uvec2 from, glm::uvec2 to);
+    Path findPath(glm::vec2 from, glm::uvec2 to);
 
 private:
     Navigation() = default;

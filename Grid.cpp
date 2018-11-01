@@ -44,8 +44,8 @@ void Grid::initGrid(std::string floorPlan) {
 }
 
 glm::uvec2 Grid::tileCoord(glm::vec3 isect) {
-    float r = std::floor(isect.x);
-    float c = std::floor(isect.y);
+    float r = std::floor(isect.x + 0.5f);
+    float c = std::floor(isect.y + 0.5f);
     bool negative = (r<0.0f || c<0.0f);
     bool outOfRange = (r>=rows || c>=cols);
     if (negative || outOfRange) {

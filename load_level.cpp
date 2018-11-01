@@ -33,7 +33,7 @@ Magpie::PixelData::PixelData(uint8_t red_channel_data_, uint8_t green_channel_da
 
 std::string Magpie::PixelData::to_string() {
     char buffer[50];
-    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
+//    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
     return std::string(buffer);
 }
 

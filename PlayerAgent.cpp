@@ -5,7 +5,7 @@
 #include "PlayerAgent.h"
 
 PlayerAgent::PlayerAgent(int object_id, int group_id) {
-    position = glm::vec2(0, 0);
+    position = glm::vec2(1, 1);
     orientation = LEFT;
 }
 
