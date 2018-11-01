@@ -22,6 +22,8 @@ public:
     void draw();
     void setDestination(glm::uvec2 destination);
 
+    glm::vec2 getPosition();
+
 protected:
     Model* model = nullptr;
     Agent* agent = nullptr;

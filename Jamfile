@@ -89,6 +89,9 @@ CLIENT_NAMES =
 	Entity
 	PlayerAgent
 	PlayerModel
+	GuardModel
+	GuardAgent
+	SignalQueue
 	;
 
 if $(OS) = NT {

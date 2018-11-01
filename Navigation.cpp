@@ -35,24 +35,25 @@ void Navigation::loadGrid(Grid *map) {
     this->map = map;
 }
 
-Path Navigation::findPath(glm::uvec2 from, glm::uvec2 to) {
+Path Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
     std::vector<glm::uvec2> path_vector;
 
     int x_direction = (to.x > from.x)?1:-1;
     int y_direction = (to.y > from.y)?1:-1;
 
-    glm::uvec2 t = from;
+    glm::vec2 t = from;
+    t.x = round(t.x + 0.4f * x_direction);
+    t.y = round(t.y + 0.4f * y_direction);
+
 
     path_vector.push_back(t);
 
     while (t.x != to.x) {
-        std::cout << "(" << t.x << "," << to.x << ")" <<  x_direction << std::endl;
         t.x += x_direction;
         path_vector.push_back(t);
     }
 
     while (t.y != to.y) {
-        std::cout << "(" << from.y << "," << to.y << ")" << y_direction << std::endl;
         t.y += y_direction;
         path_vector.push_back(t);
     }

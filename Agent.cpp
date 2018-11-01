@@ -1,5 +1,5 @@
 //
-// Created by 何宇 on 2018/10/15.
+// Created by York on 2018/10/15.
 //
 
 #include "Agent.h"
@@ -41,14 +41,18 @@ void Agent::turnTo(glm::uvec2 destination) {
     }
 }
 
-void Agent::setDestination(glm::uvec2 destination){
-
-    state = WALKING;
-    std::cout << "Destination Set to " << destination.x << "," << destination.y << std::endl;
+void Agent::setDestination(glm::uvec2 destination, Agent::STATE state) {
+    this->state = state;
 
     this->path = Navigation::getInstance().findPath(position, destination);
 
     cur_destination = this->path.top();
+
+    turnTo(cur_destination);
+}
+
+void Agent::setDestination(glm::uvec2 destination){
+    setDestination(destination, WALKING);
 }
 
 void Agent::walk(float elapsed) {
@@ -56,16 +60,20 @@ void Agent::walk(float elapsed) {
     if (state == IDLE) return;
 
     float distance = elapsed * velocity;
-    std::cout << "Walking to " << cur_destination.x << "," << cur_destination.y << "from" << position.x << ","
-            << position.y << "Direction" << orientation << ":" << getDirectionVec2().x << "," << getDirectionVec2().y << std::endl;
 
     glm::vec2 vector_to =  cur_destination - position;
 
+//    std::cout << "Walking to " << cur_destination.x << "," << cur_destination.y << "from" << position.x << ","
+//              << position.y << "Direction" << orientation << ":" << getDirectionVec2().x << "," << getDirectionVec2().y << std::endl;
+
     if (glm::length(vector_to) < distance || glm::dot(vector_to, getDirectionVec2()) < 0) {
+
         position = cur_destination;
         if (path.isEmpty()) {
-            state = IDLE;
+            std::cout << "EMPTY" << std::endl;
+            if (state != CHASING) state = IDLE;
         } else {
+            std::cout << "NEXT" << std::endl;
             cur_destination = path.next();
             turnTo(cur_destination);
         }

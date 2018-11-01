@@ -21,3 +21,7 @@ void Entity::draw() {
 void Entity::setDestination(glm::uvec2 destination) {
     agent->setDestination(destination);
 }
+
+glm::vec2 Entity::getPosition() {
+    return agent->position;
+}

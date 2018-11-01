@@ -33,7 +33,7 @@ Magpie::PixelData::PixelData(uint8_t red_channel_data_, uint8_t green_channel_da
 
 std::string Magpie::PixelData::to_string() {
     char buffer[50];
-    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
+//    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
     return std::string(buffer);
 }
 
@@ -138,8 +138,8 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             // Create a new transform, give it a position, and attatch a mesh
             if (mesh_id != 0) {
                 temp_transform = scene->new_transform();
-                temp_transform->position.x = (float)row + 0.5;
-                temp_transform->position.y = (float)col + 0.5 ;
+                temp_transform->position.x = (float)row;
+                temp_transform->position.y = (float)col;
 
                 auto custom_mesh_grp = mesh_names.find(customization_id);
                 if (custom_mesh_grp != mesh_names.end()) {

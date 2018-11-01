@@ -363,8 +363,8 @@ GameMode::~GameMode() {
 }
 
 glm::uvec2 GameMode::tileMap(glm::vec3 isect, std::string floorPlan) {
-	float r = std::floor(isect.x);
-	float c = std::floor(isect.y);
+	float r = std::floor(isect.x - 0.5f);
+	float c = std::floor(isect.y - 0.5f);
 	bool negative = (r<0.0f || c<0.0f);
 	bool outOfRange = (r>=currFloor.rows || c>=currFloor.cols);
 	if (negative || outOfRange) {
