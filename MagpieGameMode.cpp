@@ -46,6 +46,7 @@ namespace Magpie {
     std::vector< Scene::Transform* > guard_model_patrol_transforms;
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
+    Scene::Transform *camera_trans = nullptr;
 
     // PLAYER IDLE
     Load< MeshBuffer > magpie_player_idle_mesh(LoadTagDefault, [](){
@@ -248,6 +249,10 @@ namespace Magpie {
         }
         if (!camera) throw std::runtime_error("No 'Camera' camera in scene.");
 
+        camera_trans = scene.new_transform();
+        camera_trans->rotation = glm::angleAxis(glm::radians(360.0f), glm::vec3(0.0, 0.0, 1.0));
+        camera->transform->parent = camera_trans;
+
         //look up the spotlight:
         for (Scene::Lamp *l = scene.first_lamp; l != nullptr; l = l->alloc_next) {
             if (l->transform->name == "Spot") {
@@ -308,6 +313,9 @@ namespace Magpie {
         for (Entity* entity: entities) {
             entity->update(elapsed);
         }
+
+        camera_trans->position.x = player_trans->position.x;
+        camera_trans->position.y = player_trans->position.y;
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
@@ -351,10 +359,11 @@ namespace Magpie {
         if (evt.type == SDL_MOUSEBUTTONDOWN) {
             if (evt.button.button == SDL_BUTTON_LEFT) {
                 //TODO: get x and y of mouse click and figure out which tile it is
-                glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
-                                        window_size.x, window_size.y, 0, camera, "prototype");
-                std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-                if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
+                glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y,
+                                                   window_size.x, window_size.y, 0, camera, "prototype");
+                std::cout << "clickedTile.x is " << clickedTile.x << "and clickTile.y is " << clickedTile.y
+                          << std::endl;
+                if (clickedTile.x < currFloor.rows && clickedTile.y < currFloor.cols) { //ignore (-1, -1)/error
 
                     //pass into pathfinding algorithm
                     ;
@@ -366,7 +375,6 @@ namespace Magpie {
                 }
             }
         }
-
         return false;
     };
 
