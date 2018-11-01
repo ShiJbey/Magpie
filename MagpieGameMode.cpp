@@ -157,7 +157,7 @@ namespace Magpie {
 
         // Get the level loading object
         Magpie::LevelLoader level_pixel_data;
-        currFloor = level_pixel_data.load(data_path("sample.lvl"), &magpie_game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        currFloor = level_pixel_data.load(data_path("demo-map-simple.lvl"), &game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("scenery")->second;
