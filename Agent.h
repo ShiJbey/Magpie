@@ -22,10 +22,10 @@ public:
     void update(float elapsed);
 
     enum DIRECTION {
-        UP,
-        RIGHT,
         DOWN,
-        LEFT
+        LEFT,
+        UP,
+        RIGHT
     };
 
     enum STATE {

@@ -26,7 +26,7 @@ void GuardAgent::consumeSignal() {
 }
 
 void GuardAgent::updateState(float elapsed) {
-//    std::cout << "STATE:" << state << "," << state_duration << std::endl;
+    std::cout << "STATE:" << state << "," << state_duration << std::endl;
     state_duration += elapsed;
     if (state == CHASING) {
         // The guard will chase the player for 20 seconds, then go back to his original point.
@@ -53,6 +53,10 @@ void GuardAgent::updateState(float elapsed) {
             dest_index = (dest_index + 1) % 4;
             setDestination(destinations[dest_index]);
         }
+    } else if (state == IDLE) {
+        state = WALKING;
+        dest_index = 0;
+        setDestination(destinations[0]);
     }
 }
 
@@ -63,35 +67,44 @@ void GuardAgent::interact() {
 
 //    std::cout << orientation << "(" << distance.x << "," << distance.y << ")" << std::endl;
     if (orientation == RIGHT) {
-        if (distance.x >= -2 && distance.x < 0 && distance.y >= -1 && distance.y <= 1) {
+        if (distance.x >= -3 && distance.x < 0 && distance.y >= -1 && distance.y <= 1) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
+            state_duration = 0;
+            chase_duration = 0;
         }
     }
 
     if (orientation == LEFT) {
-        if (distance.x <= 2 && distance.x > 0 && distance.y >= -1 && distance.y <= 1) {
+        if (distance.x <= 3 && distance.x > 0 && distance.y >= -1 && distance.y <= 1) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
+            state_duration = 0;
+            chase_duration = 0;
         }
     }
 
     if (orientation == DOWN) {
-        if (distance.x >= -1 && distance.x <= 1 && distance.y > 0 && distance.y <= 2) {
+        if (distance.x >= -1 && distance.x <= 1 && distance.y > 0 && distance.y <= 3) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
+            state_duration = 0;
+            chase_duration = 0;
         }
     }
 
     if (orientation == UP) {
-        if (distance.x >= -1 && distance.x <= 1 && distance.y < 0 && distance.y >= -2) {
+        if (distance.x >= -1 && distance.x <= 1 && distance.y < 0 && distance.y >= -3) {
             std::cout << "START CHASING" << std::endl;
             state = CHASING;
+            state_duration = 0;
+            chase_duration = 0;
         }
     }
 
     if (abs(distance.x) < 0.5 && abs(distance.y) < 0.5) {
         state = CAUGHT;
+        SignalQueue::getInstance().send(new Signal("caught", 0, 0));
         return;
     }
 }
