@@ -20,6 +20,9 @@
 #include "PlayerAgent.h"
 #include "PlayerModel.h"
 
+#include "GuardAgent.h"
+#include "GuardModel.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
@@ -46,6 +49,9 @@ namespace Magpie {
     std::vector< Scene::Transform* > guard_model_patrol_transforms;
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
+    Scene::Transform *guard_trans = nullptr;
+
+    MagpieGame game;
 
     // PLAYER IDLE
     Load< MeshBuffer > magpie_player_idle_mesh(LoadTagDefault, [](){
@@ -150,7 +156,7 @@ namespace Magpie {
 
         // Get the level loading object
         Magpie::LevelLoader level_pixel_data;
-        level_pixel_data.load(data_path("sample.lvl"), &magpie_game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        level_pixel_data.load(data_path("sample.lvl"), &game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("scenery")->second;
@@ -191,7 +197,7 @@ namespace Magpie {
         player_trans->position.y = 1.0f;
         
 
-        Scene::Transform* guard_trans = scene.look_up("guardDogPatrol_GRP");
+        guard_trans = scene.look_up("guardDogPatrol_GRP");
         assert(guard_trans != nullptr);
         guard_trans->position.x = 3.0f;
         guard_trans->position.y = 0.0f;
@@ -272,10 +278,13 @@ namespace Magpie {
     void MagpieGameMode::initEntities() {
 
         entityFactoryMap = {
-                {1, ENTITY_FACTORY(Player)}
+                {1, ENTITY_FACTORY(Player)},
+                {2, ENTITY_FACTORY(Guard)}
         };
 
-        player = ENTITY_FACTORY(Player)(0, 0, player_trans);
+        game.player = ENTITY_FACTORY(Player)(0, 0, player_trans);
+
+        game.entities.push_back(ENTITY_FACTORY(Guard)(1, 1, guard_trans));
     }
 
     void MagpieGameMode::updatePosition(char character, std::vector<glm::uvec2> path) {
@@ -302,9 +311,9 @@ namespace Magpie {
             }
         }
 
-        player->update(elapsed);
+        game.player->update(elapsed);
 
-        for (Entity* entity: entities) {
+        for (Entity* entity: game.entities) {
             entity->update(elapsed);
         }
     };
@@ -354,14 +363,7 @@ namespace Magpie {
                                         window_size.x, window_size.y, 0, camera, "prototype");
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
                 if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
-
-                    //pass into pathfinding algorithm
-                    ;
-                    player->setDestination(clickedTile);
-//                    magpieEndpt = clickedTile;
-
-//                    player_trans->position.x = (float)clickedTile.x + 0.5f;
-//                    player_trans->position.y = (float)clickedTile.y + 0.5f;
+                    Magpie::game.player->setDestination(clickedTile);
                 }
             }
         }

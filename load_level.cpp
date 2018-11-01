@@ -145,8 +145,8 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             // Create a new transform and position it
             if (mesh_id != 0) {
                 temp_transform = scene->new_transform();
-                temp_transform->position.x = (float)row + 0.5;
-                temp_transform->position.y = (float)col + 0.5 ;
+                temp_transform->position.x = (float)row;
+                temp_transform->position.y = (float)col;
 
                 auto custom_mesh_grp = mesh_names.find(customization_id);
                 if (custom_mesh_grp != mesh_names.end()) {

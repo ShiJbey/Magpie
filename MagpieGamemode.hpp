@@ -62,11 +62,8 @@ namespace Magpie {
         glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
         std::vector<glm::uvec2> magpieWalkPath;
 
-        MagpieGame magpie_game;
         Scene scene;
 
-        std::vector<Entity*> entities;
-        Entity* player;
         std::map<int, EntityFactoryType> entityFactoryMap;
     };
 }

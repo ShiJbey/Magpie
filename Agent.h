@@ -28,9 +28,18 @@ public:
         LEFT
     };
 
+    enum STATE {
+        WALKING,
+        IDLE,
+        CHASING,
+        RETURN,
+        CAUGHT
+    };
+
     glm::vec2 getDirectionVec2();
     void turnTo(glm::uvec2 destination);
     void setDestination(glm::uvec2 destination);
+    void setDestination(glm::uvec2 destination, enum STATE state);
     void walk(float elapsed);
 
     // Virtual functions for inherited classes to implement
@@ -45,10 +54,6 @@ public:
     glm::vec2 cur_destination;
     Path path;
 
-    enum STATE {
-        WALKING,
-        IDLE
-    };
 
     enum STATE state = IDLE;
 };

@@ -9,7 +9,7 @@ PlayerModel::PlayerModel(Scene::Transform *transform) {
 }
 
 void PlayerModel::update(float elapsed, Agent* agent) {
-    transform->position.x = agent->position.x + 0.5f;
-    transform->position.y = agent->position.y + 0.5f;
+    transform->position.x = agent->position.x;
+    transform->position.y = agent->position.y;
 }
 
