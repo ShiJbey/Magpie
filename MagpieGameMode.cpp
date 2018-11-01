@@ -49,6 +49,7 @@ namespace Magpie {
     std::vector< Scene::Transform* > guard_model_patrol_transforms;
     std::list< TransformAnimationPlayer > current_animations;
     Scene::Transform *player_trans = nullptr;
+    Scene::Transform *camera_trans = nullptr;
     Scene::Transform *guard_trans = nullptr;
 
     MagpieGame game;
@@ -97,13 +98,13 @@ namespace Magpie {
 
     // ENV
 
-    Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
-        return new MeshBuffer(data_path("prototype_scene.pnct"));
-    });
-
-    Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
-        return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
-    });
+//    Load< MeshBuffer > magpie_meshes(LoadTagDefault, [](){
+//        return new MeshBuffer(data_path("prototype_scene.pnct"));
+//    });
+//
+//    Load< GLuint > meshes_for_vertex_color_program(LoadTagDefault, [](){
+//        return new GLuint(magpie_meshes->make_vao_for_program(vertex_color_program->program));
+//    });
 
     Load< MeshBuffer > scenery_meshes(LoadTagDefault, [](){
         return new MeshBuffer(data_path("building_tiles.pnc"));
@@ -156,7 +157,7 @@ namespace Magpie {
 
         // Get the level loading object
         Magpie::LevelLoader level_pixel_data;
-        level_pixel_data.load(data_path("sample.lvl"), &game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        level_pixel_data.load(data_path("demo-map-simple.lvl"), &game, &scene, scenery_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("scenery")->second;
@@ -170,7 +171,8 @@ namespace Magpie {
         // Load in the magpie walk mesh
         scene.load(data_path("magpie_walk.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
-            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            Scene::Object::ProgramInfo default_program_info
+            = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("magpieWalk")->second;
             obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
             MeshBuffer::Mesh const &mesh = magpie_player_walk_mesh->lookup(m);
@@ -204,7 +206,7 @@ namespace Magpie {
 
         
         // We are just using this for the camera positioning
-        scene.load(data_path("prototype_scene.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+        scene.load(data_path("camera_transform.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
             // Save resources
             scene.delete_transform(t);
         });
@@ -252,6 +254,10 @@ namespace Magpie {
             }
         }
         if (!camera) throw std::runtime_error("No 'Camera' camera in scene.");
+
+        camera_trans = scene.new_transform();
+        camera_trans->rotation = glm::angleAxis(glm::radians(360.0f), glm::vec3(0.0, 0.0, 1.0));
+        camera->transform->parent = camera_trans;
 
         //look up the spotlight:
         for (Scene::Lamp *l = scene.first_lamp; l != nullptr; l = l->alloc_next) {
@@ -316,6 +322,9 @@ namespace Magpie {
         for (Entity* entity: game.entities) {
             entity->update(elapsed);
         }
+
+        camera_trans->position.x = player_trans->position.x;
+        camera_trans->position.y = player_trans->position.y;
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
@@ -367,7 +376,6 @@ namespace Magpie {
                 }
             }
         }
-
         return false;
     };
 

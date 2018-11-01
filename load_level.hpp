@@ -29,11 +29,12 @@ namespace Magpie {
         // Can we place either a gem or a painting at this tile
         bool is_item_location();
         // Will the guard use this postion to navigate
-        bool is_guard_path();
+        uint8_t guard_path();
 
         // NOTE: The following are for implementing high level mechanics
         // Does the mesh at this position have a special identifier
         uint8_t get_object_id();
+        uint8_t get_group_id();
         // What interaction lambda function is associated with this game object
         uint8_t get_interaction_func_id();
         // Does the interaction function need to set or check a global flag
@@ -45,9 +46,8 @@ namespace Magpie {
         static uint8_t ROOM_NUMBER_MASK;
         static uint8_t GUARD_PATH_MASK;
         static uint8_t ITEM_LOCATION_MASK;
+        static uint8_t GROUP_ID_MASK;
         static uint8_t OBJECT_ID_MASK;
-        static uint8_t INTERACTION_FUNC_ID_MASK;
-        static uint8_t INTERACTION_FLAG_MASK;
 
         // OFFSET VALUES
         static uint8_t MESH_OFFSET;
@@ -55,9 +55,8 @@ namespace Magpie {
         static uint8_t ROOM_NUMBER_OFFSET;
         static uint8_t GUARD_PATH_OFFSET;
         static uint8_t ITEM_LOCATION_OFFSET;
+        static uint8_t GROUP_ID_OFFSET;
         static uint8_t OBJECT_ID_OFFSET;
-        static uint8_t INTERACTION_FUNC_ID_OFFSET;
-        static uint8_t INTERACTION_FLAG_OFFSET;
 
     };
 

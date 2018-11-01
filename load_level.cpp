@@ -8,18 +8,16 @@ uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_MASK = 0b00000111;
 uint8_t Magpie::PixelData::ROOM_NUMBER_MASK = 0b11111000;
 uint8_t Magpie::PixelData::GUARD_PATH_MASK = 0b00000110;
 uint8_t Magpie::PixelData::ITEM_LOCATION_MASK = 0b00000001;
-uint8_t Magpie::PixelData::OBJECT_ID_MASK = 0b01110000;
-uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_MASK = 0b00001100;
-uint8_t Magpie::PixelData::INTERACTION_FLAG_MASK = 0b00000011;
+uint8_t Magpie::PixelData::OBJECT_ID_MASK = 0b00001111;
+uint8_t Magpie::PixelData::GROUP_ID_MASK = 0b11110000;
 
 uint8_t Magpie::PixelData::MESH_OFFSET = 3;
 uint8_t Magpie::PixelData::MESH_CUSTOMIZATION_OFFSET = 0;
 uint8_t Magpie::PixelData::ROOM_NUMBER_OFFSET = 3;
 uint8_t Magpie::PixelData::GUARD_PATH_OFFSET = 1;
 uint8_t Magpie::PixelData::ITEM_LOCATION_OFFSET = 0;
-uint8_t Magpie::PixelData::OBJECT_ID_OFFSET = 4;
-uint8_t Magpie::PixelData::INTERACTION_FUNC_ID_OFFSET = 2;
-uint8_t Magpie::PixelData::INTERACTION_FLAG_OFFSET = 0;
+uint8_t Magpie::PixelData::OBJECT_ID_OFFSET = 0;
+uint8_t Magpie::PixelData::GROUP_ID_OFFSET = 4;
 
 Magpie::PixelData::PixelData() {
     red_channel_data = 0;
@@ -51,8 +49,8 @@ uint8_t Magpie::PixelData::get_room_number() {
     return (green_channel_data & ROOM_NUMBER_MASK) >> ROOM_NUMBER_OFFSET;
 }
 
-bool Magpie::PixelData::is_guard_path() {
-    return (bool)((green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET);
+uint8_t Magpie::PixelData::guard_path() {
+    return (green_channel_data & GUARD_PATH_MASK) >> GUARD_PATH_OFFSET;
 }
 
 bool Magpie::PixelData::is_item_location() {
@@ -63,14 +61,9 @@ uint8_t Magpie::PixelData::get_object_id() {
     return (blue_channel_data & OBJECT_ID_MASK) >> OBJECT_ID_OFFSET;
 }
 
-uint8_t Magpie::PixelData::get_interaction_func_id() {
-    return (blue_channel_data & INTERACTION_FUNC_ID_MASK) >> INTERACTION_FUNC_ID_OFFSET;
+uint8_t Magpie::PixelData::get_group_id() {
+    return (blue_channel_data & GROUP_ID_MASK) >> GROUP_ID_OFFSET;
 }
-
-uint8_t Magpie::PixelData::get_interaction_flag() {
-    return (blue_channel_data & INTERACTION_FLAG_MASK) >> INTERACTION_FLAG_OFFSET;
-}
-
 
 std::map<uint8_t, std::string> Magpie::LevelLoader::purple_meshes = {
     // Non Collidable
@@ -142,7 +135,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             uint8_t mesh_id = current_pixel.get_mesh_id();
             uint8_t customization_id = current_pixel.get_mesh_customization();
 
-            // Create a new transform and position it
+            // Create a new transform, give it a position, and attatch a mesh
             if (mesh_id != 0) {
                 temp_transform = scene->new_transform();
                 temp_transform->position.x = (float)row;
@@ -204,57 +197,147 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
              // Walls
             if (mesh_id == 16) {
+                
+
                 // Build the WALL!
                 std::string name = "wall_" + std::to_string(i);
                 temp_transform->name = std::string(name);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                // rotate walls on the left side of the room
-                if(col > 0) {
-                    // check for wall to the left
-                    if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                    }
+
+                if (row == 0 || row == level_length - 1) {
+                    // Top Row should automatically rotate to 
+                    temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
-                else if (col < level_width - 1) {
-                    if(pixel_data[(row * level_width) + (col + 1)].get_mesh_id() == 16) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                    }
-                }
-                
-                if(row > 0) {
-                    // check for wall to the left
-                    if(pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 16
-                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 4
-                        || pixel_data[((row - 1) * level_width) + col].get_mesh_id() == 19) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-                    }
-                }
-                else if (row < level_length - 1) {
-                    if(pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 16
-                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 4
-                        || pixel_data[((row + 1) * level_width) + col].get_mesh_id() == 19) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                else {
+                    // rotate intermediate rows
+                    // Rotate if the wall is flanked by walls, corners, or doors
+                    uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
+                    uint8_t mesh_to_right = pixel_data[(row * level_width) + (col + 1)].get_mesh_id();
+                    if ((mesh_to_left == 4 || (mesh_to_left >= 16 && mesh_to_left <= 19)) && mesh_to_left != 3
+                        && (mesh_to_right == 4 || (mesh_to_right >= 16 && mesh_to_right <= 19)) && mesh_to_right != 3
+                        && col != 0 && col != level_width - 1) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                 }
 
                 if (current_pixel.is_item_location()) {
                     game->potential_wall_locations.push_back(temp_transform);
-                    std::cout << "Added wall to potential item locations" << std::endl;
+                    //std::cout << "Added wall to potential item locations" << std::endl;
                 }
             }
 
-            // Corners
+            // 2-Corner
             if (mesh_id == 19) {
-                std::string name = "corner_" + std::to_string(i);
+                std::string name = "2-corner_" + std::to_string(i);
+                temp_transform->name = std::string(name);
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                
+                // rotate corners
+                if (row == 0) {
+                    if (col == 0) {
+                        // Do nothing, this is proper orientation
+                    }
+                    else if (col == level_width - 1) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else {
+                        uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
+                        uint8_t mesh_to_right = pixel_data[(row * level_width) + (col + 1)].get_mesh_id();
+                        if (mesh_to_left == 0) {
+                            // Do nothing
+                        } else if (mesh_to_right == 0) {
+                            temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                    }
+                }
+                else if (row == level_length - 1) {
+                    if (col == 0) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else if (col == level_width - 1) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else {
+                        uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
+                        uint8_t mesh_to_right = pixel_data[(row * level_width) + (col + 1)].get_mesh_id();
+                        if (mesh_to_left == 0) {
+                            temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        } else if (mesh_to_right == 0) {
+                            temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                    }
+                }
+                else {
+                    if (col == 0) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else if (col == level_width - 1) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else {
+                        uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
+                        uint8_t mesh_to_right = pixel_data[(row * level_width) + (col + 1)].get_mesh_id();
+                        uint8_t mesh_to_top = pixel_data[((row - 1)* level_width) + (col)].get_mesh_id();
+//                        uint8_t mesh_to_bottom = pixel_data[((row + 1) * level_width) + (col)].get_mesh_id();
+
+                        if ((mesh_to_left == 4 || (mesh_to_left >= 16 && mesh_to_left <= 19))) {
+                            // Check to the top and bottom
+                            if ((mesh_to_top == 4 || (mesh_to_top >= 16 && mesh_to_top <= 19))) {
+                                temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                            } else {
+                                temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                            }
+                        }
+                        else if ((mesh_to_right == 4 || (mesh_to_right >= 16 && mesh_to_right <= 19))) {
+                            if ((mesh_to_top == 4 || (mesh_to_top >= 16 && mesh_to_top <= 19))) {
+                                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                            }
+                        }
+
+
+                    }
+                }
+            }
+
+            // 3-Corner
+            if (mesh_id == 18) {
+                std::string name = "3-corner_" + std::to_string(i);
                 temp_transform->name = std::string(name);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 // rotate corners
-                if(col > 0) {
-                    // check for wall to the left
-                    if(pixel_data[(row * level_width) + (col - 1)].get_mesh_id() == 16) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+
+                if (row == 0) {
+                    // Do Nothing
+                }
+                else if (row == level_length - 1) {
+                    temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                }
+                else {
+                    if (col == 0) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else if (col == level_width - 1) {
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    }
+                    else {
+                        uint8_t mesh_to_top = pixel_data[((row - 1)* level_width) + (col)].get_mesh_id();
+                        uint8_t mesh_to_left = pixel_data[(row * level_width) + (col - 1)].get_mesh_id();
+                        if ((mesh_to_top == 4 || (mesh_to_top >= 16 && mesh_to_top <= 19))) {
+                            if ((mesh_to_left == 4 || (mesh_to_left >= 16 && mesh_to_left <= 19))) { 
+                                temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                            } else {
+                                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                            }
+                        }
                     }
                 }
+            }
+
+            // 4-Corner
+            if (mesh_id == 17) {
+                std::string name = "4-corner_" + std::to_string(i);
+                temp_transform->name = std::string(name);
+                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
 
             // Pedestal
@@ -265,7 +348,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
                 if (current_pixel.is_item_location()) {
                     game->potential_pedestal_locations.push_back(temp_transform);
-                    std::cout << "Added pedestal to potential item locations" << std::endl;
+                    //std::cout << "Added pedestal to potential item locations" << std::endl;
                 }
             }
         }
