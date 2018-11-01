@@ -20,7 +20,7 @@ private:
     int group_id;
     float state_duration = 0.0f;
     float chase_duration = 0.0f;
-    std::vector<glm::vec2> destinations = {glm::vec2(3, 1), glm::vec2(3, 8), glm::vec2(5, 8), glm::vec2(5, 1)};
+    std::vector<glm::vec2> destinations = {glm::vec2(2, 4), glm::vec2(2, 8), glm::vec2(8, 8), glm::vec2(8, 4)};
     int dest_index = 0;
 };
 

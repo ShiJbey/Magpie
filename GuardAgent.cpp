@@ -14,6 +14,7 @@ GuardAgent::GuardAgent(int object_id, int group_id) {
     this->group_id = group_id;
     this->state = WALKING;
     this->dest_index = 0;
+    this->velocity = 1.5f;
     setDestination(destinations[dest_index]);
 }
 
@@ -37,7 +38,7 @@ void GuardAgent::updateState(float elapsed) {
             state_duration = 0;
             setDestination(destinations[0]);
         } else {
-            if (chase_duration > 2.0f || path.isEmpty())  {
+            if (chase_duration > 0.5f || path.isEmpty())  {
                 glm::vec2 p = Magpie::game.player->getPosition();
                 setDestination(p, CHASING);
                 std::cout << "Destination Set" << p.x << "," << p.y <<" STATE " << state << std::endl;
