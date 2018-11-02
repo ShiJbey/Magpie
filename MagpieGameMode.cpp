@@ -387,7 +387,7 @@ namespace Magpie {
         magpie_idle_animation = new TransformAnimationPlayer(*player_idle_tanim, player_model_idle_transforms, 1.0f, true);
         magpie_steal_animation = new TransformAnimationPlayer(*player_steal_tanim, player_model_steal_transforms, 1.0f, false);
 
-        guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
+        guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 2.0f, true);
         guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
         guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
 
@@ -455,47 +455,86 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
 
-        /*
-        if(std::find(current_animations.begin(), current_animations.end(), magpie_idle_animation) == current_animations.end()
-            && std::find(current_animations.begin(), current_animations.end(), magpie_walk_animation) != current_animations.end()
-            && game.player->getAgent()->state == Agent::STATE::IDLE) {
-            // Remove the idle animation
-            current_animations.remove(magpie_idle_animation);
-            // Add the walk animation
-            current_animations.push_back(magpie_walk_animation);
-            // Swap the positions of the models
+        if (game.player->getAgent()->state == Agent::STATE::IDLE) {
+            printf("IDLE\n");
+        }
+        else if (game.player->getAgent()->state == Agent::STATE::WALKING) {
+            printf("WALKING\n");
+        }
+
+        if (current_player_animation == magpie_idle_animation) {
+            printf("IDLE ANiMAitioN\n");
+        }
+
+        if (current_player_animation == magpie_walk_animation) {
+            printf("WALK ANiMAitioN\n");
+        }
+
+        if (game.player->getAgent()->state == Agent::STATE::IDLE &&
+            current_player_animation == magpie_walk_animation) {
+            magpie_idle_animation->reset();
+            current_player_animation = magpie_idle_animation;
             glm::vec3 position = player_trans->position;
+            glm::quat rotation = player_trans->rotation;
             player_idle_trans->position = position;
+            player_idle_trans->rotation = rotation;
+            player_steal_trans->position = OFF_SCREEN_POS;
             player_walk_trans->position = OFF_SCREEN_POS;
             player_trans = player_idle_trans;
         }
-
-        else if(std::find(current_animations.begin(), current_animations.end(), magpie_idle_animation) != current_animations.end()
-            && std::find(current_animations.begin(), current_animations.end(), magpie_walk_animation) == current_animations.end()
-            && game.player->getAgent()->state == Agent::STATE::WALKING) {
-            // Remove the idle animation
-            current_animations.remove(magpie_idle_animation);
-            // Add the walk animation
-            current_animations.push_back(magpie_walk_animation);
-            // Swap the positions of the model
+        /*
+        else if (game.player->getAgent()->state == Agent::STATE::WALKING &&
+            current_player_animation != magpie_walk_animation) {
+            printf("Starting player walk animation\n");
+            magpie_walk_animation->reset();
+            current_player_animation = magpie_walk_animation;
+            // Swap the meshes
             glm::vec3 position = player_trans->position;
+            glm::quat rotation = player_trans->rotation;
             player_walk_trans->position = position;
+            player_walk_trans->rotation = rotation;
+            player_steal_trans->position = OFF_SCREEN_POS;
             player_idle_trans->position = OFF_SCREEN_POS;
             player_trans = player_walk_trans;
         }
         */
+        
 
         magMoveCountdown -= elapsed;
 
         if (current_player_animation != nullptr) {
             current_player_animation->update(elapsed);
             if (current_player_animation->done()) {
-                current_player_animation = magpie_idle_animation;
+                if (current_player_animation == magpie_steal_animation) {
+                    magpie_steal_animation->reset();
+                    magpie_idle_animation->reset();
+                    current_player_animation = magpie_idle_animation;
+                    // Swap the meshes
+                    glm::vec3 position = player_trans->position;
+                    glm::quat rotation = player_trans->rotation;
+                    player_idle_trans->position = position;
+                    player_idle_trans->rotation = rotation;
+                    player_steal_trans->position = OFF_SCREEN_POS;
+                    player_walk_trans->position = OFF_SCREEN_POS;
+                    player_trans = player_idle_trans;
+                }
             }
         }
+    
 
         if (current_guard_animation != nullptr) {
-
+            current_guard_animation->update(elapsed);
+            if (current_guard_animation->done()) {
+                guard_patrol_animation->reset();
+                current_guard_animation = guard_chase_animation;
+                guard_alert_animation->reset();
+                // Swap the meshes
+                glm::vec3 position = guard_trans->position;
+                guard_patrol_trans->position = position;
+                guard_alert_trans->position = OFF_SCREEN_POS;
+                guard_chase_trans->position = OFF_SCREEN_POS;
+                guard_trans = guard_patrol_trans;
+            }
         }
 
         
@@ -566,8 +605,9 @@ namespace Magpie {
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
                 if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
                     // Check that the space is a 1 in the movement grid
-                    if (currFloor.map[clickedTile.x][clickedTile.y] == true){
+                    if (currFloor.map[clickedTile.x][clickedTile.y] == true && current_player_animation != magpie_steal_animation) {
                         Magpie::game.player->setDestination(clickedTile);
+                        
                     } else {
                         // TODO: ACTUALLY MAKE THIS DO SOMETHING OTHER THAN DELETE THINGS
                         // AND ADJUST FOR THE HEIGHT OF OBJECTS
@@ -578,6 +618,47 @@ namespace Magpie {
                             if (grabbed_item != nullptr) {
                                 currFloor.interaction_map[clickedTile.x][clickedTile.y] = false;
                                 scene.delete_object(grabbed_item);
+                                // Play animation
+                                magpie_steal_animation->reset();
+                                current_player_animation = magpie_steal_animation;
+                                glm::vec3 position = player_trans->position;
+                                player_steal_trans->position = position;
+                                player_walk_trans->position = OFF_SCREEN_POS;
+                                player_idle_trans->position = OFF_SCREEN_POS;
+                                player_trans = player_steal_trans;
+
+                                // Rotate the player based on where the item is
+                                if ((int)player_trans->position.y < (int)clickedTile.y) {
+                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                    else {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                }
+                                if ((int)player_trans->position.y > (int)clickedTile.y) {
+                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                    else {
+                                        //player_trans->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                }
+                                else
+                                {
+                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
+                                        player_trans->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                                    }
+                                }
                             }
                         }
                     }

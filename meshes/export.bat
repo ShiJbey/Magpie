@@ -37,8 +37,8 @@ blender --background --python export-transform-animation-hierarchy.py -- magpie_
 
 rem Export the Guard Dog animations
 blender --background --python export-transform-animation-hierarchy.py -- guardDog_alert.blend guardDogAlert_GRP 0 15 %DIST%/guardDog_alert.tanim
-blender --background --python export-transform-animation-hierarchy.py -- guardDog_patrol.blend guardDogPatrol_GRP 0 60 %DIST%/guardDog_patrol.tanim
-blender --background --python export-transform-animation-hierarchy.py -- guardDog_chase.blend guardDogChase_GRP 0 60 %DIST%/guardDog_chase.tanim
+blender --background --python export-transform-animation-hierarchy.py -- guardDog_patrol.blend guardDogPatrol_GRP 0 40 %DIST%/guardDog_patrol.tanim
+blender --background --python export-transform-animation-hierarchy.py -- guardDog_chase.blend guardDogChase_GRP 0 20 %DIST%/guardDog_chase.tanim
 
 rem Set the path back to where we were
 cd %CD%
