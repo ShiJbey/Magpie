@@ -17,9 +17,11 @@
 class Entity {
 public:
     Entity()= default;
+    
     Entity(Model* model, Agent* agent);
+
     void update(float elapsed);
-    void draw();
+
     void setDestination(glm::uvec2 destination);
 
     Agent* getAgent() {

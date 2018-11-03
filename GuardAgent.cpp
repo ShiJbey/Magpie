@@ -26,13 +26,13 @@ void GuardAgent::consumeSignal() {
 }
 
 void GuardAgent::updateState(float elapsed) {
-    std::cout << "STATE:" << state << "," << state_duration << std::endl;
+    //std::cout << "STATE:" << state << "," << state_duration << std::endl;
     state_duration += elapsed;
     if (state == CHASING) {
         // The guard will chase the player for 20 seconds, then go back to his original point.
         chase_duration += elapsed;
         if (state_duration > 20.0f) {
-            std::cout << "TIRED" << std::endl;
+            //std::cout << "TIRED" << std::endl;
             state = WALKING;
             dest_index = 0;
             state_duration = 0;
@@ -41,7 +41,7 @@ void GuardAgent::updateState(float elapsed) {
             if (chase_duration > 0.5f || path.isEmpty())  {
                 glm::vec2 p = Magpie::game.player->getPosition();
                 setDestination(p, CHASING);
-                std::cout << "Destination Set" << p.x << "," << p.y <<" STATE " << state << std::endl;
+                //std::cout << "Destination Set" << p.x << "," << p.y <<" STATE " << state << std::endl;
                 chase_duration = 0;
             }
         }
@@ -68,7 +68,7 @@ void GuardAgent::interact() {
 //    std::cout << orientation << "(" << distance.x << "," << distance.y << ")" << std::endl;
     if (orientation == RIGHT) {
         if (distance.x >= -3 && distance.x < 0 && distance.y >= -1 && distance.y <= 1) {
-            std::cout << "START CHASING" << std::endl;
+            //std::cout << "START CHASING" << std::endl;
             state = CHASING;
             state_duration = 0;
             chase_duration = 0;
@@ -77,7 +77,7 @@ void GuardAgent::interact() {
 
     if (orientation == LEFT) {
         if (distance.x <= 3 && distance.x > 0 && distance.y >= -1 && distance.y <= 1) {
-            std::cout << "START CHASING" << std::endl;
+            //std::cout << "START CHASING" << std::endl;
             state = CHASING;
             state_duration = 0;
             chase_duration = 0;
@@ -86,7 +86,7 @@ void GuardAgent::interact() {
 
     if (orientation == DOWN) {
         if (distance.x >= -1 && distance.x <= 1 && distance.y > 0 && distance.y <= 3) {
-            std::cout << "START CHASING" << std::endl;
+            //std::cout << "START CHASING" << std::endl;
             state = CHASING;
             state_duration = 0;
             chase_duration = 0;
@@ -95,7 +95,7 @@ void GuardAgent::interact() {
 
     if (orientation == UP) {
         if (distance.x >= -1 && distance.x <= 1 && distance.y < 0 && distance.y >= -3) {
-            std::cout << "START CHASING" << std::endl;
+            //std::cout << "START CHASING" << std::endl;
             state = CHASING;
             state_duration = 0;
             chase_duration = 0;

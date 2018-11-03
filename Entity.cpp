@@ -14,10 +14,6 @@ void Entity::update(float elapsed) {
     model->update(elapsed, agent);
 };
 
-void Entity::draw() {
-//    model->draw(agent);
-};
-
 void Entity::setDestination(glm::uvec2 destination) {
     agent->setDestination(destination);
 }

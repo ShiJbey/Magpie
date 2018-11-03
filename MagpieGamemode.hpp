@@ -55,15 +55,10 @@ namespace Magpie {
         // Set up the scene using the level loader and such
         void init_scene();
 
-        Scene::Transform *player_transform = nullptr;
-        Grid currFloor;
-        float magMoveCountdown = 5.0f;
-        glm::uvec2 magpie = glm::uvec2(0, 0);
-        glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
-        std::vector<glm::uvec2> magpieWalkPath;
 
         Scene scene;
-
+        Grid currFloor;
+        std::vector<glm::uvec2> magpieWalkPath;
         std::map<int, EntityFactoryType> entityFactoryMap;
     };
 }
