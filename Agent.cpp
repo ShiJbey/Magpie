@@ -4,6 +4,8 @@
 
 #include "Agent.h"
 
+#include <iostream>
+
 glm::vec2 Agent::getDirectionVec2() {
     switch (orientation) {
         case UP:
@@ -44,7 +46,7 @@ void Agent::turnTo(glm::uvec2 destination) {
 void Agent::setDestination(glm::uvec2 destination, Agent::STATE state) {
     this->state = state;
 
-    this->path = Navigation::getInstance().findPath(position, destination);
+    this->path = Magpie::Navigation::getInstance().findPath(position, destination);
 
     cur_destination = this->path.top();
 

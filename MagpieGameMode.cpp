@@ -2,6 +2,8 @@
 
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
+#include "MagpieGame.hpp"
+#include "MagpieLevel.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -16,13 +18,6 @@
 #include "texture_program.hpp"
 #include "vertex_color_program.hpp"
 #include "depth_program.hpp"
-
-#include "PlayerAgent.h"
-#include "PlayerModel.h"
-
-#include "GuardAgent.h"
-#include "GuardModel.h"
-
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
@@ -32,11 +27,6 @@
 #include <random>
 #include <unordered_map>
 #include <cstdlib>
-
-#define ENTITY_FACTORY(name) \
-[](int object_id, int group_id, Scene::Transform* transform){ \
- return new Entity(new name##Model(transform), new name##Agent(object_id, group_id));\
-}\
 
 namespace Magpie {
 
@@ -242,7 +232,7 @@ namespace Magpie {
 
         // Get the level loading object
         Magpie::LevelLoader level_pixel_data;
-        currFloor = level_pixel_data.load(data_path("levels/floorplans/demo-map-simple.lvl"), &game, &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        level_pixel_data.load(data_path("levels/floorplans/demo-map-simple.lvl"), &game, &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("scenery")->second;
@@ -322,6 +312,20 @@ namespace Magpie {
         guard_chase_trans = scene.look_up("guardDogChase_GRP");
         assert(guard_chase_trans != nullptr);
         guard_chase_trans->position = OFF_SCREEN_POS;
+
+        // Load in the guard alert mesh
+        scene.load(data_path("guardDog/guardDog_alert.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+            Scene::Object *obj = s.new_object(t);
+            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos.find("guardAlert")->second;
+            obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+            MeshBuffer::Mesh const &mesh = guard_dog_alert_mesh->lookup(m);
+            obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+            obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        });
+        guard_alert_trans = scene.look_up("guardDogAlert_GRP");
+        assert(guard_alert_trans != nullptr);
+        guard_alert_trans->position = OFF_SCREEN_POS;
 
         // Load in the guard confused mesh
         scene.load(data_path("guardDog/guardDog_confused.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
@@ -515,28 +519,14 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         init_scene();
-        Navigation::getInstance().loadGrid(&currFloor);
-        initEntities();
     };
 
     MagpieGameMode::~MagpieGameMode() {
-
+        // Do Nothing
     };
 
-    void MagpieGameMode::initEntities() {
-
-        entityFactoryMap = {
-                {1, ENTITY_FACTORY(Player)},
-                {2, ENTITY_FACTORY(Guard)}
-        };
-
-        game.player = ENTITY_FACTORY(Player)(0, 0, player_trans);
-
-        game.entities.push_back(ENTITY_FACTORY(Guard)(1, 1, guard_trans));
-    }
-
     void MagpieGameMode::update(float elapsed) {
-
+        /*
         if (game.player->getAgent()->state == Agent::STATE::IDLE &&
             current_player_animation == magpie_walk_animation) {
             magpie_idle_animation->reset();
@@ -563,6 +553,7 @@ namespace Magpie {
             player_idle_trans->position = OFF_SCREEN_POS;
             player_trans = player_walk_trans;
         }
+        */
     
 
         if (current_player_animation != nullptr) {
@@ -599,19 +590,13 @@ namespace Magpie {
             }
         }
 
-        game.player->update(elapsed);
-
-        for (Entity* entity: game.entities) {
-            entity->update(elapsed);
-        }
 
         camera_trans->position.x = player_trans->position.x;
         camera_trans->position.y = player_trans->position.y;
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
-    glm::uvec2 MagpieGameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
-                                int floorHeight, const Scene::Camera* cam, std::string flPlan) {
+    glm::uvec2 MagpieGameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight, int floorHeight, const Scene::Camera* cam) {
         //cam from scene::
         //const Scene::Camera* cam = ;
         glm::mat4 camLocalToWorld = cam->transform->make_local_to_world(); 
@@ -637,9 +622,10 @@ namespace Magpie {
 
         glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
-        glm::uvec2 pickedTile = currFloor.tileCoord(pointOfIntersect);
+        //glm::uvec2 pickedTile = currFloor.tileCoord(pointOfIntersect);
 
-        return pickedTile;
+        //return pickedTile;
+        return glm::uvec2(0);
     };
 
     void cast_ray(int mouse_x, int mouse_y, int screen_width, int screen_height, const Scene::Camera* cam) {
@@ -665,11 +651,10 @@ namespace Magpie {
         ray_world.z = ray_world_space.z;
         // Normalize the final result
         ray_world = glm::normalize(ray_world);
-
-
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
+
         //ignore any keys that are the result of automatic key repeat:
         if (evt.type == SDL_KEYDOWN && evt.key.repeat) {
             return false;
@@ -677,12 +662,11 @@ namespace Magpie {
 
         if (evt.type == SDL_MOUSEBUTTONUP) {
             if (evt.button.button == SDL_BUTTON_LEFT) {
-
+                /*
                 std::cout << "X:" << evt.button.x << " Y:" << evt.button.y << std::endl;
                 cast_ray(evt.button.x, evt.button.y, window_size.x, window_size.y, camera);
                 //TODO: get x and y of mouse click and figure out which tile it is
-                glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
-                                        window_size.x, window_size.y, 0, camera, "prototype");
+                glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, window_size.x, window_size.y, 0, camera);
                 //std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
                 if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
                     // Check that the space is a 1 in the movement grid
@@ -744,6 +728,7 @@ namespace Magpie {
                         }
                     }
                 }
+                */
             }
         }
         return false;

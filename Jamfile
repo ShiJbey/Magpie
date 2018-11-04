@@ -79,18 +79,16 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
-	Grid
 	TransformAnimation
-	Agent
 	Navigation
-	MagpieGameMode
 	load_level
-	Entity
-	PlayerAgent
-	PlayerModel
-	GuardModel
-	GuardAgent
-	SignalQueue
+	GameAgent
+	Guard
+	Player
+	MagpieLevel
+	Signalable
+	MagpieGame
+	MagpieGameMode
 	;
 
 if $(OS) = NT {

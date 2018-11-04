@@ -3,27 +3,28 @@
 //
 
 #include "Navigation.h"
+#include <iostream>
 
 /**
  *  The Implementations of class Path.
  */
 
-Path::Path(std::vector<glm::uvec2> path) {
+Magpie::Path::Path(std::vector<glm::uvec2> path) {
     this->path = std::move(path);
     it = this->path.begin();
 }
 
-glm::uvec2 Path::next() {
+glm::uvec2 Magpie::Path::next() {
     std::cout << "NEXT:" << it->x << it->y << std::endl;
     if (it == path.end()) return glm::uvec2(0, 0);
     return *(it++);
 }
 
-bool Path::isEmpty() {
+bool Magpie::Path::isEmpty() {
     return it == path.end();
 }
 
-glm::uvec2 Path::top() {
+glm::uvec2 Magpie::Path::top() {
     return *path.begin();
 }
 
@@ -31,11 +32,11 @@ glm::uvec2 Path::top() {
  *  The Implementations of class Navigation.
  */
 
-void Navigation::loadGrid(Grid *map) {
-    this->map = map;
+void Magpie::Navigation::loadLevel(Magpie::MagpieLevel *level) {
+    this->level = level;
 }
 
-Path Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
+Magpie::Path Magpie::Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
     std::vector<glm::uvec2> path_vector;
 
     int x_direction = (to.x > from.x)?1:-1;

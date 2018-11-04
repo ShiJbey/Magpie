@@ -1,17 +1,14 @@
 #pragma once
 
 #include "MagpieGame.hpp"
+#include "MagpieLevel.hpp"
+#include "Navigation.h"
 
 #include "Mode.hpp"
 #include "TransformAnimation.hpp"
-#include "Grid.h"
-#include "Navigation.h"
-
 #include "MeshBuffer.hpp"
 #include "GL.hpp"
 #include "Scene.hpp"
-#include "Entity.h"
-
 
 #include <SDL.h>
 #include <glm/glm.hpp>
@@ -19,15 +16,12 @@
 
 #include <vector>
 
-typedef Entity*(*EntityFactoryType)(int, int, Scene::Transform*);
 namespace Magpie {
     // Game mode for playing the MagpieGame
     struct MagpieGameMode : public Mode {
 
         MagpieGameMode();
         virtual ~MagpieGameMode();
-
-        void initEntities();
 
         //handle_event is called when new mouse or keyboard events are received:
         // (note that this might be many times per frame or never)
@@ -40,13 +34,10 @@ namespace Magpie {
         //draw is called after update:
         virtual void draw(glm::uvec2 const &drawable_size) override;
 
-        //update position is used to update the magpie or guard's position with pathfinder
-        void updatePosition(char character, std::vector<glm::uvec2> path);
-
         //mouse pick sends a raycast from where the mouse has clicked and returns which tile
         //the user has landed in
         glm::uvec2 mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
-                                int floorHeight, const Scene::Camera* cam, std::string floorPlan);
+                                int floorHeight, const Scene::Camera* cam);
 
         //given a point of intersection, tileMap tries to find a matching tile in given floorplan 
         //and returns that. if not it returns -1, -1
@@ -55,10 +46,6 @@ namespace Magpie {
         // Set up the scene using the level loader and such
         void init_scene();
 
-
         Scene scene;
-        Grid currFloor;
-        std::vector<glm::uvec2> magpieWalkPath;
-        std::map<int, EntityFactoryType> entityFactoryMap;
     };
 }

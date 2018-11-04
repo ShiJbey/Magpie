@@ -5,7 +5,6 @@
 #include "Load.hpp"
 
 //The 'GameMode' mode plays the game:
-#include "GameMode.hpp"
 #include "MagpieGamemode.hpp"
 
 //The 'Sound' header has functions for managing sound:

@@ -3,7 +3,6 @@
 //
 
 #include "GuardAgent.h"
-#include "SignalQueue.h"
 #include "MagpieGame.hpp"
 
 GuardAgent::GuardAgent(int object_id, int group_id) {
