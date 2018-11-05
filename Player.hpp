@@ -60,6 +60,8 @@ namespace Magpie {
                 (*transform)->position = position;
             }
             board_position = glm::vec2(position);
+            //board_position.x = std::round(board_position.x);
+            //board_position.y = std::round(board_position.y);
         }
 
         glm::vec3 get_position() {
@@ -76,11 +78,32 @@ namespace Magpie {
 
         Scene::Transform** get_transform() {
             return transform;
-        }
+        };
+
+        void set_model_orientation(DIRECTION dir) {
+            switch(dir) {
+                case DIRECTION::RIGHT :
+                    std::cout << "DEBUG:: Facing right" << std::endl;
+                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    break;
+                case DIRECTION::LEFT :
+                    std::cout << "DEBUG:: Facing left" << std::endl;
+                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    break;
+                case DIRECTION::UP :
+                    std::cout << "DEBUG:: right up" << std::endl;
+                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    break;
+                case DIRECTION::DOWN:
+                    (*transform)->rotation = original_rotation;
+                    break;
+            }
+        };
 
         void set_transform(Scene::Transform** transform) {
             this->transform = transform;
-        }
+            original_rotation = (*transform)->rotation;
+        };
 
         AnimationManager* get_animation_manager() {
             return &animation_manager;
@@ -92,5 +115,6 @@ namespace Magpie {
         Scene::Transform** transform;
         std::vector < HitlistTask > hitlist;
         AnimationManager animation_manager;
+        glm::quat original_rotation;
     };
 }

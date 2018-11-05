@@ -552,10 +552,8 @@ namespace Magpie {
             }
         }
         
-
-
-        //camera_trans->position.x = player_trans->position.x;
-        //camera_trans->position.y = player_trans->position.y;
+        camera_trans->position.x = game.player.get_position().x;
+        camera_trans->position.y = game.player.get_position().y;
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html

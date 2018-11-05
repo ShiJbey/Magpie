@@ -5,6 +5,11 @@
 #include <glm/glm.hpp>
 
 namespace Magpie {
+    
+    template <typename T> int sgn(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
+
     class GameAgent {
     public:
 

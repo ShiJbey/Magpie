@@ -28,47 +28,35 @@ void Magpie::Player::print_tasks() {
 };
 
 void Magpie::Player::walk(float elapsed) {
+
+    //printf("Current Destination: ( %f, %f)\n", current_destination.x, current_destination.y);
+    //printf("Current Board Position: ( %f, %f)\n", board_position.x, board_position.y);
+    //printf("Current Trans Position: ( %f, %f)\n", (*transform)->position.x, (*transform)->position.y);
+    //turnTo(current_destination);
+    
     float distance = elapsed * movespeed;
+    glm::vec2 displacement = getDirectionVec2() * distance;
 
-    /*
+    glm::vec2 vector_to =  current_destination - glm::vec2(board_position);
 
-    if (path.isEmpty()) {
-        current_state = (uint32_t)Player::STATE::IDLE;
-        animation_manager.set_current_state((uint32_t)Player::STATE::IDLE);
-        return;
-    } else {
-        if (board_position == glm::round(current_destination)) {
+    if (glm::length(vector_to) < distance || glm::dot(vector_to, getDirectionVec2()) < 0) {
+        if (path.isEmpty()) {
+            Player::set_state((uint32_t)Player::STATE::IDLE);
+            return;
+        } else {
+            
+            Player::set_position(glm::vec3(current_destination, 0.0f));
             printf("DESTINATION REACHED\n");
             current_destination = path.next();
             printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
             turnTo(current_destination);
-        }
-        set_position(glm::vec3(current_destination.x, current_destination.y, 0.0f));
-
-        set_position((*transform)->position + glm::vec3(getDirectionVec2() * distance, 0.0f));
-        
-        board_position.x = (float)std::floor((*transform)->position.x + 0.5f);
-        board_position.y = (float)std::floor((*transform)->position.y + 0.5f);
-    }
-
-    */
-
-    glm::vec2 vector_to =  current_destination - glm::vec2(board_position);
-    
-    if (glm::length(vector_to) < distance || glm::dot(vector_to, getDirectionVec2()) < 0) {
-
-        set_position(glm::vec3(current_destination, 0.0f));
-        if (path.isEmpty()) {
-            //std::cout << "EMPTY" << std::endl;
-        } else {
-            //std::cout << "NEXT" << std::endl;
-            current_destination = path.next();
-            turnTo(current_destination);
+            set_model_orientation(orientation);
+            
+            
         }
     } else {
-        set_position((*transform)->position + glm::vec3(getDirectionVec2() * distance, 0.0f));
+        Player::set_position((*transform)->position + glm::vec3(displacement, 0.0f));
     }
-    
 };
 
 void Magpie::Player::consume_signal() {
@@ -78,9 +66,9 @@ void Magpie::Player::consume_signal() {
 void Magpie::Player::update(float elapsed) {
     ///board_position = glm::vec2((*transform)->position);
     animation_manager.update(elapsed);
-    if (current_destination == board_position && current_state != (uint32_t)Player::STATE::IDLE) {
+    //if (current_destination == board_position && current_state != (uint32_t)Player::STATE::IDLE) {
        // current_state = (uint32_t)Player::STATE::IDLE;
-    }
+    //}
 
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
@@ -97,5 +85,7 @@ void Magpie::Player::interact() {
 
 Magpie::Player::Player() {
     // Default to position off the map
-    current_destination = glm::vec2(-1, -1);
+    current_destination = glm::vec2(0, 0);
+    orientation = DIRECTION::LEFT;
+    movespeed = 2.0f;
 };
