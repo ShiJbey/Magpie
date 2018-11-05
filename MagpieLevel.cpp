@@ -37,7 +37,12 @@ glm::uvec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
 
 
 bool Magpie::MagpieLevel::can_move_to(uint32_t row, uint32_t col) {
-    return this->movement_matrix[row][col];
+    if (row < movement_matrix.size()) {
+        if (col < movement_matrix[row].size()) {
+            return this->movement_matrix[row][col];
+        }
+    }
+    return false;    
 }
 
 void Magpie::MagpieLevel::handle_click() {

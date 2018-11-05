@@ -19,12 +19,14 @@ namespace Magpie {
         virtual void update_state(float elapsed) = 0;
         virtual void interact() = 0;
         
-        virtual void walk(float elapsed);
+        virtual void walk(float elapsed) = 0;
         virtual void turnTo(glm::uvec2 destination);
+        uint32_t get_state();
+        void set_state(uint32_t state);
 
         glm::vec2 getDirectionVec2();
 
-        void setDestination(glm::uvec2 destination);
+        virtual void setDestination(glm::uvec2 destination);
 
     protected:
         // All agents use an int to represent the current state
@@ -34,8 +36,9 @@ namespace Magpie {
 
         float movespeed = 1.0f;
         DIRECTION orientation;
-        glm::vec2 position;
+        glm::vec2 board_position;
         glm::vec2 current_destination;
+        bool at_destination;
         Path path;
     };
 }

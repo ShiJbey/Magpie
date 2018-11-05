@@ -89,6 +89,7 @@ CLIENT_NAMES =
 	Signalable
 	MagpieGame
 	MagpieGameMode
+	AnimationManager
 	;
 
 if $(OS) = NT {

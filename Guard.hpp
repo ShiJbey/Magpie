@@ -4,7 +4,7 @@
 #include "Signalable.hpp"
 
 namespace Magpie {
-    class Guard: public GameAgent, public Signalable {
+    class Guard: protected GameAgent, public Signalable {
     public:
        enum class STATE {
             IDLE = 0,
@@ -14,6 +14,8 @@ namespace Magpie {
             CONFUSED,
             CAUTIOUS
         }; 
+
+        void walk(float elapsed);
 
         void consume_signal();
 

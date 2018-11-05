@@ -4,6 +4,7 @@
 
 #include "Navigation.h"
 #include <iostream>
+#include <deque>
 
 /**
  *  The Implementations of class Path.
@@ -38,6 +39,8 @@ void Magpie::Navigation::loadLevel(Magpie::MagpieLevel *level) {
 
 Magpie::Path Magpie::Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
     std::vector<glm::uvec2> path_vector;
+
+    
 
     int x_direction = (to.x > from.x)?1:-1;
     int y_direction = (to.y > from.y)?1:-1;

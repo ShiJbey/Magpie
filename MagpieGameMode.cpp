@@ -1,5 +1,6 @@
 #include "MagpieGamemode.hpp"
 
+#include "AnimationManager.hpp"
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
 #include "MagpieGame.hpp"
@@ -218,7 +219,7 @@ namespace Magpie {
 
         // Vaos that the vertex color program will use
         std::map< std::string, GLuint > vertex_color_vaos = {
-            {"scenery", *building_meshes_vao},
+            {"buildingTiles", *building_meshes_vao},
             {"magpieWalk", *magpie_walk_mesh_vao},
             {"magpieIdle", *magpie_idle_mesh_vao},
             {"magpieSteal", *magpie_steal_mesh_vao},
@@ -235,7 +236,7 @@ namespace Magpie {
         level_pixel_data.load(data_path("levels/floorplans/demo-map-simple.lvl"), &game, &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
-            default_program_info.vao = vertex_color_vaos.find("scenery")->second;
+            default_program_info.vao = vertex_color_vaos.find("buildingTiles")->second;
             obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
             MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
@@ -369,14 +370,8 @@ namespace Magpie {
         assert(guard_idle_trans != nullptr);
         guard_idle_trans->position = OFF_SCREEN_POS;
 
-        // Set the general transform pointers
-        player_trans = player_idle_trans;
-        guard_trans = guard_patrol_trans;
-
         // Move the transforms into the camera's view
-        player_trans->position.x = 1.0f;
-        player_trans->position.y = 1.0f;
-        player_trans->position.z = 0.0f;
+        guard_trans = guard_patrol_trans;
         guard_trans->position.x = 3.0f;
         guard_trans->position.y = 3.0f;
         guard_trans->position.z = 0.0f;
@@ -487,9 +482,19 @@ namespace Magpie {
             }
         }
 
-        magpie_walk_animation = new TransformAnimationPlayer(*magpie_walk_tanim, player_model_walk_transforms, 1.0f, true);
+
         magpie_idle_animation = new TransformAnimationPlayer(*magpie_idle_tanim, player_model_idle_transforms, 1.0f, true);
+        magpie_walk_animation = new TransformAnimationPlayer(*magpie_walk_tanim, player_model_walk_transforms, 1.0f, true);
         magpie_steal_animation = new TransformAnimationPlayer(*magpie_steal_tanim, player_model_steal_transforms, 1.0f, false);
+
+        game.player.get_animation_manager()->add_state(new AnimationState(player_idle_trans, magpie_idle_animation));
+        game.player.get_animation_manager()->add_state(new AnimationState(player_walk_trans, magpie_walk_animation));
+        game.player.get_animation_manager()->add_state(new AnimationState(player_steal_trans, magpie_steal_animation));
+        game.player.set_transform(game.player.get_animation_manager()->init(game.player.get_position(), (uint32_t)Player::STATE::IDLE));
+        if (game.player.get_transform() == nullptr) {
+            printf("FUCK\n");
+        }
+        game.player.set_position(glm::vec3(2.0f, 2.0f, 0.0f));
 
         guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
         guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
@@ -498,8 +503,7 @@ namespace Magpie {
         guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
         guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
 
-
-        // Setanimation
+        // Set animation
         current_player_animation = magpie_idle_animation;
         current_guard_animation = guard_patrol_animation;
 
@@ -526,53 +530,11 @@ namespace Magpie {
     };
 
     void MagpieGameMode::update(float elapsed) {
-        /*
-        if (game.player->getAgent()->state == Agent::STATE::IDLE &&
-            current_player_animation == magpie_walk_animation) {
-            magpie_idle_animation->reset();
-            current_player_animation = magpie_idle_animation;
-            glm::vec3 position = player_trans->position;
-            glm::quat rotation = player_trans->rotation;
-            player_idle_trans->position = position;
-            player_idle_trans->rotation = rotation;
-            player_steal_trans->position = OFF_SCREEN_POS;
-            player_walk_trans->position = OFF_SCREEN_POS;
-            player_trans = player_idle_trans;
-        }
-        else if (game.player->getAgent()->state == Agent::STATE::WALKING &&
-            current_player_animation != magpie_walk_animation) {
-            printf("Starting player walk animation\n");
-            magpie_walk_animation->reset();
-            current_player_animation = magpie_walk_animation;
-            // Swap the meshes
-            glm::vec3 position = player_trans->position;
-            glm::quat rotation = player_trans->rotation;
-            player_walk_trans->position = position;
-            player_walk_trans->rotation = rotation;
-            player_steal_trans->position = OFF_SCREEN_POS;
-            player_idle_trans->position = OFF_SCREEN_POS;
-            player_trans = player_walk_trans;
-        }
-        */
-    
 
-        if (current_player_animation != nullptr) {
-            current_player_animation->update(elapsed);
-            if (current_player_animation->done()) {
-                if (current_player_animation == magpie_steal_animation) {
-                    magpie_steal_animation->reset();
-                    magpie_idle_animation->reset();
-                    current_player_animation = magpie_idle_animation;
-                    // Swap the meshes
-                    glm::vec3 position = player_trans->position;
-                    glm::quat rotation = player_trans->rotation;
-                    player_idle_trans->position = position;
-                    player_idle_trans->rotation = rotation;
-                    player_steal_trans->position = OFF_SCREEN_POS;
-                    player_walk_trans->position = OFF_SCREEN_POS;
-                    player_trans = player_idle_trans;
-                }
-            }
+        game.player.update(elapsed);
+
+        for (auto it = game.guards.begin(); it != game.guards.end(); it++) {
+            it->update(elapsed);
         }
     
         if (current_guard_animation != nullptr) {
@@ -589,16 +551,15 @@ namespace Magpie {
                 guard_trans = guard_patrol_trans;
             }
         }
+        
 
 
-        camera_trans->position.x = player_trans->position.x;
-        camera_trans->position.y = player_trans->position.y;
+        //camera_trans->position.x = player_trans->position.x;
+        //camera_trans->position.y = player_trans->position.y;
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html
     glm::uvec2 MagpieGameMode::mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight, int floorHeight, const Scene::Camera* cam) {
-        //cam from scene::
-        //const Scene::Camera* cam = ;
         glm::mat4 camLocalToWorld = cam->transform->make_local_to_world(); 
 
         float halfImageHeight = cam->near*std::tan(cam->fovy/2.0f);
@@ -611,8 +572,8 @@ namespace Magpie {
         glm::vec3 localOrigin = glm::vec3(normDeviceX*halfImageWidth, normDeviceY*halfImageHeight, -cam->near);
         glm::vec3 worldOrigin = camLocalToWorld*glm::vec4(localOrigin, 1.0f);
         glm::vec3 worldDir = camLocalToWorld*glm::vec4(localOrigin, 0.0f); //unnormalized dir
-        glm::vec3 norm_worldDir = glm::normalize(worldDir);
-        //float dist = worldOrigin.z - floorHeight;
+        // glm::vec3 norm_worldDir = glm::normalize(worldDir);
+        // float dist = worldOrigin.z - floorHeight;
 
         if (worldDir.z>=0.0f) { //discard all rays going away from floor
             return glm::uvec2(-1,-1);
@@ -622,35 +583,9 @@ namespace Magpie {
 
         glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
-        //glm::uvec2 pickedTile = currFloor.tileCoord(pointOfIntersect);
+        glm::uvec2 pickedTile = game.current_level->floor_tile_coord(pointOfIntersect);
 
-        //return pickedTile;
-        return glm::uvec2(0);
-    };
-
-    void cast_ray(int mouse_x, int mouse_y, int screen_width, int screen_height, const Scene::Camera* cam) {
-        
-        // Get the [-1,1] normalized coordinates of the click 
-        float normalized_device_x = (2.0f * mouse_x) / screen_width - 1.0f;
-        float normalized_device_y = 1.0f - (2.0f * mouse_y) / screen_height;
-        float z = 1.0f;
-
-        glm::vec3 ray_nds = glm::vec3(normalized_device_x, normalized_device_y, z);
-        // Ray defined in clip space [-1,1] coordinates
-        glm::vec4 ray_clip_space = glm::vec4(ray_nds.x, ray_nds.y, -1.0f, 1.0f);
-        // Converts the above ray to clip space coordinates
-        glm::vec4 ray_view_space = glm::inverse(cam->make_projection()) * ray_clip_space;
-        // We only need the x and y coordinates for now, change z and w
-        ray_view_space.z = -1.0f;
-        ray_view_space.w = 0.0f;
-        // Convert to  world space by multiplying by the inverse of the view matrix
-        glm::vec4 ray_world_space = glm::inverse(cam->transform->make_local_to_world()) * ray_view_space;
-        glm::vec3 ray_world;
-        ray_world.x = ray_world_space.x;
-        ray_world.y = ray_world_space.y;
-        ray_world.z = ray_world_space.z;
-        // Normalize the final result
-        ray_world = glm::normalize(ray_world);
+        return pickedTile;
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -662,18 +597,30 @@ namespace Magpie {
 
         if (evt.type == SDL_MOUSEBUTTONUP) {
             if (evt.button.button == SDL_BUTTON_LEFT) {
-                /*
-                std::cout << "X:" << evt.button.x << " Y:" << evt.button.y << std::endl;
-                cast_ray(evt.button.x, evt.button.y, window_size.x, window_size.y, camera);
-                //TODO: get x and y of mouse click and figure out which tile it is
+                //std::cout << "Screen Click at (x: " << evt.button.x << ", y: " << evt.button.y << ")" << std::endl;
+                
                 glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, window_size.x, window_size.y, 0, camera);
-                //std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
-                if (clickedTile.x<currFloor.rows && clickedTile.y<currFloor.cols) { //ignore (-1, -1)/error
-                    // Check that the space is a 1 in the movement grid
-                    if (currFloor.map[clickedTile.x][clickedTile.y] == true && current_player_animation != magpie_steal_animation) {
-                        Magpie::game.player->setDestination(clickedTile);
-                        
-                    } else {
+                // Check if we can actually move to that tile
+                if (game.current_level->can_move_to(clickedTile.x, clickedTile.y)) {
+                    std::cout << "Clicked tile is (x: " << clickedTile.x << ", y: "<< clickedTile.y << ")" << std::endl;
+                    game.player.setDestination(clickedTile);
+                    if (game.player.get_state() == (uint32_t)Player::STATE::IDLE) {
+                        game.player.set_state((uint32_t)Player::STATE::WALKING);
+                    }
+                }
+                else {
+                    // Check if the click ray collides with any of the item bounding boxes in the scene
+                    if (game.current_level->interaction_map[clickedTile.x][clickedTile.y] == true &&
+                            std::abs((int)player_trans->position.x - (int)clickedTile.x) <= 1 && 
+                            std::abs((int)player_trans->position.y - (int)clickedTile.y) <= 1) {
+
+                        game.player.set_state((uint32_t)Player::STATE::STEALING);
+
+                    }
+                }
+                
+                              
+                /*
                         // TODO: ACTUALLY MAKE THIS DO SOMETHING OTHER THAN DELETE THINGS
                         // AND ADJUST FOR THE HEIGHT OF OBJECTS
                         if (currFloor.interaction_map[clickedTile.x][clickedTile.y] == true &&

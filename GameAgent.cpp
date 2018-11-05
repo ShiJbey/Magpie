@@ -15,20 +15,30 @@ glm::vec2 Magpie::GameAgent::getDirectionVec2() {
         default:
             return glm::vec2(0, 0);
     }
-}
+};
 
 void Magpie::GameAgent::setDestination(glm::uvec2 destination) {
     current_destination = destination;
+
+    this->path = Magpie::Navigation::getInstance().findPath(board_position, destination);
+
+    current_destination = this->path.top();
+
+    turnTo(current_destination);
 };
 
-void Magpie::GameAgent::walk(float elapsed) {
+uint32_t Magpie::GameAgent::get_state() {
+    return current_state;
+}
 
-};
+void Magpie::GameAgent::set_state(uint32_t state) {
+    current_state = state;
+}
 
 void Magpie::GameAgent::turnTo(glm::uvec2 destination) {
     std::cout << "TURN TO" << destination.x << "," << destination.y << std::endl;
-    int x_direction = (destination.x - position.x) >= 0 ? 1 : 0;
-    int y_direction = (destination.y - position.y) >= 0 ? 1 : 0;
+    int x_direction = (destination.x - board_position.x) >= 0 ? 1 : 0;
+    int y_direction = (destination.y - board_position.y) >= 0 ? 1 : 0;
 
     if (x_direction == 0) {
         if (y_direction == 1) {
@@ -45,4 +55,4 @@ void Magpie::GameAgent::turnTo(glm::uvec2 destination) {
             orientation = DIRECTION::RIGHT;
         }
     }
-}
+};
