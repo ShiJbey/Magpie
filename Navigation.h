@@ -5,6 +5,7 @@
 
 #include "MagpieLevel.hpp"
 
+#include <glm/glm.hpp>
 #include <vector>
 
 namespace Magpie {
@@ -33,6 +34,7 @@ namespace Magpie {
 
         void loadLevel(MagpieLevel* map);
         Path findPath(glm::vec2 from, glm::uvec2 to);
+        std::vector<glm::uvec2> get_adjacent(glm::vec2 pos);
 
     private:
         Navigation() = default;

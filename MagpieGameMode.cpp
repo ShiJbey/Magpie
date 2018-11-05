@@ -523,6 +523,7 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         init_scene();
+        Navigation::getInstance().loadLevel(game.current_level);
     };
 
     MagpieGameMode::~MagpieGameMode() {
