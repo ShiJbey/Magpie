@@ -2,8 +2,11 @@
 
 #include <algorithm>
 
-bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm::vec3 &ray_dir, float &t1, float&t2) {
-    float e, f, t2, t2;
+bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm::vec3 &ray_dir) {
+    float e;
+    float f; 
+    float t1;
+    float t2;
 
     glm::vec3 t_max(100000.0f, 100000.0f, 100000.0f);
     glm::vec3 t_min(0.0f, 0.0f, 0.0f);

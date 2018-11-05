@@ -19,7 +19,7 @@ Magpie::Path::Path(std::vector<glm::uvec2> path) {
 }
 
 glm::uvec2 Magpie::Path::next() {
-    std::cout << "NEXT:" << it->x << it->y << std::endl;
+    //std::cout << "NEXT:" << it->x << ", " << it->y << std::endl;
     if (it == path.end()) return glm::uvec2(0, 0);
     return *(it++);
 }

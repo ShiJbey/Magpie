@@ -90,6 +90,7 @@ CLIENT_NAMES =
 	MagpieGame
 	MagpieGameMode
 	AnimationManager
+	Clickable
 	;
 
 if $(OS) = NT {

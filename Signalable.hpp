@@ -7,6 +7,10 @@ namespace Magpie {
     class Signal {
     public:
         Signal(uint32_t _sender_id, uint32_t _group_id, uint32_t _sig_num): sender_id(_sender_id), group_id(group_id), sig_num(_sig_num) { }
+        uint32_t get_sender_id() { return this->sender_id; }
+        uint32_t get_group_id() { return this->group_id; }
+        uint32_t get_signal_number() { return this->sig_num; }
+    protected:
         uint32_t sender_id;
         uint32_t group_id;
         uint32_t sig_num;
@@ -29,6 +33,9 @@ namespace Magpie {
         // Defins how the play should react given a certain signal
         virtual void consume_signal() = 0;
 
+        // Getters
+        uint32_t get_object_id() { return this->object_id; }
+        uint32_t get_group_id() { return this->group_id; }
     protected:
         uint32_t object_id;
         uint32_t group_id;

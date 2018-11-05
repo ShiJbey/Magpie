@@ -55,59 +55,14 @@ namespace Magpie {
 
         void interact();
 
-        void set_position(glm::vec3 position) {
-            if (transform != nullptr) {
-                (*transform)->position = position;
-            }
-            board_position = glm::vec2(position);
-            //board_position.x = std::round(board_position.x);
-            //board_position.y = std::round(board_position.y);
-        }
+        void set_position(glm::vec3 position);
+        void set_state(uint32_t state);
+        void set_model_orientation(DIRECTION dir);
+        void set_transform(Scene::Transform** transform);
 
-        glm::vec3 get_position() {
-            if (transform != nullptr) {
-                return (*transform)->position;
-            }
-            return glm::vec3(-1.0f, -1.0f, 0.0f);
-        }
-
-        void set_state(uint32_t state) {
-            GameAgent::set_state(state);
-            animation_manager.set_current_state(state);
-        }
-
-        Scene::Transform** get_transform() {
-            return transform;
-        };
-
-        void set_model_orientation(DIRECTION dir) {
-            switch(dir) {
-                case DIRECTION::RIGHT :
-                    std::cout << "DEBUG:: Facing right" << std::endl;
-                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                    break;
-                case DIRECTION::LEFT :
-                    std::cout << "DEBUG:: Facing left" << std::endl;
-                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                    break;
-                case DIRECTION::UP :
-                    std::cout << "DEBUG:: right up" << std::endl;
-                    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                    break;
-                case DIRECTION::DOWN:
-                    (*transform)->rotation = original_rotation;
-                    break;
-            }
-        };
-
-        void set_transform(Scene::Transform** transform) {
-            this->transform = transform;
-            original_rotation = (*transform)->rotation;
-        };
-
-        AnimationManager* get_animation_manager() {
-            return &animation_manager;
-        }
+        glm::vec3 get_position();
+        Scene::Transform** get_transform();
+        AnimationManager* get_animation_manager();
 
     protected:
         // This points to another transform pointer

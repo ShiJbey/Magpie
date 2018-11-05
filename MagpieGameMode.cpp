@@ -1,5 +1,6 @@
 #include "MagpieGamemode.hpp"
 
+#include "Clickable.hpp"
 #include "AnimationManager.hpp"
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
@@ -571,7 +572,6 @@ namespace Magpie {
         glm::vec3 localOrigin = glm::vec3(normDeviceX*halfImageWidth, normDeviceY*halfImageHeight, -cam->near);
         glm::vec3 worldOrigin = camLocalToWorld*glm::vec4(localOrigin, 1.0f);
         glm::vec3 worldDir = camLocalToWorld*glm::vec4(localOrigin, 0.0f); //unnormalized dir
-        // glm::vec3 norm_worldDir = glm::normalize(worldDir);
         // float dist = worldOrigin.z - floorHeight;
 
         if (worldDir.z>=0.0f) { //discard all rays going away from floor
@@ -583,6 +583,16 @@ namespace Magpie {
         glm::vec3 pointOfIntersect = worldOrigin + t*worldDir;
 
         glm::uvec2 pickedTile = game.current_level->floor_tile_coord(pointOfIntersect);
+
+        if (!game.current_level->can_move_to(pickedTile.x, pickedTile.y)) {
+            // Try collision code
+            // TODO:: Cahnge the index for paintings
+            for (auto it = game.current_level->paintings[1].begin(); it != game.current_level->paintings[1].end(); it++) {
+                if (it->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
+                    printf("PAINTING CLICKED");
+                }
+            }
+        }
 
         return pickedTile;
     };
@@ -609,13 +619,13 @@ namespace Magpie {
                 }
                 else {
                     // Check if the click ray collides with any of the item bounding boxes in the scene
-                    if (game.current_level->interaction_map[clickedTile.x][clickedTile.y] == true &&
-                            std::abs((int)player_trans->position.x - (int)clickedTile.x) <= 1 && 
-                            std::abs((int)player_trans->position.y - (int)clickedTile.y) <= 1) {
+                    ///if (game.current_level->interaction_map[clickedTile.x][clickedTile.y] == true &&
+                    //        std::abs((int)player_trans->position.x - (int)clickedTile.x) <= 1 && 
+                    //        std::abs((int)player_trans->position.y - (int)clickedTile.y) <= 1) {
 
-                        game.player.set_state((uint32_t)Player::STATE::STEALING);
+                        //game.player.set_state((uint32_t)Player::STATE::STEALING);
 
-                    }
+                    //}
                 }
                 
                               

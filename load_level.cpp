@@ -396,11 +396,16 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
         game->current_level->interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
 
+        
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
             auto custom_mesh_name = custom_mesh_grp->second.find(5);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                game->placed_items.push_back(on_object(*scene, temp_transform, custom_mesh_name->second));
+                
+                Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
+                // TODO:: Get the actual room
+                game->current_level->add_painting(1, Painting(obj));
+                game->placed_items.push_back(obj);
             }
         }
     }

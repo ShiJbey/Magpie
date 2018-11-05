@@ -32,7 +32,7 @@ void Magpie::GameAgent::set_state(uint32_t state) {
 }
 
 void Magpie::GameAgent::turnTo(glm::uvec2 destination) {
-    std::cout << "TURN TO: " << destination.x << "," << destination.y << std::endl;
+    //std::cout << "TURN TO: " << destination.x << "," << destination.y << std::endl;
     int x_direction = Magpie::sgn(destination.x - board_position.x);
     int y_direction = Magpie::sgn(destination.y - board_position.y);
 
