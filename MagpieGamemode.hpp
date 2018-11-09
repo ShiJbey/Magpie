@@ -60,7 +60,7 @@ namespace Magpie {
         float magMoveCountdown = 5.0f;
         glm::uvec2 magpie = glm::uvec2(0, 0);
         glm::uvec2 magpieEndpt = glm::uvec2(0, 0);
-        std::vector<glm::uvec2> magpieWalkPath;
+        std::vector<glm::uvec2> highlightPath;
 
         Scene scene;
 

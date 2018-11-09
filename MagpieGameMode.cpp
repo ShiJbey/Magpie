@@ -597,9 +597,30 @@ namespace Magpie {
             return false;
         }
 
+        //TODO: WRITE THIS
+        if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
+            if (evt.key.keysym.scancode == SDL_SCANCODE_M) {
+                //put away inventory if needed
+                //call menu
+                return true;
+            }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_I) {
+                //put away map if needed
+                //call inventory
+                return true;
+            }
+        }
+
+        //TODO: WRITE THIS
+        if (evt.type == SDL_MOUSEMOTION) {
+            //call mousepick with mouse.x and mouse.y to get the path of 
+            //glm::uvec2 endpt = mousePick(evt.motion.x, evt.motion.y, window_size.x, window_size.y, 0, camera, "prototype");
+            //highlightPath = ;
+            return true;
+        }
+
         if (evt.type == SDL_MOUSEBUTTONDOWN) {
             if (evt.button.button == SDL_BUTTON_LEFT) {
-                //TODO: get x and y of mouse click and figure out which tile it is
                 glm::uvec2 clickedTile = mousePick(evt.button.x, evt.button.y, 
                                         window_size.x, window_size.y, 0, camera, "prototype");
                 std::cout << "clickedTile.x is "<< clickedTile.x << "and clickTile.y is "<< clickedTile.y << std::endl;
@@ -693,6 +714,14 @@ namespace Magpie {
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
+
+            //TODO: highlight magpie path! WHAT STORES THE TRANSFORMS OF ALL THE FLOOR TILES IN MAP?
+            //make highlightedPath squares seem brighter than the ones around it
+            /*
+            for (uint32_t i=0; i<highlightPath.size(); i++) {
+                ;
+            }
+            */
         }
 
         GL_ERRORS();

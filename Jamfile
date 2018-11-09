@@ -91,6 +91,9 @@ CLIENT_NAMES =
 	GuardModel
 	GuardAgent
 	SignalQueue
+	Map
+	Inventory
+	UI
 	;
 
 if $(OS) = NT {
