@@ -32,9 +32,7 @@ Magpie::PixelData::PixelData(uint8_t red_channel_data_, uint8_t green_channel_da
 }
 
 std::string Magpie::PixelData::to_string() {
-    char buffer[50];
-//    sprintf(buffer, "[ %d, %d, %d ]", red_channel_data, green_channel_data, blue_channel_data);
-    return std::string(buffer);
+    return "[" + std::to_string(red_channel_data) + ", " + std::to_string(green_channel_data) + ", " + std::to_string(blue_channel_data) + "]";
 }
 
 uint8_t Magpie::PixelData::get_mesh_id() {
@@ -83,7 +81,7 @@ Magpie::LevelLoader::LevelLoader() {
     mesh_names.insert({0, purple_meshes});
 }
 
-Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
+void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     ///////////////////////////////////////////////////////
@@ -124,8 +122,9 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
     ///////////////////////////////////////////////////////
     //             PLACE OBJECTS IN SCENE                //
     ///////////////////////////////////////////////////////
-    Grid grid(level_length, level_width);
 
+    game->current_level = new MagpieLevel(length, width);
+    
     Scene::Transform *temp_transform;
     for (uint32_t row = 0; row < level_length; row++) {
         for (uint32_t col = 0; col < level_width; col++) {
@@ -164,9 +163,6 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                     }
                 }
             }
-            else {
-                grid.map[row][col] = false;
-            }
             
             // Floor Tile
             if (mesh_id == 3) {
@@ -174,7 +170,7 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->name = name;
                 temp_transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
                 game->moveable_tiles.push_back(glm::vec2(col, row));
-                grid.map[row][col] = true;
+                game->current_level->movement_matrix[row][col] = true;
             }
 
             // Doors
@@ -380,7 +376,7 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
         temp_transform->position.y = game->potential_pedestal_locations[i]->position.y;
         temp_transform->rotation = game->potential_pedestal_locations[i]->rotation;
         
-        grid.interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
+        game->current_level->interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
 
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
@@ -398,17 +394,19 @@ Grid Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
         temp_transform->position.y = game->potential_wall_locations[i]->position.y;
         temp_transform->rotation = game->potential_wall_locations[i]->rotation;
 
-        grid.interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
+        game->current_level->interaction_map[(int)temp_transform->position.x][(int)temp_transform->position.y] = true;
 
+        
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
             auto custom_mesh_name = custom_mesh_grp->second.find(5);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                game->placed_items.push_back(on_object(*scene, temp_transform, custom_mesh_name->second));
+                
+                Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
+                // TODO:: Get the actual room
+                game->current_level->add_painting(1, Painting(obj));
+                game->placed_items.push_back(obj);
             }
         }
     }
-
-    return grid;
-
 }

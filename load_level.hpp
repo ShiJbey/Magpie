@@ -1,12 +1,12 @@
 #pragma once
-// Loads level blob files and builds the scene
 
-#include<map>
-#include <string>
 #include "MagpieGame.hpp"
 #include "Scene.hpp"
 #include "MeshBuffer.hpp"
-#include "Grid.h"
+
+#include<map>
+#include <string>
+
 
 namespace Magpie {
     // Pixels are read into this
@@ -77,7 +77,8 @@ namespace Magpie {
 
         LevelLoader();
 
-        Grid load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
+        // Loads level blob files and builds the scene
+        void load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
     };
 }
