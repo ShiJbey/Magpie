@@ -604,6 +604,7 @@ namespace Magpie {
             return false;
         }
 
+
         if (evt.type == SDL_MOUSEBUTTONUP) {
             if (evt.button.button == SDL_BUTTON_LEFT) {
                 //std::cout << "Screen Click at (x: " << evt.button.x << ", y: " << evt.button.y << ")" << std::endl;
@@ -628,63 +629,6 @@ namespace Magpie {
                     //}
                 }
                 
-                              
-                /*
-                        // TODO: ACTUALLY MAKE THIS DO SOMETHING OTHER THAN DELETE THINGS
-                        // AND ADJUST FOR THE HEIGHT OF OBJECTS
-                        if (currFloor.interaction_map[clickedTile.x][clickedTile.y] == true &&
-                            std::abs((int)player_trans->position.x - (int)clickedTile.x) <= 1 && 
-                            std::abs((int)player_trans->position.y - (int)clickedTile.y) <= 1) {
-                            Scene::Object* grabbed_item = game.remove_placed_item(clickedTile.x, clickedTile.y);
-                            if (grabbed_item != nullptr) {
-                                currFloor.interaction_map[clickedTile.x][clickedTile.y] = false;
-                                scene.delete_object(grabbed_item);
-                                // Play animation
-                                magpie_steal_animation->reset();
-                                current_player_animation = magpie_steal_animation;
-                                glm::vec3 position = player_trans->position;
-                                player_steal_trans->position = position;
-                                player_walk_trans->position = OFF_SCREEN_POS;
-                                player_idle_trans->position = OFF_SCREEN_POS;
-                                player_trans = player_steal_trans;
-
-                                // Rotate the player based on where the item is
-                                if ((int)player_trans->position.y < (int)clickedTile.y) {
-                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                    else {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                }
-                                if ((int)player_trans->position.y > (int)clickedTile.y) {
-                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                    else {
-                                        //player_trans->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                }
-                                else
-                                {
-                                    if ((int)player_trans->position.x < (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                    else if ((int)player_trans->position.x > (int)clickedTile.x) {
-                                        player_trans->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                */
             }
         }
         return false;
@@ -715,6 +659,14 @@ namespace Magpie {
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
+
+            //TODO: highlight magpie path! WHAT STORES THE TRANSFORMS OF ALL THE FLOOR TILES IN MAP?
+            //make highlightedPath squares seem brighter than the ones around it
+            /*
+            for (uint32_t i=0; i<highlightPath.size(); i++) {
+                ;
+            }
+            */
         }
 
         GL_ERRORS();
