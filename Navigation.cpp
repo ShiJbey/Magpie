@@ -8,6 +8,10 @@
 #include <map>
 #include <tuple>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <random>
+#include <iterator>
 
 /**
  *  The Implementations of class Path.
@@ -46,6 +50,10 @@ std::vector<glm::uvec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
     if (level->can_move_to((uint32_t)pos.x, (uint32_t)pos.y - 1U)) {
         adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x, (uint32_t)pos.y - 1U));
     }
+    // From https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(adjacent_tiles.begin(), adjacent_tiles.end(), g);
     return adjacent_tiles;
 };
 
@@ -138,6 +146,7 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
         path_vector.push_back(t);
     }
     */
+   
    std::reverse(path_vector.begin(), path_vector.end());
 
     for (glm::uvec2 p : path_vector) {

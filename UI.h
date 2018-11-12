@@ -2,8 +2,6 @@
 #ifndef UI_AGENT_H
 #define UI_AGENT_H
 
-#include "Agent.h"
-
 class UI : public Agent{
 public:
     //constructor

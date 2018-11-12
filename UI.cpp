@@ -1,7 +1,6 @@
 
 #include "Inventory.h"
 #include "Map.h"
-#include "SignalQueue.h"
 #include "UI.h"
 
 
@@ -15,6 +14,7 @@ UI::UI(int object_id, int group_id) {
     inventory = Inventory();
 }
 
+/*
 void UI::consumeSignal(){
     //get right signals
     Signal *s = SignalQueue::getInstance().get(objID, grpID); 
@@ -26,6 +26,7 @@ void UI::consumeSignal(){
         s = SignalQueue::getInstance().get(objID, grpID);
     }
 }
+*/
 
 void UI::stateChanger(char keyPressed) {
     if (keyPressed == 'i') {
