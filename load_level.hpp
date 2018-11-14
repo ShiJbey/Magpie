@@ -29,8 +29,9 @@ namespace Magpie {
         uint8_t get_room_number();
         // Can we place either a gem or a painting at this tile
         bool is_item_location();
-        // Will the guard use this postion to navigate
-        uint8_t guard_path();
+        // Get the number id of the guard who walks using this position
+        // in its path
+        uint8_t guard_path_number();
 
         // NOTE: The following are for implementing high level mechanics
         // Does the mesh at this position have a special identifier

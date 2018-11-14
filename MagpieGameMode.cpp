@@ -5,7 +5,6 @@
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
 #include "MagpieGame.hpp"
-#include "MagpieLevel.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -234,7 +233,7 @@ namespace Magpie {
 
         // Get the level loading object
         Magpie::LevelLoader level_pixel_data;
-        level_pixel_data.load(data_path("levels/floorplans/demo-map-simple.lvl"), &game, &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        level_pixel_data.load(data_path("demo_map_flipped.lvl"), &game, &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos.find("buildingTiles")->second;
@@ -373,8 +372,8 @@ namespace Magpie {
 
         // Move the transforms into the camera's view
         guard_trans = guard_patrol_trans;
-        guard_trans->position.x = 3.0f;
-        guard_trans->position.y = 3.0f;
+        guard_trans->position.x = 0.0f;
+        guard_trans->position.y = 0.0f;
         guard_trans->position.z = 0.0f;
 
         // We are just using this for the camera positioning
@@ -495,7 +494,7 @@ namespace Magpie {
         if (game.player.get_transform() == nullptr) {
             printf("FUCK\n");
         }
-        game.player.set_position(glm::vec3(2.0f, 2.0f, 0.0f));
+        game.player.set_position(glm::vec3(7.0f, 7.0f, 0.0f));
 
         guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
         guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
@@ -518,13 +517,13 @@ namespace Magpie {
         if (!camera) throw std::runtime_error("No 'Camera' camera in scene.");
 
         camera_trans = scene.new_transform();
-        camera_trans->rotation = glm::angleAxis(glm::radians(360.0f), glm::vec3(0.0, 0.0, 1.0));
+        camera_trans->rotation = glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 0.0, 1.0));
         camera->transform->parent = camera_trans;
     };
 
     MagpieGameMode::MagpieGameMode() {
         init_scene();
-        Navigation::getInstance().loadLevel(game.current_level);
+        Navigation::getInstance().set_movement_matrix(game.current_level->get_movement_matrix());
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -587,11 +586,12 @@ namespace Magpie {
         if (!game.current_level->can_move_to(pickedTile.x, pickedTile.y)) {
             // Try collision code
             // TODO:: Cahnge the index for paintings
-            for (auto it = game.current_level->paintings[1].begin(); it != game.current_level->paintings[1].end(); it++) {
-                if (it->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
-                    printf("PAINTING CLICKED");
-                }
-            }
+            //for (auto it = game.current_level->get_paintings()[1].begin(); it != game.current_level->get_paintings()[1].end(); it++) {
+                //if (it->second->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
+                    //it->second[0].get_boundingbox();
+                    //it->second->steal(&(game.player));
+                //}
+            //}
         }
 
         return pickedTile;

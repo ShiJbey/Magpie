@@ -1,5 +1,5 @@
 #include "Player.hpp"
-#include <iostream>
+
 
 // Runs the lambda functions for each task on the hit list
 // that has not been marked as completed
@@ -137,3 +137,13 @@ void Magpie::Player::set_transform(Scene::Transform** transform) {
 Magpie::AnimationManager* Magpie::Player::get_animation_manager() {
     return &animation_manager;
 };
+
+void Magpie::Player::set_score(uint32_t score) {
+    this->score = score;
+    printf("DEBUG:: Player score is (%d).", this->score);
+};
+
+uint32_t Magpie::Player::get_score() {
+    return this->score;
+};
+

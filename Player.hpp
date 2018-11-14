@@ -3,9 +3,12 @@
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
 #include "AnimationManager.hpp"
+
+#include <glm/glm.hpp>
+
 #include <string>
 #include <iostream>
-#include <glm/glm.hpp>
+
 
 namespace Magpie {
 
@@ -38,6 +41,7 @@ namespace Magpie {
         // Runs the lambda functions for each task on the hit list
         // that has not been marked as completed
         void update_hitlist();
+
         // Returns true if all the tasks in the hitlist are marked as
         // completed
         bool hitlist_complete();
@@ -64,6 +68,9 @@ namespace Magpie {
         Scene::Transform** get_transform();
         AnimationManager* get_animation_manager();
 
+        uint32_t get_score();
+        void set_score(uint32_t score);
+
     protected:
         // This points to another transform pointer
         // handled by the animation manager
@@ -71,5 +78,6 @@ namespace Magpie {
         std::vector < HitlistTask > hitlist;
         AnimationManager animation_manager;
         glm::quat original_rotation;
+        uint32_t score;
     };
 }

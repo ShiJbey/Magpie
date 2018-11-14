@@ -80,12 +80,14 @@ CLIENT_NAMES =
 	draw_text
 	Sound
 	TransformAnimation
+	FloorTile
+	Item
+	MagpieLevel
 	Navigation
 	load_level
 	GameAgent
 	Guard
 	Player
-	MagpieLevel
 	Signalable
 	MagpieGame
 	MagpieGameMode

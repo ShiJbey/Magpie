@@ -3,8 +3,6 @@
 //
 #pragma once
 
-#include "MagpieLevel.hpp"
-
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -32,13 +30,14 @@ namespace Magpie {
         Navigation(Navigation const&) = delete;
         void operator=(Navigation const&) = delete;
 
-        void loadLevel(MagpieLevel* map);
+        void set_movement_matrix(std::vector< std::vector< bool > >* matrix);
         Path findPath(glm::vec2 from, glm::uvec2 to);
         std::vector<glm::uvec2> get_adjacent(glm::vec2 pos);
+        bool can_move_to(uint32_t x, uint32_t y);
 
     private:
         Navigation() = default;
-        MagpieLevel* level;
+        std::vector< std::vector< bool > >* movement_matrix;
     };
 }
 

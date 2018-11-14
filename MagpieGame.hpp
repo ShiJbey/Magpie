@@ -31,15 +31,23 @@ namespace Magpie {
         std::vector< Scene::Transform* > potential_pedestal_locations;
         std::vector< Scene::Transform* > potential_wall_locations;
 
-        std::map< uint8_t, std::vector< glm::vec2 > > guard_paths;
 
-        std::vector< glm::vec2 > moveable_tiles;
+        
 
+        // Maintain references to all the floor tiles
+        // NOTE:: We may use this for highlighting the floor tiles during movement
+        std::vector< Scene::Object* > floor_tiles;
+
+        // All the objects that have been placed for the player to obtain
         std::vector< Scene::Object* > placed_items;
 
-        Scene::Object* remove_placed_item(uint32_t row, uint32_t col);
+        Scene::Object* remove_placed_item(uint32_t x, uint32_t y);
 
         MagpieLevel *current_level;
+
+        
+        
+
     };
 
     extern MagpieGame game;

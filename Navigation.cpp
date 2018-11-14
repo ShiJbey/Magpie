@@ -36,20 +36,47 @@ glm::uvec2 Magpie::Path::top() {
     return *path.begin();
 }
 
+bool Magpie::Navigation::can_move_to(uint32_t x, uint32_t y) {
+    if (this->movement_matrix == nullptr) {
+        return false;
+    } 
+    else if (x > (*movement_matrix).size() || y > (*movement_matrix)[x].size()) {
+        return false;
+    }
+
+    return (*movement_matrix)[x][y];
+}
+
 std::vector<glm::uvec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
     std::vector<glm::uvec2> adjacent_tiles;
-    if (level->can_move_to((uint32_t)pos.x + 1U, (uint32_t)pos.y)) {
+    // Cardinal Directions
+    if (can_move_to((uint32_t)pos.x + 1U, (uint32_t)pos.y)) {
         adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1U, (uint32_t)pos.y));
     }
-    if (level->can_move_to((uint32_t)pos.x - 1U, (uint32_t)pos.y)) {
+    if (can_move_to((uint32_t)pos.x - 1U, (uint32_t)pos.y)) {
         adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1U, (uint32_t)pos.y));
     }
-    if (level->can_move_to((uint32_t)pos.x, (uint32_t)pos.y + 1U)) {
-        adjacent_tiles.push_back(glm::uvec2(pos.x, (uint32_t)pos.y + 1U));
+    if (can_move_to((uint32_t)pos.x, (uint32_t)pos.y + 1U)) {
+        adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x, (uint32_t)pos.y + 1U));
     }
-    if (level->can_move_to((uint32_t)pos.x, (uint32_t)pos.y - 1U)) {
+    if (can_move_to((uint32_t)pos.x, (uint32_t)pos.y - 1U)) {
         adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x, (uint32_t)pos.y - 1U));
     }
+    /*
+    // Diagonals
+    if (level->can_move_to((uint32_t)pos.x + 1U, (uint32_t)pos.y)+ 1U) {
+        adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1U, (uint32_t)pos.y) + 1U);
+    }
+    if (level->can_move_to((uint32_t)pos.x - 1U, (uint32_t)pos.y) - 1U) {
+        adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1U, (uint32_t)pos.y) - 1U);
+    }
+    if (level->can_move_to((uint32_t)pos.x - 1U, (uint32_t)pos.y + 1U)) {
+        adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1U, (uint32_t)pos.y + 1U));
+    }
+    if (level->can_move_to((uint32_t)pos.x + 1U, (uint32_t)pos.y - 1U)) {
+        adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1U, (uint32_t)pos.y - 1U));
+    }
+    */
     // From https://en.cppreference.com/w/cpp/algorithm/random_shuffle
     std::random_device rd;
     std::mt19937 g(rd());
@@ -61,11 +88,12 @@ std::vector<glm::uvec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
  *  The Implementations of class Navigation.
  */
 
-void Magpie::Navigation::loadLevel(Magpie::MagpieLevel *level) {
-    this->level = level;
+void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >* matrix) {
+    this->movement_matrix = matrix;
 }
 
 Magpie::Path Magpie::Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
+    std::cout << "Current Magpie Position: (x: " <<  from.x << " , y: " << from.y << " )" << std::endl;
     std::vector<glm::uvec2> path_vector;
 
     // Implement BFS for path finding
@@ -124,31 +152,8 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 from, glm::uvec2 to) {
             }
         }
     }
-    
-    /*
-    int x_direction = (to.x > from.x)?1:-1;
-    int y_direction = (to.y > from.y)?1:-1;
-
-    glm::vec2 t = from;
-    t.x = round(t.x + 0.4f * x_direction);
-    t.y = round(t.y + 0.4f * y_direction);
-
-
-    path_vector.push_back(t);
-
-    while (t.x != to.x) {
-        t.x += x_direction;
-        path_vector.push_back(t);
-    }
-
-    while (t.y != to.y) {
-        t.y += y_direction;
-        path_vector.push_back(t);
-    }
-    */
-   
-   std::reverse(path_vector.begin(), path_vector.end());
-
+       
+    std::reverse(path_vector.begin(), path_vector.end());
     for (glm::uvec2 p : path_vector) {
         std::cout << "(" << p.x << "," << p.y << ")" << std::endl;
     }
