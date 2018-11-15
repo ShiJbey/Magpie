@@ -585,13 +585,26 @@ namespace Magpie {
 
         if (!game.current_level->can_move_to(pickedTile.x, pickedTile.y)) {
             // Try collision code
-            // TODO:: Cahnge the index for paintings
-            //for (auto it = game.current_level->get_paintings()[1].begin(); it != game.current_level->get_paintings()[1].end(); it++) {
-                //if (it->second->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
-                    //it->second[0].get_boundingbox();
-                    //it->second->steal(&(game.player));
-                //}
-            //}
+            // TODO:: Change the index for paintings
+            for (auto it = game.current_level->get_paintings()->begin(); it != game.current_level->get_paintings()->end(); it++) {
+                for (auto paint_iter = it->second.begin(); paint_iter != it->second.end(); paint_iter++) {
+                    if (paint_iter->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
+                        paint_iter->steal(&(game.player));
+                        paint_iter->on_click();
+                        game.player.set_state((uint32_t)Player::STATE::STEALING);
+                    }
+                }
+            }
+
+            for (auto it = game.current_level->get_gems()->begin(); it != game.current_level->get_gems()->end(); it++) {
+                for (auto gem_iter = it->second.begin(); gem_iter != it->second.end(); gem_iter++) {
+                    if (gem_iter->get_boundingbox()->check_intersect(worldOrigin, worldDir)) {
+                        gem_iter->steal(&(game.player));
+                        gem_iter->on_click();
+                        game.player.set_state((uint32_t)Player::STATE::STEALING);
+                    }
+                }
+            }
         }
 
         return pickedTile;

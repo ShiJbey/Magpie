@@ -5,7 +5,7 @@
 void Magpie::Guard::walk(float elapsed) {
     float distance = elapsed * movespeed;
 
-    glm::vec2 vector_to =  current_destination - board_position;
+    glm::vec2 vector_to =  current_destination - glm::vec2(board_position);
 
 //    std::cout << "Walking to " << cur_destination.x << "," << cur_destination.y << "from" << position.x << ","
 //              << position.y << "Direction" << orientation << ":" << getDirectionVec2().x << "," << getDirectionVec2().y << std::endl;

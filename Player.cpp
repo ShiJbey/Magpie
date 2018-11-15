@@ -34,23 +34,23 @@ void Magpie::Player::walk(float elapsed) {
     //printf("Current Trans Position: ( %f, %f)\n", (*transform)->position.x, (*transform)->position.y);
     //turnTo(current_destination);
     
-    float distance = elapsed * movespeed;
-    glm::vec2 displacement = getDirectionVec2() * distance;
+    glm::vec2 displacement = getDirectionVec2() * movespeed * elapsed;
 
-    glm::vec2 vector_to =  current_destination - glm::vec2(board_position);
+    float distance_to_destination = glm::length(glm::vec2(current_destination) - glm::vec2(get_position().x, get_position().y));
 
-    if (glm::length(vector_to) < distance || glm::dot(vector_to, getDirectionVec2()) < 0) {
+    if (distance_to_destination <= 0.01){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
         if (path.isEmpty()) {
             Player::set_state((uint32_t)Player::STATE::IDLE);
             return;
         } else {
             
-            Player::set_position(glm::vec3(current_destination, 0.0f));
-            //printf("DESTINATION REACHED\n");
+            //Player::set_position(glm::vec3(current_destination, 0.0f));
+            printf("DESTINATION REACHED\n");
             current_destination = path.next();
-            //printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
+            printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
             turnTo(current_destination);
             set_model_orientation(orientation);
+            Player::set_position(glm::vec3(current_destination, 0.0f));
             
             
         }
@@ -65,7 +65,7 @@ void Magpie::Player::consume_signal() {
 
 void Magpie::Player::update(float elapsed) {
     animation_manager.update(elapsed);
-
+    
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
     }
@@ -83,7 +83,7 @@ void Magpie::Player::set_position(glm::vec3 position) {
     if (transform != nullptr) {
         (*transform)->position = position;
     }
-    board_position = glm::vec2(position);
+    board_position = glm::uvec2(position);
 };
 
 glm::vec3 Magpie::Player::get_position() {
@@ -112,19 +112,36 @@ Scene::Transform** Magpie::Player::get_transform() {
 void Magpie::Player::set_model_orientation(GameAgent::DIRECTION dir) {
     switch(dir) {
         case DIRECTION::RIGHT :
-            std::cout << "DEBUG:: Facing right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::LEFT :
-            std::cout << "DEBUG:: Facing left" << std::endl;
+            //std::cout << "DEBUG:: Facing right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
+        case DIRECTION::LEFT :
+            //std::cout << "DEBUG:: Facing left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
         case DIRECTION::UP :
-            std::cout << "DEBUG:: right up" << std::endl;
+            //std::cout << "DEBUG:: Facing right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case DIRECTION::DOWN:
+            //std::cout << "DEBUG:: Facing down" << std::endl;
             (*transform)->rotation = original_rotation;
+            break;
+        case DIRECTION::UP_RIGHT :
+            //std::cout << "DEBUG:: Facing up-right" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case DIRECTION::UP_LEFT :
+            //std::cout << "DEBUG:: Facing up-left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case DIRECTION::DOWN_RIGHT :
+            //std::cout << "DEBUG:: right down-right" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case DIRECTION::DOWN_LEFT:
+            //std::cout << "DEBUG:: right down-left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(315.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
     }
 };

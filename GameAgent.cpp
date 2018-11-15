@@ -7,11 +7,19 @@ glm::vec2 Magpie::GameAgent::getDirectionVec2() {
         case DIRECTION::UP:
             return glm::vec2(0, 1);
         case DIRECTION::RIGHT:
-            return glm::vec2(-1, 0);
+            return glm::vec2(1, 0);
         case DIRECTION::DOWN:
             return glm::vec2(0, -1);
         case DIRECTION::LEFT:
-            return glm::vec2(1, 0);
+            return glm::vec2(-1, 0);
+        case DIRECTION::UP_RIGHT:
+            return glm::vec2(1, 1);
+        case DIRECTION::UP_LEFT:
+            return glm::vec2(-1, 1);
+        case DIRECTION::DOWN_RIGHT:
+            return glm::vec2(1, -1);
+        case DIRECTION::DOWN_LEFT:
+            return glm::vec2(-1, -1);
         default:
             return glm::vec2(0, 0);
     }
@@ -32,23 +40,38 @@ void Magpie::GameAgent::set_state(uint32_t state) {
 }
 
 void Magpie::GameAgent::turnTo(glm::uvec2 destination) {
-    //std::cout << "TURN TO: " << destination.x << "," << destination.y << std::endl;
-    int x_direction = Magpie::sgn(destination.x - board_position.x);
-    int y_direction = Magpie::sgn(destination.y - board_position.y);
+    std::cout << "TURNING" << std::endl;
 
-    if (x_direction == 0) {
-        if (y_direction == 1) {
-            orientation = DIRECTION::UP;
-        } else {
-            orientation = DIRECTION::DOWN;
+    // Face right
+    if (destination.x > board_position.x) {
+        if (destination.y > board_position.y) {
+            orientation = DIRECTION::UP_RIGHT;
+        }
+        else if (destination.y < board_position.y) {
+            orientation = DIRECTION::DOWN_RIGHT;
+        }
+        else {
+            orientation = DIRECTION::RIGHT;
         }
     }
-
-    if (y_direction == 0) {
-        if (x_direction == 1) {
+    // Face Left
+    else if (destination.x < board_position.x) {
+        if (destination.y > board_position.y) {
+            orientation = DIRECTION::UP_LEFT;
+        }
+        else if (destination.y < board_position.y) {
+            orientation = DIRECTION::DOWN_LEFT;
+        }
+        else {
             orientation = DIRECTION::LEFT;
-        } else {
-            orientation = DIRECTION::RIGHT;
+        }
+    }
+    else {
+        if (destination.y > board_position.y) {
+            orientation = DIRECTION::UP;
+        }
+        else {
+            orientation = DIRECTION::DOWN;
         }
     }
 };

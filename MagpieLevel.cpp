@@ -62,6 +62,10 @@ std::map< uint32_t, std::vector< Magpie::Painting > >* Magpie::MagpieLevel::get_
     return &paintings;
 };
 
+std::map< uint32_t, std::vector< Magpie::Gem > >* Magpie::MagpieLevel::get_gems() {
+    return &gems;
+};
+
 void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting painting) {
     auto it = paintings.find(room_number);
     if (it == paintings.end()) {
@@ -69,6 +73,16 @@ void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting pa
     }
     else{
         paintings[room_number].push_back(painting);
+    }
+};
+
+void Magpie::MagpieLevel::add_gem(uint32_t room_number, Gem gem) {
+    auto it = paintings.find(room_number);
+    if (it == paintings.end()) {
+        gems.insert({room_number, {gem}}); 
+    }
+    else{
+        gems[room_number].push_back(gem);
     }
 };
 

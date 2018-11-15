@@ -37,8 +37,10 @@ namespace Magpie {
         std::vector< std::vector< bool > >* get_movement_matrix();
         void set_movement_matrix_position(uint32_t x, uint32_t y, bool can_walk);
         std::map< uint32_t, std::vector< Magpie::Painting > >* get_paintings();
+        std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
 
         void add_painting(uint32_t room_number, Painting painting);
+        void add_gem(uint32_t room_number, Gem gem);
 
         // Adds a position to a guards path
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);

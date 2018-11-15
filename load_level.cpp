@@ -403,7 +403,11 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
         if (custom_mesh_grp != mesh_names.end()) {
             auto custom_mesh_name = custom_mesh_grp->second.find(6);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                game->placed_items.push_back(on_object(*scene, temp_transform, custom_mesh_name->second));
+
+                Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
+                // TODO:: Get the actual room
+                game->current_level->add_gem(1, Gem(obj));
+                game->placed_items.push_back(obj);
             }
         }
     }

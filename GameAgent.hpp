@@ -6,10 +6,6 @@
 
 namespace Magpie {
     
-    template <typename T> int sgn(T val) {
-        return (T(0) < val) - (val < T(0));
-    };
-
     class GameAgent {
     public:
 
@@ -17,7 +13,11 @@ namespace Magpie {
             DOWN = 0,
             LEFT,
             UP,
-            RIGHT
+            RIGHT,
+            UP_RIGHT,
+            UP_LEFT,
+            DOWN_RIGHT,
+            DOWN_LEFT
         };
 
         // TODO: Place more generally relevant functions here
@@ -41,7 +41,7 @@ namespace Magpie {
 
         float movespeed = 1.0f;
         DIRECTION orientation;
-        glm::vec2 board_position;
+        glm::uvec2 board_position;
         glm::vec2 current_destination;
         bool at_destination;
         Path path;

@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <tuple>
 
 namespace Magpie {
     class Path {
@@ -31,13 +32,17 @@ namespace Magpie {
         void operator=(Navigation const&) = delete;
 
         void set_movement_matrix(std::vector< std::vector< bool > >* matrix);
-        Path findPath(glm::vec2 from, glm::uvec2 to);
+        Path findPath(glm::uvec2 start, glm::uvec2 destination);
         std::vector<glm::uvec2> get_adjacent(glm::vec2 pos);
         bool can_move_to(uint32_t x, uint32_t y);
+        void print_movement_matrix();
+        void reset_visited_matrix();
 
     private:
         Navigation() = default;
         std::vector< std::vector< bool > >* movement_matrix;
+        // (visited, previous_position, distance from start)
+        std::vector< std::vector< std::tuple< bool, glm::uvec2, uint32_t > > > visited_matrix;
     };
 }
 
