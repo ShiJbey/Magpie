@@ -58,6 +58,7 @@ namespace Magpie {
         void update_state(float elapsed);
 
         void interact();
+        void setDestination(glm::uvec2 destination);
 
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
@@ -79,5 +80,6 @@ namespace Magpie {
         AnimationManager animation_manager;
         glm::quat original_rotation;
         uint32_t score;
+        glm::vec3 velocity;
     };
 }

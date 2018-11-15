@@ -61,7 +61,11 @@ namespace Magpie {
         std::map< uint32_t, std::vector< glm::vec2 > > guard_paths;
 
         // Maps room number to the floor tiles in those rooms
-        std::map< uint32_t, std::vector< FloorTile > >floor_tiles;
+        std::map< uint32_t, std::vector< FloorTile > > floor_tiles;
+
+        // Probably going to use this to modify wall transparency when
+        // the player moves
+        std::vector< std::vector< Scene::Transform* > > walls; 
 
         // Maps room numbers to the vectors of items placed within that room
         std::map< uint32_t, std::vector< Gem > > gems;

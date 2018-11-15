@@ -27,6 +27,11 @@ void Magpie::Player::print_tasks() {
     }
 };
 
+void Magpie::Player::setDestination(glm::uvec2 destination) {
+    velocity = glm::vec3((float)destination.x, (float)destination.y, 0) - get_position();
+    GameAgent::setDestination(destination);
+};
+
 void Magpie::Player::walk(float elapsed) {
 
     //printf("Current Destination: ( %f, %f)\n", current_destination.x, current_destination.y);
@@ -34,28 +39,26 @@ void Magpie::Player::walk(float elapsed) {
     //printf("Current Trans Position: ( %f, %f)\n", (*transform)->position.x, (*transform)->position.y);
     //turnTo(current_destination);
     
-    glm::vec2 displacement = getDirectionVec2() * movespeed * elapsed;
-
-    float distance_to_destination = glm::length(glm::vec2(current_destination) - glm::vec2(get_position().x, get_position().y));
-
-    if (distance_to_destination <= 0.01){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
+    Player::set_position((*transform)->position + (velocity * elapsed));
+    float distance_to_destination = glm::length(glm::vec3((float)current_destination.x, (float)current_destination.y, 0) - get_position());
+    
+    if (distance_to_destination <= 0.5){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
         if (path.isEmpty()) {
             Player::set_state((uint32_t)Player::STATE::IDLE);
+            velocity = glm::vec3(0.0f, 0.0f, 0.0f);
             return;
         } else {
             
-            //Player::set_position(glm::vec3(current_destination, 0.0f));
+            Player::set_position(glm::vec3(current_destination, 0.0f));
             printf("DESTINATION REACHED\n");
             current_destination = path.next();
             printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
             turnTo(current_destination);
             set_model_orientation(orientation);
-            Player::set_position(glm::vec3(current_destination, 0.0f));
+            velocity = glm::vec3((float)current_destination.x, (float)current_destination.y, 0) - get_position();
             
             
         }
-    } else {
-        Player::set_position((*transform)->position + glm::vec3(displacement, 0.0f));
     }
 };
 
