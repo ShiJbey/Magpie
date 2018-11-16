@@ -51,9 +51,11 @@ namespace Magpie {
         init_program_info();
         load_level("demo_map_flipped.lvl");
 
+        create_player(glm::vec3(7.0f, 7.0f, 0.0f));
+        create_guard(glm::vec3(7.0f, 8.0f, 0.0f));
+        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
+        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
-        //load_all_models();
-        //get_all_animation_transforms();
         //Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
     };
 
@@ -145,11 +147,12 @@ namespace Magpie {
      * Once the model is loaded it is moved off screen and apointer to the
      * head transform is retured
      */
-    Scene::Transform* MagpieGameMode::load_character_model(std::string filename, std::string vao_key, std::string transform_name, 
+    Scene::Transform* MagpieGameMode::load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key, 
             Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
         
-        // Load the model
-        scene.load(data_path(filename), [&](Scene &s, Scene::Transform *t, std::string const &m){
+        Scene::Transform* model_group_transform = nullptr;
+        
+        model_group_transform = character->load_model(scene, model_data, model_name, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info = program_info;
             default_program_info.vao = vertex_color_vaos->find(vao_key)->second;
@@ -159,11 +162,7 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
 
-        // Get the top level transform of the model, move it, and return it
-        Scene::Transform* model_transform = scene.look_up(transform_name);
-        assert(model_transform != nullptr);
-        model_transform->position = OFF_SCREEN_POS;
-        return model_transform;
+        return model_group_transform;
     };
 
     /**
@@ -191,13 +190,13 @@ namespace Magpie {
      * Given amap of all the transforms in the game and a vector of transforms,
      * returns a fector of Transform pointers to transforms with the given names
      */
-    std::vector< Scene::Transform* > MagpieGameMode::get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >* name_to_transform, std::vector< std::string > names) {
+    std::vector< Scene::Transform* > MagpieGameMode::get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform, std::vector< std::string > names) {
 
         std::vector< Scene::Transform* > animation_transforms;
 
         for (auto const &name : names) {
-            auto f = name_to_transform->find(name);
-            if (f == name_to_transform->end()) {
+            auto f = name_to_transform.find(name);
+            if (f == name_to_transform.end()) {
                 std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
                 animation_transforms.emplace_back(nullptr);
             } else {
@@ -209,61 +208,6 @@ namespace Magpie {
     };
 
     /**
-     * Gets the animations transforms for all animations loaded into the game
-     */
-    void MagpieGameMode::get_all_animation_transforms() {
-        //look up various transforms for animations
-        std::unordered_map< std::string, Scene::Transform * > name_to_transform;
-        for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
-            auto ret = name_to_transform.insert(std::make_pair(t->name, t));
-            if (!ret.second) {
-                std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
-            }
-        }
-
-        
-        // Get guard animation transforms
-        //guard_model_idle_transforms = get_animation_transforms(&name_to_transform, guard_dog_idle_tanim->names);
-        //guard_model_patrol_transforms = get_animation_transforms(&name_to_transform, guard_dog_patrol_tanim->names);
-        //guard_model_chase_transforms = get_animation_transforms(&name_to_transform, guard_dog_chase_tanim->names);
-        //guard_model_alert_transforms = get_animation_transforms(&name_to_transform, guard_dog_alert_tanim->names);
-        //guard_model_cautious_transforms = get_animation_transforms(&name_to_transform, guard_dog_cautious_tanim->names);
-        //guard_model_confused_transforms = get_animation_transforms(&name_to_transform, guard_dog_confused_tanim->names);
-    };
-
-    /**
-     * loads all the character models used in the game
-     */
-    void MagpieGameMode::load_all_models() {
-            // Load Player Models
-            //player_idle_trans = load_character_model("magpie/magpie_idle.scene", "magpieIdle", "magpieIdle_GRP", vertex_color_program_info, magpie_idle_mesh.value);
-            //player_walk_trans = load_character_model("magpie/magpie_walk.scene", "magpieWalk", "magpieWalk_GRP", vertex_color_program_info, magpie_walk_mesh.value);
-            //player_steal_trans = load_character_model("magpie/magpie_steal.scene", "magpieSteal", "magpieSteal_GRP", vertex_color_program_info, magpie_steal_mesh.value);
-            // Load Guard Models
-            //guard_idle_trans = load_character_model("guardDog/guardDog_idle.scene", "guardidle", "guardDogIdle_GRP", vertex_color_program_info, guard_dog_idle_mesh.value);
-            //guard_patrol_trans = load_character_model("guardDog/guardDog_patrol.scene", "guardPatrol", "guardDogPatrol_GRP", vertex_color_program_info, guard_dog_patrol_mesh.value);
-            //guard_chase_trans = load_character_model("guardDog/guardDog_chase.scene", "guardChase", "guardDogChase_GRP", vertex_color_program_info, guard_dog_chase_mesh.value);
-            //guard_cautious_trans = load_character_model("guardDog/guardDog_cautious.scene", "guardCautious", "guardDogCautious_GRP", vertex_color_program_info, guard_dog_cautious_mesh.value);
-            //guard_confused_trans = load_character_model("guardDog/guardDog_confused.scene", "guardConfused", "guardDogConfused_GRP", vertex_color_program_info, guard_dog_confused_mesh.value);
-            //guard_alert_trans = load_character_model("guardDog/guardDog_alert.scene", "guardAlert", "guardDogAlert_GRP", vertex_color_program_info, guard_dog_alert_mesh.value);
-    };
-
-    /**
-     * Loads a single animation into the game
-     */
-    void MagpieGameMode::load_animation() {
-
-    };
-
-    /**
-     * Loads and sets pointers for all the animations used in the game
-     */
-    void MagpieGameMode::load_all_animations() {
-
-        
-    };
-
-    /**
      * Creats a new player in the game and:
      * 1. Sets up its animations
      * 2. Places it a starting position
@@ -271,28 +215,32 @@ namespace Magpie {
     void MagpieGameMode::create_player(glm::vec3 position) {
         
         Magpie::Player* player = new Player();
-        
-        //player->load_character_model();
 
         // Top-level transforms for each one of the animated models
-        Scene::Transform *player_idle_trans = nullptr;
-        Scene::Transform *player_walk_trans = nullptr;
-        Scene::Transform *player_steal_trans = nullptr;
+        Scene::Transform *player_idle_trans = load_character_model(player, magpie_idle_model.value, "Idle", "magpieIdle", vertex_color_program_info, magpie_idle_mesh.value);
+        Scene::Transform *player_walk_trans = load_character_model(player, magpie_walk_model.value, "Walk", "magpieWalk", vertex_color_program_info, magpie_walk_mesh.value);
+        Scene::Transform *player_steal_trans = load_character_model(player, magpie_steal_model.value, "Steal", "magpieSteal", vertex_color_program_info, magpie_steal_mesh.value);
+
+        //look up various transforms for animations
+        std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+        for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
+            if (t->name.find("Magpie") != std::string::npos) {
+                auto ret = name_to_transform.insert(std::make_pair(t->name, t));
+                if (!ret.second) {
+                    std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
+                }
+            }
+        }
 
         // Tansforms for player animations
-        std::vector< Scene::Transform* > player_model_walk_transforms;
-        std::vector< Scene::Transform* > player_model_steal_transforms;
-        std::vector< Scene::Transform* > player_model_idle_transforms;
-
-        // Player Animation players
-        TransformAnimationPlayer* magpie_walk_animation = nullptr;
-        TransformAnimationPlayer* magpie_idle_animation = nullptr;
-        TransformAnimationPlayer* magpie_steal_animation = nullptr;
+        std::vector< Scene::Transform* > player_model_walk_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_idle_tanim.value, "Idle"));
+        std::vector< Scene::Transform* > player_model_steal_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_walk_tanim.value, "Walk"));
+        std::vector< Scene::Transform* > player_model_idle_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_steal_tanim.value, "Steal"));
     
         // Start constructing animations
-        magpie_idle_animation = new TransformAnimationPlayer(*magpie_idle_tanim, player_model_idle_transforms, 1.0f, true);
-        magpie_walk_animation = new TransformAnimationPlayer(*magpie_walk_tanim, player_model_walk_transforms, 1.0f, true);
-        magpie_steal_animation = new TransformAnimationPlayer(*magpie_steal_tanim, player_model_steal_transforms, 1.0f, false);
+        TransformAnimationPlayer* magpie_idle_animation = new TransformAnimationPlayer(*magpie_idle_tanim, player_model_idle_transforms, 1.0f, true);
+        TransformAnimationPlayer* magpie_walk_animation = new TransformAnimationPlayer(*magpie_walk_tanim, player_model_walk_transforms, 1.0f, true);
+        TransformAnimationPlayer* magpie_steal_animation = new TransformAnimationPlayer(*magpie_steal_tanim, player_model_steal_transforms, 1.0f, false);
 
         // Set animation states
         player->get_animation_manager()->add_state(new AnimationState(player_idle_trans, magpie_idle_animation));
@@ -300,7 +248,7 @@ namespace Magpie {
         player->get_animation_manager()->add_state(new AnimationState(player_steal_trans, magpie_steal_animation));
         
         // Finally, set the transform for this player
-        player->set_transform(player->get_animation_manager()->init(player->get_position(), (uint32_t)Player::STATE::IDLE)); 
+        player->set_transform(player->get_animation_manager()->init(position, (uint32_t)Player::STATE::IDLE)); 
         if (player->get_transform() == nullptr) {
             std::cerr << "ERROR:: Player Transform not found" << std::endl;
         }
@@ -316,40 +264,41 @@ namespace Magpie {
 
         Magpie::Guard* guard = new Guard();
 
-        //guard->load_character_model();
-
         // Use one main transform and swap it to point between
         // one of the three other specific transforms
-        Scene::Transform *guard_patrol_trans = nullptr;
-        Scene::Transform *guard_chase_trans = nullptr;
-        Scene::Transform *guard_alert_trans = nullptr;
-        Scene::Transform *guard_confused_trans = nullptr;
-        Scene::Transform *guard_cautious_trans = nullptr;
-        Scene::Transform *guard_idle_trans = nullptr;
+        Scene::Transform *guard_idle_trans = load_character_model(guard, guard_dog_idle_model.value, "Idle", "guardIdle", vertex_color_program_info, guard_dog_idle_mesh.value);
+        Scene::Transform *guard_patrol_trans = load_character_model(guard, guard_dog_patrol_model.value, "Patrol", "guardPatrol", vertex_color_program_info, guard_dog_patrol_mesh.value);
+        Scene::Transform *guard_chase_trans = load_character_model(guard, guard_dog_chase_model.value, "Chase", "guardChase", vertex_color_program_info, guard_dog_chase_mesh.value);
+        Scene::Transform *guard_alert_trans = load_character_model(guard, guard_dog_alert_model.value, "Alert", "guardAlert", vertex_color_program_info, guard_dog_alert_mesh.value);
+        Scene::Transform *guard_confused_trans = load_character_model(guard, guard_dog_confused_model.value, "Confused", "guardConfused", vertex_color_program_info, guard_dog_confused_mesh.value);
+        Scene::Transform *guard_cautious_trans = load_character_model(guard, guard_dog_cautious_model.value, "Cautious", "guardCautious", vertex_color_program_info, guard_dog_cautious_mesh.value);
+
+        //look up various transforms for animations
+        std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+        for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
+            if (t->name.find("Guard") != std::string::npos) {
+                auto ret = name_to_transform.insert(std::make_pair(t->name, t));
+                if (!ret.second) {
+                    std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
+                }
+            }
+        }
 
         // Transforms for guard animations
-        std::vector< Scene::Transform* > guard_model_idle_transforms;
-        std::vector< Scene::Transform* > guard_model_patrol_transforms;
-        std::vector< Scene::Transform* > guard_model_chase_transforms;
-        std::vector< Scene::Transform* > guard_model_alert_transforms;
-        std::vector< Scene::Transform* > guard_model_cautious_transforms;
-        std::vector< Scene::Transform* > guard_model_confused_transforms;
-
-        // Guard Animation players
-        TransformAnimationPlayer* guard_idle_animation = nullptr;
-        TransformAnimationPlayer* guard_patrol_animation = nullptr;
-        TransformAnimationPlayer* guard_chase_animation = nullptr;
-        TransformAnimationPlayer* guard_alert_animation = nullptr;
-        TransformAnimationPlayer* guard_cautious_animation = nullptr;
-        TransformAnimationPlayer* guard_confused_animation = nullptr;
+        std::vector< Scene::Transform* > guard_model_idle_transforms = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_idle_tanim.value, "Idle"));
+        std::vector< Scene::Transform* > guard_model_patrol_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_patrol_tanim.value, "Patrol"));
+        std::vector< Scene::Transform* > guard_model_chase_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_chase_tanim.value, "Chase"));
+        std::vector< Scene::Transform* > guard_model_alert_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_alert_tanim.value, "Alert"));
+        std::vector< Scene::Transform* > guard_model_cautious_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_cautious_tanim.value, "Cautious"));
+        std::vector< Scene::Transform* > guard_model_confused_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_confused_tanim.value, "Confused"));
 
         // Contructing Animations
-        guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
-        guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
-        guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
-        guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, true);
-        guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
-        guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
+        TransformAnimationPlayer* guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
 
         // Set animation states
         guard->get_animation_manager()->add_state(new AnimationState(guard_idle_trans, guard_idle_animation));
@@ -360,7 +309,7 @@ namespace Magpie {
         guard->get_animation_manager()->add_state(new AnimationState(guard_cautious_trans, guard_cautious_animation));
 
         // Finally, set the transform for this guard
-        guard->set_transform(guard->get_animation_manager()->init(guard->get_position(), (uint32_t)Guard::STATE::IDLE)); 
+        guard->set_transform(guard->get_animation_manager()->init(position, (uint32_t)Guard::STATE::IDLE)); 
         if (guard->get_transform() == nullptr) {
             std::cerr << "ERROR:: Guard Transform not found" << std::endl;
         }

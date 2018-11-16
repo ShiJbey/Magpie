@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 #include "AnimationManager.hpp"
 #include "GameAgent.hpp"
+#include "TransformAnimation.hpp"
 
 #include <vector>
 #include <functional>
@@ -53,7 +54,11 @@ namespace Magpie {
         ~GameCharacter();
 
         // Imports a character model from a file
-        virtual void load_character_model(Scene& scene, const ModelData* model_data, std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+        virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
+            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) = 0;
+
+        // Converts the names imported from the animation t-anim
+        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name) = 0;
         
         // SETTERS
         void set_position(glm::vec3 position);
@@ -65,6 +70,7 @@ namespace Magpie {
         glm::vec3 get_position();
         Scene::Transform** get_transform();
         AnimationManager* get_animation_manager();
+        uint32_t get_instance_id();
 
     protected:
         // Pointer to the, transform pointer for this character
@@ -81,6 +87,12 @@ namespace Magpie {
         // Stores the original rotation of the magpie model.
         // This is used when rotating the player transform
         glm::quat original_rotation;
+
+        // Secific identifier for which intance this is
+        // NOTE:: Instance counts are managed by specific
+        //      classes, not by this class. For example,
+        //      Guard has a different count than Player
+        uint32_t instance_id;
 
     };
 

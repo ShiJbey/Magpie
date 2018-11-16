@@ -29,6 +29,8 @@ namespace Magpie {
 
     class Player: public GameCharacter, public GameAgent, public Signalable {
     public:
+        // This is incremented each time we create a new player
+        static uint32_t instance_count;
         
         // States specific to the magpie player
         enum class STATE {
@@ -38,8 +40,6 @@ namespace Magpie {
         };
 
         Player();
-
-        void load_character_model();
         
         // Runs the lambda functions for each task on the hit list
         // that has not been marked as completed
@@ -61,6 +61,12 @@ namespace Magpie {
         void update_state(float elapsed);
 
         void interact();
+
+        // Loads Magpie model data specifically
+        Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
+            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+
+        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
         
         // SETTERS
         void set_position(glm::vec3 position);
@@ -69,6 +75,7 @@ namespace Magpie {
         
         // GETTERS
         uint32_t get_score();
+        
         
     protected:
 
@@ -79,6 +86,6 @@ namespace Magpie {
         // NOTE:: This is old code, but it may be used later
         //        when the game is in a more polished state
         std::vector < HitlistTask > hitlist;
-    
+
     };
 }

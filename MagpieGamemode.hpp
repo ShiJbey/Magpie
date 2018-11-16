@@ -59,18 +59,10 @@ namespace Magpie {
         // Initialize the global program info structs
         void init_program_info();
 
-        Scene::Transform* load_character_model(std::string filename, std::string vao_key, std::string transform_name, 
+        Scene::Transform* load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key, 
             Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
 
-        void load_all_models();
-
-        void load_animation();
-
-        void load_all_animations();
-
-        std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >* name_to_transform,  std::vector< std::string > names);
-
-        void get_all_animation_transforms();
+        std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform,  std::vector< std::string > names);
 
         // Adds a new guard to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
