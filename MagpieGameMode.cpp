@@ -222,9 +222,9 @@ namespace Magpie {
         }
 
         // Tansforms for player animations
-        std::vector< Scene::Transform* > player_model_walk_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_idle_tanim.value, "Idle"));
-        std::vector< Scene::Transform* > player_model_steal_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_walk_tanim.value, "Walk"));
-        std::vector< Scene::Transform* > player_model_idle_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_steal_tanim.value, "Steal"));
+        std::vector< Scene::Transform* > player_model_idle_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_idle_tanim.value, "Idle"));
+        std::vector< Scene::Transform* > player_model_walk_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_walk_tanim.value, "Walk"));
+        std::vector< Scene::Transform* > player_model_steal_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_steal_tanim.value, "Steal"));
     
         // Start constructing animations
         TransformAnimationPlayer* magpie_idle_animation = new TransformAnimationPlayer(*magpie_idle_tanim, player_model_idle_transforms, 1.0f, true);
