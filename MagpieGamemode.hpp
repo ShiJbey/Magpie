@@ -15,8 +15,22 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include <vector>
+#include <unordered_map>
 
 namespace Magpie {
+
+    // Rays are used when performing ray casts when the player
+    // clicks anywhere on the game window
+    struct Ray {
+        Ray() : Ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)) {}
+        Ray(glm::vec3 origin, glm::vec3 direction) {
+            this->origin = origin;
+            this->direction = direction;
+        }
+        glm::vec3 origin;
+        glm::vec3 direction;
+    };
+
     // Game mode for playing the MagpieGame
     struct MagpieGameMode : public Mode {
 
@@ -34,20 +48,70 @@ namespace Magpie {
         //draw is called after update:
         virtual void draw(glm::uvec2 const &drawable_size) override;
 
-        //mouse pick sends a raycast from where the mouse has clicked and returns which tile
-        //the user has landed in
-        glm::uvec2 mousePick(int mouseX, int mouseY, int screenWidth, int screenHeight,
-                                int floorHeight, const Scene::Camera* cam);
+        ////////////////////////////////////////////////
+        //        Magpie Specific Functions           //
+        ////////////////////////////////////////////////
 
-        //given a point of intersection, tileMap tries to find a matching tile in given floorplan 
-        //and returns that. if not it returns -1, -1
-        glm::uvec2 tileMap(glm::vec3 isect, std::string floorPlan);
+        // Loads a level from a file, instantiates all the
+        // meshes and positions the camera
+        void load_level(std::string level_file);
 
+        // Initialize the global program info structs
+        void init_program_info();
+
+        Scene::Transform* load_character_model(std::string filename, std::string vao_key, std::string transform_name, 
+            Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
+
+        void load_all_models();
+
+        void load_animation();
+
+        void load_all_animations();
+
+        std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >* name_to_transform,  std::vector< std::string > names);
+
+        void get_all_animation_transforms();
+
+        // Adds a new guard to the game by loading all the model data
+        // and animations. Then it sets attributes for what programs to use
+        void create_guard(glm::vec3 position);
+
+        // Adds a new player to the game by loading all the model data
+        // and animations. Then it sets attributes for what programs to use
+        void create_player(glm::vec3 position);
+
+        // Highlights the tile meshes along the player's path
+        // NOTE:: This function will most likely be deleted since
+        //        we are moving to dota style movement.
         void highlight_path_tiles();
 
-        // Set up the scene using the level loader and such
-        void init_scene();
+        // Handles all screen clicks by delegating athourity to either
+        // handle_clickables() or handle_player_movement()
+        bool handle_screen_click(Magpie::Ray click_ray);
 
+        // Set play movement to the destination calculated by a raycast
+        // from the players screen click
+        bool handle_player_movement(glm::ivec3 click_floor_intersect);
+
+        // Performs collision detection between the given ray
+        // and Clickable objects in the worlds
+        bool handle_clickables(Magpie::Ray click_ray);
+
+        //mouse pick sends a raycast from where the mouse has clicked and returns which tile
+        //the user has landed in
+        glm::ivec3 get_click_floor_intersect(Magpie::Ray click_ray, float floorHeight);
+
+        // Creates a ray based on where the user clicks on the screen
+        Ray create_click_ray(int mouseX, int mouseY, int screenWidth, int screenHeight, const Scene::Camera* cam);
+
+        
+        ////////////////////////////////////////////////
+        //                Attributes                  //
+        ////////////////////////////////////////////////
+
+        MagpieGame game;
         Scene scene;
+        Scene::Camera* camera = nullptr;
+        Scene::Transform* camera_trans = nullptr;
     };
 }

@@ -40,16 +40,16 @@ Magpie::FloorTile**** Magpie::MagpieLevel::get_floor_matrix() {
 };
 
 
-glm::uvec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
+glm::ivec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
     float x = std::floor(isect.x + 0.5f);
     float y = std::floor(isect.y + 0.5f);
     bool negative = (x < 0.0f || y < 0.0f);
     bool outOfRange = (x >= this->width || y >= this->length);
     if (negative || outOfRange) {
         //click is negative and impossible or is greater than dims of row and cols of given map
-        return glm::uvec2(-1, -1);
+        return glm::ivec2(-1, -1);
     }
-    return glm::uvec2(x, y);
+    return glm::ivec2(x, y);
 };
 
 std::vector< Magpie::FloorTile* >* Magpie::MagpieLevel::get_highlighted_tiles() {

@@ -2,9 +2,10 @@
 
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
+#include "GameCharacter.hpp"
 
 namespace Magpie {
-    class Guard: protected GameAgent, public Signalable {
+    class Guard: public GameCharacter, public GameAgent, public Signalable {
     public:
        enum class STATE {
             IDLE = 0,
@@ -23,6 +24,6 @@ namespace Magpie {
 
         void update_state(float elapsed);
 
-        void interact();
+        void interact();        
     };
 }

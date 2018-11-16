@@ -46,6 +46,5 @@ namespace Magpie {
         glm::vec2 current_destination;
         bool at_destination;
         Path path;
-        glm::vec3 velocity;
     };
 }

@@ -1,7 +1,10 @@
 #include "Player.hpp"
 
-std::vector< glm::vec2 > Magpie::Player::get_path() {
-    return this->path.get_path();
+
+Magpie::Player::Player() {
+    current_destination = glm::vec2(-0.0f, -0.0f);
+    orientation = DIRECTION::LEFT;
+    movespeed = 2.0f;
 };
 
 // Runs the lambda functions for each task on the hit list
@@ -31,9 +34,7 @@ void Magpie::Player::print_tasks() {
 };
 
 
-void Magpie::Player::set_velocity(glm::vec3 velocity) {
-    this->velocity = velocity;
-}
+
 
 void Magpie::Player::walk(float elapsed) {
 
@@ -78,13 +79,13 @@ void Magpie::Player::consume_signal() {
 };
 
 void Magpie::Player::update(float elapsed) {
-    animation_manager.update(elapsed);
+    animation_manager->update(elapsed);
     
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
     }
 
-    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager.get_current_animation()->animation_player->done()) {
+    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
         set_state((uint32_t)Player::STATE::IDLE);
         set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
     }
@@ -99,80 +100,25 @@ void Magpie::Player::interact() {
 };
 
 void Magpie::Player::set_position(glm::vec3 position) {
-    if (transform != nullptr) {
-        (*transform)->position = position;
-    }
+    Magpie::GameCharacter::set_position(position);
     board_position = glm::uvec2(position);
 };
 
-glm::vec3 Magpie::Player::get_position() {
-    if (transform != nullptr) {
-        return (*transform)->position;
-    }
-    return glm::vec3(-1.0f, -1.0f, 0.0f);
-};
 
-Magpie::Player::Player() {
-    // Default to position off the map
-    current_destination = glm::vec2(-1U, -1U);
-    orientation = DIRECTION::LEFT;
-    movespeed = 2.0f;
-};
+
 
 void Magpie::Player::set_state(uint32_t state) {
     GameAgent::set_state(state);
-    animation_manager.set_current_state(state);
+    animation_manager->set_current_state(state);
 };
 
-Scene::Transform** Magpie::Player::get_transform() {
-    return transform;
-};
 
-void Magpie::Player::set_model_orientation(GameAgent::DIRECTION dir) {
-    switch(dir) {
-        case DIRECTION::RIGHT :
-            //std::cout << "DEBUG:: Facing right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::LEFT :
-            //std::cout << "DEBUG:: Facing left" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::UP :
-            //std::cout << "DEBUG:: Facing right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::DOWN:
-            //std::cout << "DEBUG:: Facing down" << std::endl;
-            (*transform)->rotation = original_rotation;
-            break;
-        case DIRECTION::UP_RIGHT :
-            //std::cout << "DEBUG:: Facing up-right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::UP_LEFT :
-            //std::cout << "DEBUG:: Facing up-left" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::DOWN_RIGHT :
-            //std::cout << "DEBUG:: right down-right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case DIRECTION::DOWN_LEFT:
-            //std::cout << "DEBUG:: right down-left" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(315.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-    }
-};
 
-void Magpie::Player::set_transform(Scene::Transform** transform) {
-    this->transform = transform;
-    original_rotation = (*transform)->rotation;
-};
 
-Magpie::AnimationManager* Magpie::Player::get_animation_manager() {
-    return &animation_manager;
-};
+
+
+
+
 
 void Magpie::Player::set_score(uint32_t score) {
     this->score = score;

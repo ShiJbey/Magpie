@@ -1,18 +1,29 @@
 #include "MagpieGame.hpp"
 
-Scene::Object* Magpie::MagpieGame::remove_placed_item(uint32_t row, uint32_t col) {
-    Scene::Object* removed_item = nullptr;
-    uint32_t index_to_remove = 0;
-    for (uint32_t i = 0; i < placed_items.size(); i++) {
-            Scene::Object* item = placed_items[i];
-        if (row == (uint32_t)item->transform->position.x && col == (uint32_t)item->transform->position.y) {
-            removed_item = item;
-            index_to_remove = i;
-            break;
-        }
-    }
-    if (removed_item != nullptr) {
-        placed_items.erase(placed_items.begin() + index_to_remove);
-    }
-    return removed_item;
-}
+Magpie::Player* Magpie::MagpieGame::get_player() {
+    return this->player;
+};
+
+std::vector< Magpie::Guard* > Magpie::MagpieGame::get_guards() {
+    return this->guards;
+};
+
+Magpie::MagpieLevel* Magpie::MagpieGame::get_level() {
+    return this->current_level;
+};
+
+void Magpie::MagpieGame::add_guard(Magpie::Guard* guard) {
+    this->guards.push_back(guard);
+};
+
+void Magpie::MagpieGame::set_player(Magpie::Player* player) {
+    this->player = player;
+};
+
+void Magpie::MagpieGame::set_guards(std::vector< Magpie::Guard* > guard_vec) {
+    this->guards = guard_vec;
+};
+
+void Magpie::MagpieGame::set_level(Magpie::MagpieLevel* level) {
+    this->current_level = level;
+};

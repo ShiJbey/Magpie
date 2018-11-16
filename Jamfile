@@ -97,6 +97,8 @@ CLIENT_NAMES =
 	Clickable
 	Map
 	Inventory
+	AssetLoader
+	GameCharacter
 	;
 
 if $(OS) = NT {

@@ -33,7 +33,7 @@ namespace Magpie {
 
         // Code adopted from Grid.cpp
         // Converts a click to a floor tile position
-        glm::uvec2 floor_tile_coord(glm::vec3 isect);
+        glm::ivec2 floor_tile_coord(glm::vec3 isect);
 
         // Returns true if the player is allowed to move to the
         // given position
@@ -91,6 +91,10 @@ namespace Magpie {
 
         // Maps room numbers to clickable objects in  the room
         std::map< uint32_t, std::vector< Clickable > >interactables;
+
+        // References to places where we can place gems/paintings
+        std::vector< Scene::Transform* > potential_pedestal_locations;
+        std::vector< Scene::Transform* > potential_wall_locations;
 
         // Maps room numbers to maps of guard numbers to vectors of movement positions
         std::map< uint32_t, std::map< uint32_t, std::vector< glm::vec2 > > > guard_paths_by_room;

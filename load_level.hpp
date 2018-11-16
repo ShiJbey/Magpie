@@ -3,8 +3,9 @@
 #include "MagpieGame.hpp"
 #include "Scene.hpp"
 #include "MeshBuffer.hpp"
+#include "MagpieLevel.hpp"
 
-#include<map>
+#include <map>
 #include <string>
 
 
@@ -65,21 +66,24 @@ namespace Magpie {
     class LevelLoader {
     public:
 
+        LevelLoader();
+
         // just making each map static for now
         static std::map<uint8_t, std::string> purple_meshes;
 
-        // maps customization numbers to maps of mesh IDs
-        // mapped to the name of the mesh
-        std::map <uint8_t, std::map<uint8_t, std::string>> mesh_names;
+        // Loads level blob files and builds the scene
+        Magpie::MagpieLevel* load(std::string const &level_filename, Scene* scene, const MeshBuffer* mesh_buffer, 
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+
+    private:
 
         // Dimensions of the level
         uint32_t level_width;
         uint32_t level_length;
 
-        LevelLoader();
+        // maps customization numbers to maps of mesh IDs
+        // mapped to the name of the mesh
+        std::map <uint8_t, std::map<uint8_t, std::string>> mesh_names;
 
-        // Loads level blob files and builds the scene
-        void load(std::string const &level_filename, MagpieGame* game, Scene* scene, const MeshBuffer* mesh_buffer, 
-            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
     };
 }

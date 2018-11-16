@@ -3,6 +3,7 @@
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
 #include "AnimationManager.hpp"
+#include "GameCharacter.hpp"
 
 #include <glm/glm.hpp>
 
@@ -26,17 +27,19 @@ namespace Magpie {
         };
     };
 
-    class Player: public GameAgent, public Signalable {
+    class Player: public GameCharacter, public GameAgent, public Signalable {
     public:
         
         // States specific to the magpie player
         enum class STATE {
-            IDLE = 0,
+            IDLE = 0U,
             WALKING,
             STEALING
         };
 
         Player();
+
+        void load_character_model();
         
         // Runs the lambda functions for each task on the hit list
         // that has not been marked as completed
@@ -58,29 +61,24 @@ namespace Magpie {
         void update_state(float elapsed);
 
         void interact();
-
+        
+        // SETTERS
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
-        void set_model_orientation(DIRECTION dir);
-        void set_transform(Scene::Transform** transform);
-        void set_velocity(glm::vec3 velocity);
-        std::vector< glm::vec2 > get_path();
-
-        glm::vec3 get_position();
-        Scene::Transform** get_transform();
-        AnimationManager* get_animation_manager();
-
-        uint32_t get_score();
         void set_score(uint32_t score);
-
+        
+        // GETTERS
+        uint32_t get_score();
+        
     protected:
-        // This points to another transform pointer
-        // handled by the animation manager
-        Scene::Transform** transform;
-        std::vector < HitlistTask > hitlist;
-        AnimationManager animation_manager;
-        glm::quat original_rotation;
+
+        // Maintains the total value of all items stolen
+        // by the player
         uint32_t score;
-        glm::vec3 velocity;
+
+        // NOTE:: This is old code, but it may be used later
+        //        when the game is in a more polished state
+        std::vector < HitlistTask > hitlist;
+    
     };
 }
