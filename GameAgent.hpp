@@ -28,6 +28,7 @@ namespace Magpie {
         virtual void turnTo(glm::uvec2 destination);
         uint32_t get_state();
         void set_state(uint32_t state);
+        
 
         glm::vec2 getDirectionVec2();
 
@@ -45,6 +46,5 @@ namespace Magpie {
         glm::vec2 current_destination;
         bool at_destination;
         Path path;
-        glm::vec3 velocity;
     };
 }

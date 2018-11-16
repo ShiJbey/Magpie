@@ -16,39 +16,28 @@
 
 
 namespace Magpie {
+
     // Using this class to organize all important game logic
-    struct MagpieGame {
+    class MagpieGame {
+    public:
 
-        // NOTE: This is probably going to move to the PlayerModel class
-        glm::vec2 player_position;
+        Player* get_player();
+        std::vector< Guard* > get_guards();
+        MagpieLevel* get_level();
 
-        Player player;
-        std::vector< Guard > guards;
+        void add_guard(Guard* guard);
 
-        uint32_t gems_to_place;
-        uint32_t painting_to_place;
-        // References to places where we can place gems/paintings
-        std::vector< Scene::Transform* > potential_pedestal_locations;
-        std::vector< Scene::Transform* > potential_wall_locations;
+        void set_player(Player* player);
+        void set_guards(std::vector< Guard* > guard_vec);
+        void set_level(MagpieLevel* level);
 
+    protected:
+        // Characters within the game
+        Player* player;
+        std::vector< Guard* > guards;
 
-        
-
-        // Maintain references to all the floor tiles
-        // NOTE:: We may use this for highlighting the floor tiles during movement
-        std::vector< Scene::Object* > floor_tiles;
-
-        // All the objects that have been placed for the player to obtain
-        std::vector< Scene::Object* > placed_items;
-
-        Scene::Object* remove_placed_item(uint32_t x, uint32_t y);
-
-        MagpieLevel *current_level;
-
-        
-        
-
+        // Level being displayed to the player
+        MagpieLevel* current_level;
     };
 
-    extern MagpieGame game;
 }

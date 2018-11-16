@@ -3,6 +3,7 @@
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
 #include "AnimationManager.hpp"
+#include "GameCharacter.hpp"
 
 #include <glm/glm.hpp>
 
@@ -26,8 +27,10 @@ namespace Magpie {
         };
     };
 
-    class Player: public GameAgent, public Signalable {
+    class Player: public GameCharacter, public GameAgent, public Signalable {
     public:
+        // This is incremented each time we create a new player
+        static uint32_t instance_count;
         
         // States specific to the magpie player
         enum class STATE {
@@ -58,28 +61,31 @@ namespace Magpie {
         void update_state(float elapsed);
 
         void interact();
-        void setDestination(glm::uvec2 destination);
 
+        // Loads Magpie model data specifically
+        Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
+            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+
+        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
+        
+        // SETTERS
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
-        void set_model_orientation(DIRECTION dir);
-        void set_transform(Scene::Transform** transform);
-
-        glm::vec3 get_position();
-        Scene::Transform** get_transform();
-        AnimationManager* get_animation_manager();
-
-        uint32_t get_score();
         void set_score(uint32_t score);
-
+        
+        // GETTERS
+        uint32_t get_score();
+        
+        
     protected:
-        // This points to another transform pointer
-        // handled by the animation manager
-        Scene::Transform** transform;
-        std::vector < HitlistTask > hitlist;
-        AnimationManager animation_manager;
-        glm::quat original_rotation;
+
+        // Maintains the total value of all items stolen
+        // by the player
         uint32_t score;
-        glm::vec3 velocity;
+
+        // NOTE:: This is old code, but it may be used later
+        //        when the game is in a more polished state
+        std::vector < HitlistTask > hitlist;
+
     };
 }

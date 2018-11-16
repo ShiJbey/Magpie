@@ -81,13 +81,12 @@ Magpie::LevelLoader::LevelLoader() {
     mesh_names.insert({0, purple_meshes});
 };
 
-void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* game, Scene *scene,const MeshBuffer* mesh_buffer, 
+Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scene *scene,const MeshBuffer* mesh_buffer, 
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     ///////////////////////////////////////////////////////
     //            READING FROM LEVEL FILE                //
     ///////////////////////////////////////////////////////
-
     std::ifstream file(filename, std::ios::binary);
 
     std::string magic = "levl";
@@ -123,9 +122,14 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
     //             PLACE OBJECTS IN SCENE                //
     ///////////////////////////////////////////////////////
 
-    game->current_level = new MagpieLevel(width, length);
+    Magpie::MagpieLevel* level = new MagpieLevel(width, length);
+
+    std::vector <Scene::Transform *> potential_wall_locations;
+    std::vector <Scene::Transform *> potential_pedestal_locations;
     
+    // Temporary pointers for tracking objects
     Scene::Transform *temp_transform;
+    Scene::Object *temp_object;
 
     // Iterate along x-axis
     for (uint32_t y = 0; y < level_length; y++) {
@@ -144,7 +148,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
             // Check if it is part of a guards path
             if (guard_number != 0) {
-                game->current_level->add_guard_path_position(room_number, guard_number, x, y);
+                level->add_guard_path_position(room_number, guard_number, x, y);
             }
 
             
@@ -159,7 +163,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 if (custom_mesh_grp != mesh_names.end()) {
                     auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
                     if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, temp_transform, custom_mesh_name->second);
+                        temp_object = on_object(*scene, temp_transform, custom_mesh_name->second);
                     }
                 }
             }
@@ -168,7 +172,9 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
             if (mesh_id == 3) {
                 temp_transform->name = "floor_" + std::to_string(i);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                game->current_level->set_movement_matrix_position(x, y, true);
+                level->set_movement_matrix_position(x, y, true);
+                FloorTile**** floor = level->get_floor_matrix();
+                (*floor)[x][y] = new FloorTile(temp_object);
                 continue;
             }
 
@@ -177,7 +183,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 std::string name = "Door_" + std::to_string(i);
                 temp_transform->name = std::string(name);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                game->current_level->set_movement_matrix_position(x, y, true);
+                level->set_movement_matrix_position(x, y, true);
 
                 // Get the meshes that surround this wall
                 if (x == 0) {
@@ -213,7 +219,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 
                 if (current_pixel.is_item_location()) {
-                    game->potential_wall_locations.push_back(temp_transform);
+                    potential_wall_locations.push_back(temp_transform);
                 }
 
 
@@ -386,18 +392,18 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
                 if (current_pixel.is_item_location()) {
-                    game->potential_pedestal_locations.push_back(temp_transform);
+                    potential_pedestal_locations.push_back(temp_transform);
                 }
             }
         }
     }
 
-    for (uint32_t i = 0; i < game->potential_pedestal_locations.size(); i++) {
+    for (uint32_t i = 0; i < potential_pedestal_locations.size(); i++) {
         temp_transform = scene->new_transform();
         temp_transform->name = "gem_" + std::to_string(i);
-        temp_transform->position.x = game->potential_pedestal_locations[i]->position.x;
-        temp_transform->position.y = game->potential_pedestal_locations[i]->position.y;
-        temp_transform->rotation = game->potential_pedestal_locations[i]->rotation;
+        temp_transform->position.x = potential_pedestal_locations[i]->position.x;
+        temp_transform->position.y = potential_pedestal_locations[i]->position.y;
+        temp_transform->rotation = potential_pedestal_locations[i]->rotation;
 
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
@@ -406,18 +412,17 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
 
                 Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
                 // TODO:: Get the actual room
-                game->current_level->add_gem(1, Gem(obj));
-                game->placed_items.push_back(obj);
+                level->add_gem(1, Gem(obj));
             }
         }
     }
 
-    for (uint32_t i = 0; i < game->potential_wall_locations.size(); i++) {
+    for (uint32_t i = 0; i < potential_wall_locations.size(); i++) {
         temp_transform = scene->new_transform();
         temp_transform->name = "painting_" + std::to_string(i);
-        temp_transform->position.x = game->potential_wall_locations[i]->position.x;
-        temp_transform->position.y = game->potential_wall_locations[i]->position.y;
-        temp_transform->rotation = game->potential_wall_locations[i]->rotation;
+        temp_transform->position.x = potential_wall_locations[i]->position.x;
+        temp_transform->position.y = potential_wall_locations[i]->position.y;
+        temp_transform->rotation = potential_wall_locations[i]->rotation;
         
         auto custom_mesh_grp = mesh_names.find(0);
         if (custom_mesh_grp != mesh_names.end()) {
@@ -426,9 +431,10 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 
                 Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
                 // TODO:: Get the actual room
-                game->current_level->add_painting(1, Painting(obj));
-                game->placed_items.push_back(obj);
+                level->add_painting(1, Painting(obj));
             }
         }
     }
+
+    return level;
 }

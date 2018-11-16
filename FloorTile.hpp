@@ -5,11 +5,10 @@
 
 namespace Magpie {
 
-    class FloorTile : public Clickable{
-    public:
+    struct FloorTile {
+        FloorTile(): FloorTile(nullptr) {};
         FloorTile( Scene::Object *scene_object);
-        BoundingBox* get_boundingbox();
-    protected:
+        //BoundingBox* get_boundingbox();
         Scene::Object *scene_object;
     };
 

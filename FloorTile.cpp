@@ -4,6 +4,7 @@ Magpie::FloorTile::FloorTile(Scene::Object* scene_object) {
     this->scene_object = scene_object;
 };
 
+/*
 Magpie::BoundingBox* Magpie::FloorTile::get_boundingbox() {
     // Return the existing bounding box
     if (this->bounding_box != nullptr) return this->bounding_box;
@@ -13,3 +14,4 @@ Magpie::BoundingBox* Magpie::FloorTile::get_boundingbox() {
         glm::vec3(-0.5f, -0.5f, -0.25f));
     return this->bounding_box;
 };
+*/

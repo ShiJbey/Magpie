@@ -12,11 +12,19 @@
 #include <map>
 
 namespace Magpie {
+    
+    struct Wall {
+        Wall(Scene::Object* obj) {
+            this->scene_object = obj;
+        }
+        Scene::Object* scene_object;
+    };
 
     class MagpieLevel {
     public:
         // Creates a new level with the given dimensions
         MagpieLevel(uint32_t width, uint32_t length);
+        ~MagpieLevel();
 
         // Iterates through the list of gems, painting, and interactables
         // and checks to see if the "click ray" intersects with any of the
@@ -25,7 +33,7 @@ namespace Magpie {
 
         // Code adopted from Grid.cpp
         // Converts a click to a floor tile position
-        glm::uvec2 floor_tile_coord(glm::vec3 isect);
+        glm::ivec2 floor_tile_coord(glm::vec3 isect);
 
         // Returns true if the player is allowed to move to the
         // given position
@@ -38,6 +46,8 @@ namespace Magpie {
         void set_movement_matrix_position(uint32_t x, uint32_t y, bool can_walk);
         std::map< uint32_t, std::vector< Magpie::Painting > >* get_paintings();
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
+        FloorTile**** get_floor_matrix();
+        std::vector< FloorTile* >* get_highlighted_tiles();
 
         void add_painting(uint32_t room_number, Painting painting);
         void add_gem(uint32_t room_number, Gem gem);
@@ -63,6 +73,14 @@ namespace Magpie {
         // Maps room number to the floor tiles in those rooms
         std::map< uint32_t, std::vector< FloorTile > > floor_tiles;
 
+        // 2D array of pointers to FloorTiles for quick look-up
+        FloorTile*** floor_matrix;
+        // 2D array of Wall pointers
+        Wall*** wall_matrix;
+
+        std::vector< FloorTile* > highlighted_tiles;
+        std::vector< Wall* > transparent_walls;
+
         // Probably going to use this to modify wall transparency when
         // the player moves
         std::vector< std::vector< Scene::Transform* > > walls; 
@@ -73,6 +91,10 @@ namespace Magpie {
 
         // Maps room numbers to clickable objects in  the room
         std::map< uint32_t, std::vector< Clickable > >interactables;
+
+        // References to places where we can place gems/paintings
+        std::vector< Scene::Transform* > potential_pedestal_locations;
+        std::vector< Scene::Transform* > potential_wall_locations;
 
         // Maps room numbers to maps of guard numbers to vectors of movement positions
         std::map< uint32_t, std::map< uint32_t, std::vector< glm::vec2 > > > guard_paths_by_room;

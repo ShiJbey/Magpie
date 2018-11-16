@@ -6,9 +6,6 @@ const glm::vec3 Magpie::AnimationManager::OFF_SCREEN_POS(-10000.0f, -10000.0f, -
 
 void Magpie::AnimationManager::update(float elapsed) {
     current_state->animation_player->update(elapsed);
-    if (current_state->animation_player->done()) {
-        set_current_state(0);
-    }
 };
 
 void Magpie::AnimationManager::set_current_state(uint32_t state) {

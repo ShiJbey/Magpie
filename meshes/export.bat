@@ -24,17 +24,17 @@ rem Export the level scenery mesh data
 blender --background --python export-meshes.py -- building-tiles.blend:1 %DIST%/levels/building_tiles.pnc
 
 rem Export the Magpie model as a scene to preserve the transform hierarchy of character models
-blender --background --python export-scene.py -- magpie_idle.blend:1 %DIST%/magpie/magpie_idle.scene
-blender --background --python export-scene.py -- magpie_walk.blend:1 %DIST%/magpie/magpie_walk.scene
-blender --background --python export-scene.py -- magpie_steal.blend:1 %DIST%/magpie/magpie_steal.scene
+blender --background --python export-scene.py -- magpie_idle.blend:1 %DIST%/magpie/magpie_idle.model
+blender --background --python export-scene.py -- magpie_walk.blend:1 %DIST%/magpie/magpie_walk.model
+blender --background --python export-scene.py -- magpie_steal.blend:1 %DIST%/magpie/magpie_steal.model
 
 rem Export the Guard Dog model as a scene to preserve the transform hierarchy of character models
-blender --background --python export-scene.py -- guardDog_alert.blend:1 %DIST%/guardDog/guardDog_alert.scene
-blender --background --python export-scene.py -- guardDog_chase.blend:1 %DIST%/guardDog/guardDog_chase.scene
-blender --background --python export-scene.py -- guardDog_patrol.blend:1 %DIST%/guardDog/guardDog_patrol.scene
-blender --background --python export-scene.py -- guardDog_cautious.blend:1 %DIST%/guardDog/guardDog_cautious.scene
-blender --background --python export-scene.py -- guardDog_confused.blend:1 %DIST%/guardDog/guardDog_confused.scene
-blender --background --python export-scene.py -- guardDog_idle.blend:1 %DIST%/guardDog/guardDog_idle.scene
+blender --background --python export-scene.py -- guardDog_alert.blend:1 %DIST%/guardDog/guardDog_alert.model
+blender --background --python export-scene.py -- guardDog_chase.blend:1 %DIST%/guardDog/guardDog_chase.model
+blender --background --python export-scene.py -- guardDog_patrol.blend:1 %DIST%/guardDog/guardDog_patrol.model
+blender --background --python export-scene.py -- guardDog_cautious.blend:1 %DIST%/guardDog/guardDog_cautious.model
+blender --background --python export-scene.py -- guardDog_confused.blend:1 %DIST%/guardDog/guardDog_confused.model
+blender --background --python export-scene.py -- guardDog_idle.blend:1 %DIST%/guardDog/guardDog_idle.model
 
 rem Export the Magpie animations
 blender --background --python export-transform-animation-hierarchy.py -- magpie_walk.blend magpieWalk_GRP 0 20 %DIST%/magpie/magpie_walk.tanim
