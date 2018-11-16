@@ -32,6 +32,8 @@ namespace Magpie {
 
         void interact();
 
+        void set_state(uint32_t state);
+
         // Loads Magpie model data specifically
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);   

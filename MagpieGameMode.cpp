@@ -51,10 +51,14 @@ namespace Magpie {
         init_program_info();
         load_level("demo_map_flipped.lvl");
 
-        create_player(glm::vec3(7.0f, 7.0f, 0.0f));
+        create_player(glm::vec3(7.0f, 5.0f, 0.0f));
         create_guard(glm::vec3(7.0f, 8.0f, 0.0f));
         create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
         create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
+
+        game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
+        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
         //Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
     };
@@ -64,35 +68,18 @@ namespace Magpie {
     };
 
     void MagpieGameMode::update(float elapsed) {
-        /*
+        
         // Update the player
-        game.player.update(elapsed);
-
+        game.get_player()->update(elapsed);
+        
         // Update the position of the guards
-        for (auto it = game.guards.begin(); it != game.guards.end(); it++) {
-            it->update(elapsed);
+        for (uint32_t i = 0; i < game.get_guards().size(); i++) {
+            game.get_guards()[i]->update(elapsed);
         }
 
         
-        if (current_guard_animation != nullptr) {
-            current_guard_animation->update(elapsed);
-            if (current_guard_animation->done()) {
-                guard_patrol_animation->reset();
-                current_guard_animation = guard_chase_animation;
-                guard_alert_animation->reset();
-                // Swap the meshes
-                glm::vec3 position = guard_trans->position;
-                guard_patrol_trans->position = position;
-                guard_alert_trans->position = OFF_SCREEN_POS;
-                guard_chase_trans->position = OFF_SCREEN_POS;
-                guard_trans = guard_patrol_trans;
-            }
-        }
-        
-        
-        camera_trans->position.x = game.player.get_position().x;
-        camera_trans->position.y = game.player.get_position().y;
-        */
+        camera_trans->position.x = game.get_player()->get_position().x;
+        camera_trans->position.y = game.get_player()->get_position().y;
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -161,6 +148,8 @@ namespace Magpie {
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
             obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
         });
+
+        assert(model_group_transform != nullptr);
 
         return model_group_transform;
     };
@@ -289,16 +278,17 @@ namespace Magpie {
         std::vector< Scene::Transform* > guard_model_patrol_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_patrol_tanim.value, "Patrol"));
         std::vector< Scene::Transform* > guard_model_chase_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_chase_tanim.value, "Chase"));
         std::vector< Scene::Transform* > guard_model_alert_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_alert_tanim.value, "Alert"));
-        std::vector< Scene::Transform* > guard_model_cautious_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_cautious_tanim.value, "Cautious"));
         std::vector< Scene::Transform* > guard_model_confused_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_confused_tanim.value, "Confused"));
+        std::vector< Scene::Transform* > guard_model_cautious_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_cautious_tanim.value, "Cautious"));
 
         // Contructing Animations
+        TransformAnimationPlayer* guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
         TransformAnimationPlayer* guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
-        TransformAnimationPlayer* guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
+        
 
         // Set animation states
         guard->get_animation_manager()->add_state(new AnimationState(guard_idle_trans, guard_idle_animation));
@@ -472,10 +462,10 @@ namespace Magpie {
      * state as needed.
      */
     bool MagpieGameMode::handle_player_movement(glm::ivec3 click_floor_intersect) {
-        game.get_player()->setDestination(glm::ivec2(click_floor_intersect.x, click_floor_intersect.y));
-        if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-        }
+        //sgame.get_player()->setDestination(glm::ivec2(click_floor_intersect.x, click_floor_intersect.y));
+        //if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+        //    game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+        //}
         return true;
     };
 

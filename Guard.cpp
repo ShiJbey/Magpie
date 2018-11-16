@@ -40,11 +40,16 @@ void Magpie::Guard::consume_signal() {
 };
 
 void Magpie::Guard::update(float elapsed) {
-    
+    animation_manager->update(elapsed);
 };
 
 void Magpie::Guard::update_state(float elapsed) {
 
+};
+
+void Magpie::Guard::set_state(uint32_t state) {
+    GameAgent::set_state(state);
+    animation_manager->set_current_state(state);
 };
 
 void Magpie::Guard::interact() {

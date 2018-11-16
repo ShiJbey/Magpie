@@ -34,7 +34,7 @@ namespace Magpie {
         
         // States specific to the magpie player
         enum class STATE {
-            IDLE = 0U,
+            IDLE = 0,
             WALKING,
             STEALING
         };

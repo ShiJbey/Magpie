@@ -86,7 +86,8 @@ void Magpie::Player::consume_signal() {
 
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
-    
+    printf("Something is wrong.\n");
+    /*
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
     }
@@ -95,6 +96,7 @@ void Magpie::Player::update(float elapsed) {
         set_state((uint32_t)Player::STATE::IDLE);
         set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
     }
+    */
 };
 
 void Magpie::Player::update_state(float elapsed) {
