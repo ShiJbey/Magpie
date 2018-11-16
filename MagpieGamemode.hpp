@@ -43,6 +43,8 @@ namespace Magpie {
         //and returns that. if not it returns -1, -1
         glm::uvec2 tileMap(glm::vec3 isect, std::string floorPlan);
 
+        void highlight_path_tiles();
+
         // Set up the scene using the level loader and such
         void init_scene();
 

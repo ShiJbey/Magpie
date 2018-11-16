@@ -71,6 +71,8 @@ CLIENT_NAMES =
 	compile_program
 	vertex_color_program
 	texture_program
+	highlight_program
+	transparent_program
 	depth_program
 	Scene
 	Mode

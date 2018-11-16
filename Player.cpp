@@ -1,5 +1,8 @@
 #include "Player.hpp"
 
+std::vector< glm::vec2 > Magpie::Player::get_path() {
+    return this->path.get_path();
+};
 
 // Runs the lambda functions for each task on the hit list
 // that has not been marked as completed
@@ -27,10 +30,10 @@ void Magpie::Player::print_tasks() {
     }
 };
 
-void Magpie::Player::setDestination(glm::uvec2 destination) {
-    velocity = glm::vec3((float)destination.x, (float)destination.y, 0) - get_position();
-    GameAgent::setDestination(destination);
-};
+
+void Magpie::Player::set_velocity(glm::vec3 velocity) {
+    this->velocity = velocity;
+}
 
 void Magpie::Player::walk(float elapsed) {
 
@@ -38,12 +41,16 @@ void Magpie::Player::walk(float elapsed) {
     //printf("Current Board Position: ( %f, %f)\n", board_position.x, board_position.y);
     //printf("Current Trans Position: ( %f, %f)\n", (*transform)->position.x, (*transform)->position.y);
     //turnTo(current_destination);
-    
+    if (current_destination == glm::vec2(-1.0f, -1.0f)) {
+        current_destination = glm::vec2(get_position().x, get_position().y);
+    }
+
     Player::set_position((*transform)->position + (velocity * elapsed));
-    float distance_to_destination = glm::length(glm::vec3((float)current_destination.x, (float)current_destination.y, 0) - get_position());
+    float distance_to_destination = glm::length(glm::vec3((float)current_destination.x, (float)current_destination.y, 0.0f) - get_position());
     
-    if (distance_to_destination <= 0.5){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
+    if (distance_to_destination <= 0.01f || current_destination == glm::vec2(-1.0f, -1.0f || distance_to_destination > 2.0f)){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
         if (path.isEmpty()) {
+            printf("DEBUG:: DONE PATH\n");
             Player::set_state((uint32_t)Player::STATE::IDLE);
             velocity = glm::vec3(0.0f, 0.0f, 0.0f);
             return;
@@ -51,13 +58,17 @@ void Magpie::Player::walk(float elapsed) {
             
             Player::set_position(glm::vec3(current_destination, 0.0f));
             printf("DESTINATION REACHED\n");
-            current_destination = path.next();
-            printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
-            turnTo(current_destination);
+            glm::vec2 next_destination = path.next();
+            printf("NEXT DESTINATION: ( %f, %f)\n", next_destination.x, next_destination.y);
+            turnTo(next_destination);
+            current_destination = next_destination;
+            glm::vec3 vec_to_next_destination = glm::vec3((float)current_destination.x, (float)current_destination.y, 0.0f) - get_position();
+            if (glm::length(vec_to_next_destination) != 0.0f) {
+                velocity = glm::normalize(vec_to_next_destination) * 2.0f;
+            } else {
+                velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+            }
             set_model_orientation(orientation);
-            velocity = glm::vec3((float)current_destination.x, (float)current_destination.y, 0) - get_position();
-            
-            
         }
     }
 };
@@ -71,6 +82,11 @@ void Magpie::Player::update(float elapsed) {
     
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
+    }
+
+    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager.get_current_animation()->animation_player->done()) {
+        set_state((uint32_t)Player::STATE::IDLE);
+        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 };
 
@@ -98,7 +114,7 @@ glm::vec3 Magpie::Player::get_position() {
 
 Magpie::Player::Player() {
     // Default to position off the map
-    current_destination = glm::vec2(0, 0);
+    current_destination = glm::vec2(-1U, -1U);
     orientation = DIRECTION::LEFT;
     movespeed = 2.0f;
 };

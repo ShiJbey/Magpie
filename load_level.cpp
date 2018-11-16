@@ -126,6 +126,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
     game->current_level = new MagpieLevel(width, length);
     
     Scene::Transform *temp_transform;
+    Scene::Object *temp_object;
 
     // Iterate along x-axis
     for (uint32_t y = 0; y < level_length; y++) {
@@ -159,7 +160,7 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 if (custom_mesh_grp != mesh_names.end()) {
                     auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
                     if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        on_object(*scene, temp_transform, custom_mesh_name->second);
+                        temp_object = on_object(*scene, temp_transform, custom_mesh_name->second);
                     }
                 }
             }
@@ -169,6 +170,8 @@ void Magpie::LevelLoader::load(std::string const &filename, Magpie::MagpieGame* 
                 temp_transform->name = "floor_" + std::to_string(i);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 game->current_level->set_movement_matrix_position(x, y, true);
+                FloorTile**** floor = game->current_level->get_floor_matrix();
+                (*floor)[x][y] = new FloorTile(temp_object);
                 continue;
             }
 

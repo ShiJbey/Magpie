@@ -58,12 +58,13 @@ namespace Magpie {
         void update_state(float elapsed);
 
         void interact();
-        void setDestination(glm::uvec2 destination);
 
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
         void set_model_orientation(DIRECTION dir);
         void set_transform(Scene::Transform** transform);
+        void set_velocity(glm::vec3 velocity);
+        std::vector< glm::vec2 > get_path();
 
         glm::vec3 get_position();
         Scene::Transform** get_transform();

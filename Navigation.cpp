@@ -17,14 +17,14 @@
  *  The Implementations of class Path.
  */
 
-Magpie::Path::Path(std::vector<glm::uvec2> path) {
+Magpie::Path::Path(std::vector<glm::vec2> path) {
     this->path = std::move(path);
     it = this->path.begin();
 }
 
-glm::uvec2 Magpie::Path::next() {
+glm::vec2 Magpie::Path::next() {
     //std::cout << "NEXT:" << it->x << ", " << it->y << std::endl;
-    if (it == path.end()) return glm::uvec2(0, 0);
+    if (it == path.end()) return glm::vec2(0, 0);
     return *(it++);
 }
 
@@ -32,19 +32,19 @@ bool Magpie::Path::isEmpty() {
     return it == path.end();
 }
 
-glm::uvec2 Magpie::Path::top() {
+glm::vec2 Magpie::Path::top() {
     return *path.begin();
 }
 
-bool Magpie::Navigation::can_move_to(uint32_t x, uint32_t y) {
+bool Magpie::Navigation::can_move_to(float x, float y) {
     if (this->movement_matrix == nullptr) {
         return false;
     } 
-    else if (x >= (*movement_matrix).size() || y >= (*movement_matrix)[x].size()) {
+    else if ((uint32_t)x >= (*movement_matrix).size() || (uint32_t)y >= (*movement_matrix)[(uint32_t)x].size()) {
         return false;
     }
 
-    return (*movement_matrix)[x][y];
+    return (*movement_matrix)[(uint32_t)x][(uint32_t)y];
 }
 
 void Magpie::Navigation::print_movement_matrix() {
@@ -63,32 +63,32 @@ void Magpie::Navigation::print_movement_matrix() {
 void Magpie::Navigation::reset_visited_matrix() {
     for (uint32_t x = 0; x < visited_matrix.size(); x++) {
         for (uint32_t y = 0; y < visited_matrix[x].size(); y++) {
-            visited_matrix[x][y] = std::make_tuple(false, glm::uvec2(x, y), -1U);
+            visited_matrix[x][y] = std::make_tuple(false, glm::vec2((float)x, (float)y), 100000.0f);
         }
     }
 };
 
-std::vector<glm::uvec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
-    std::vector<glm::uvec2> adjacent_tiles;
+std::vector<glm::vec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
+    std::vector<glm::vec2> adjacent_tiles;
     
     if (pos.x > 0) {
 
         // Check position to the left
-        if (can_move_to((uint32_t)pos.x - 1, (uint32_t)pos.y)) {
-            adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1, (uint32_t)pos.y));
+        if (can_move_to(pos.x - 1, pos.y)) {
+            adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y));
         }
         
         // Check position bottom left
         if (pos.y > 0) {
-            if (can_move_to((uint32_t)pos.x - 1, (uint32_t)pos.y - 1)) {
-                adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1, (uint32_t)pos.y - 1));
+            if (can_move_to(pos.x - 1, pos.y - 1)) {
+                adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y - 1));
             }
         }
 
         // Check upper left
         if (pos.y < -1U) {
-            if (can_move_to((uint32_t)pos.x - 1, (uint32_t)pos.y + 1)) {
-                adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x - 1, (uint32_t)pos.y + 1));
+            if (can_move_to(pos.x - 1, pos.y + 1)) {
+                adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y + 1));
             }
         }
 
@@ -96,35 +96,35 @@ std::vector<glm::uvec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
 
     if (pos.x < -1U) {
         // Check to the right
-        if (can_move_to((uint32_t)pos.x + 1, (uint32_t)pos.y)) {
-            adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1, (uint32_t)pos.y));
+        if (can_move_to(pos.x + 1, pos.y)) {
+            adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y));
         }
 
         // Check position bottom right
         if (pos.y > 0) {
-            if (can_move_to((uint32_t)pos.x + 1, (uint32_t)pos.y - 1)) {
-                adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1, (uint32_t)pos.y - 1));
+            if (can_move_to(pos.x + 1, pos.y - 1)) {
+                adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y - 1));
             }
         }
 
         // Check upper right
         if (pos.y < -1U) {
-            if (can_move_to((uint32_t)pos.x + 1, (uint32_t)pos.y + 1)) {
-                adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x + 1, (uint32_t)pos.y + 1));
+            if (can_move_to(pos.x + 1, pos.y + 1)) {
+                adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y + 1));
             }
         }
     }
 
 
     if (pos.y < -1U) {
-        if (can_move_to((uint32_t)pos.x, (uint32_t)pos.y + 1)) {
-            adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x, (uint32_t)pos.y + 1));
+        if (can_move_to(pos.x, pos.y + 1)) {
+            adjacent_tiles.push_back(glm::vec2(pos.x, pos.y + 1));
         }
     }
     
     if (pos.y > 0) {
-        if (can_move_to((uint32_t)pos.x, (uint32_t)pos.y - 1)) {
-            adjacent_tiles.push_back(glm::uvec2((uint32_t)pos.x, (uint32_t)pos.y - 1));
+        if (can_move_to(pos.x, pos.y - 1)) {
+            adjacent_tiles.push_back(glm::vec2(pos.x, pos.y - 1));
         }
     }
     
@@ -145,9 +145,9 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
     this->visited_matrix.clear();
     if (movement_matrix != nullptr) {
         for (uint32_t x = 0; x < (*movement_matrix).size(); x++) {
-            std::vector< std::tuple< bool, glm::uvec2, uint32_t > > col;
+            std::vector< std::tuple< bool, glm::vec2, float > > col;
             for (uint32_t y = 0; y < (*movement_matrix)[x].size(); y++) {
-                col.push_back(std::make_tuple(false, glm::uvec2(x, y), -1U));
+                col.push_back(std::make_tuple(false, glm::vec2((float)x, (float)y), 100000.0f));
             }
             visited_matrix.push_back(col);
         }
@@ -159,37 +159,37 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
     }
 }
 
-Magpie::Path Magpie::Navigation::findPath(glm::uvec2 start, glm::uvec2 destination) {
+Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
     reset_visited_matrix();
     
     std::cout << "Current Magpie Position: (x: " <<  start.x << " , y: " << start.y << " )" << std::endl;
-    std::vector<glm::uvec2> path_vector;
+    std::vector<glm::vec2> path_vector;
 
     // Implement BFS for path finding
     // https://www.redblobgames.com/pathfinding/tower-defense/
     
     // Unexplored grid positions
-    std::deque< glm::uvec2 > frontier;
+    std::deque< glm::vec2 > frontier;
     frontier.push_back(glm::uvec2(start));
 
-    visited_matrix[start.x][start.y] = std::make_tuple(true, glm::uvec2(start), 0);
+    visited_matrix[(uint32_t)start.x][(uint32_t)start.y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
 
     // Perform BFS
     while( !frontier.empty() ) {
 
-        glm::uvec2 current = frontier.front();
+        glm::vec2 current = frontier.front();
 
         frontier.pop_front();
 
-        std::vector<glm::uvec2> adjacent_tiles = get_adjacent(current);
+        std::vector<glm::vec2> adjacent_tiles = get_adjacent(current);
 
         for (auto it = adjacent_tiles.begin(); it != adjacent_tiles.end(); it++) {
             
-            bool position_visited = std::get<0>(visited_matrix[it->x][it->y]);
-            uint32_t distance_from_start =  std::get<2>(visited_matrix[current.x][current.y]) + 1;
+            bool position_visited = std::get<0>(visited_matrix[(uint32_t)it->x][(uint32_t)it->y]);
+            float distance_from_start =  std::get<2>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]) + glm::length(*it - current);
 
-            if (distance_from_start < std::get<2>(visited_matrix[it->x][it->y])) {
-                visited_matrix[it->x][it->y] = std::make_tuple(true, current, distance_from_start);
+            if (distance_from_start < std::get<2>(visited_matrix[(uint32_t)it->x][(uint32_t)it->y])) {
+                visited_matrix[(uint32_t)it->x][(uint32_t)it->y] = std::make_tuple(true, current, distance_from_start);
             }
 
             if (!position_visited) {
@@ -203,15 +203,15 @@ Magpie::Path Magpie::Navigation::findPath(glm::uvec2 start, glm::uvec2 destinati
     }
 
     // Reverse iterate to get a path
-    glm::uvec2 current = destination;
-    while (current != glm::uvec2(start)) {
+    glm::vec2 current = destination;
+    while (current != glm::vec2(-1, -1)) {
         path_vector.push_back(current);
-        current = std::get<1>(visited_matrix[current.x][current.y]);
+        current = std::get<1>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]);
     }
     
     //path_vector.pop_back();
     std::reverse(path_vector.begin(), path_vector.end());
-    for (glm::uvec2 p : path_vector) {
+    for (glm::vec2 p : path_vector) {
         std::cout << "(" << p.x << "," << p.y << ")" << std::endl;
     }
     

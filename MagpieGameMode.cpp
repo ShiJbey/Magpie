@@ -18,6 +18,8 @@
 #include "draw_text.hpp" //helper to... um.. draw text
 #include "texture_program.hpp"
 #include "vertex_color_program.hpp"
+#include "highlight_program.hpp"
+#include "transparent_program.hpp"
 #include "depth_program.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
@@ -90,6 +92,14 @@ namespace Magpie {
 
     Load< GLuint > building_meshes_vao(LoadTagDefault, [](){
         return new GLuint(building_meshes->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< GLuint > highlighted_building_meshes_vao(LoadTagDefault, [](){
+        return new GLuint(building_meshes->make_vao_for_program(highlight_program->program));
+    });
+
+    Load< GLuint > transparent_building_meshes_vao(LoadTagDefault, [](){
+        return new GLuint(building_meshes->make_vao_for_program(transparent_program->program));
     });
 
     // PLAYER IDLE
@@ -209,13 +219,30 @@ namespace Magpie {
         return new TransformAnimation(data_path("guardDog/guardDog_idle.tanim"));
     });
 
+    Scene::Object::ProgramInfo vertex_color_program_info;
+    Scene::Object::ProgramInfo highlight_program_info;
+    Scene::Object::ProgramInfo transparent_program_info;
+
     void MagpieGameMode::init_scene() {
-        // Single Program for drawing
-        Scene::Object::ProgramInfo vertex_color_program_info;
+        // Basic Vertex Color Program
         vertex_color_program_info.program = vertex_color_program->program;
         vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
         vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
         vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+
+        // Program for highlighting the path
+        highlight_program_info.program = highlight_program->program;
+        highlight_program_info.mvp_mat4 = highlight_program->object_to_clip_mat4;
+        highlight_program_info.mv_mat4x3 = highlight_program->object_to_light_mat4x3;
+        highlight_program_info.itmv_mat3 = highlight_program->normal_to_light_mat3;
+
+        // Program for making walls transparent
+        transparent_program_info.program = transparent_program->program;
+        transparent_program_info.mvp_mat4 = transparent_program->object_to_clip_mat4;
+        transparent_program_info.mv_mat4x3 = transparent_program->object_to_light_mat4x3;
+        transparent_program_info.itmv_mat3 = transparent_program->normal_to_light_mat3;
+
+        
 
         // Vaos that the vertex color program will use
         std::map< std::string, GLuint > vertex_color_vaos = {
@@ -530,6 +557,26 @@ namespace Magpie {
         // Do Nothing
     };
 
+    void MagpieGameMode::highlight_path_tiles() {
+        std::vector< FloorTile* >* highlighted_tiles = game.current_level->get_highlighted_tiles();
+        if (!highlighted_tiles->empty()) {
+            for (uint32_t i = 0; i < highlighted_tiles->size(); i++) {
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
+            }
+        }
+        highlighted_tiles->clear();
+        
+        std::vector<glm::vec2> path = game.player.get_path();
+        FloorTile**** floor_matrix = game.current_level->get_floor_matrix();
+        for (uint32_t i = 0; i < path.size(); i++) {
+            //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->active = false;
+            //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault] = highlight_program_info;
+            //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
+            highlighted_tiles->push_back((*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]);
+        }
+    }
+
     void MagpieGameMode::update(float elapsed) {
 
         game.player.update(elapsed);
@@ -555,6 +602,8 @@ namespace Magpie {
         
         camera_trans->position.x = game.player.get_position().x;
         camera_trans->position.y = game.player.get_position().y;
+
+       // highlight_path_tiles();
     };
 
     //from this tutorial: http://antongerdelan.net/opengl/raycasting.html

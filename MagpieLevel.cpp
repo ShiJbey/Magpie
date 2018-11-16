@@ -1,6 +1,5 @@
 #include "MagpieLevel.hpp"
-
-
+#include "FloorTile.hpp"
 
 Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     this->width = width;
@@ -14,7 +13,32 @@ Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
         }
         movement_matrix.push_back(col);
     }
-}
+
+    // Make the floor Matrix
+    floor_matrix = new FloorTile**[width];
+    for (uint32_t x = 0; x < width; x++) {
+        floor_matrix[x] = new FloorTile*[length];
+    }
+};
+
+Magpie::MagpieLevel::~MagpieLevel() {
+    for (uint32_t x = 0; x < width; x++) {
+        for (uint32_t y = 0; y < length; y++) {
+            FloorTile* tile = floor_matrix[x][y];
+            free(tile);
+            floor_matrix[width] = new FloorTile*[length];
+            
+        }
+        FloorTile** col = floor_matrix[x];
+        free(col);
+    }
+    free(floor_matrix);
+};
+
+Magpie::FloorTile**** Magpie::MagpieLevel::get_floor_matrix() {
+    return &floor_matrix;
+};
+
 
 glm::uvec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
     float x = std::floor(isect.x + 0.5f);
@@ -26,8 +50,11 @@ glm::uvec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
         return glm::uvec2(-1, -1);
     }
     return glm::uvec2(x, y);
-}
+};
 
+std::vector< Magpie::FloorTile* >* Magpie::MagpieLevel::get_highlighted_tiles() {
+    return &highlighted_tiles;
+};
 
 bool Magpie::MagpieLevel::can_move_to(uint32_t row, uint32_t col) {
     if (row < movement_matrix.size()) {
