@@ -1,5 +1,7 @@
 
 //#include "SignalQueue.h"
+#include "Inventory.h"
+#include "Map.h"
 #include "UI.h"
 #include <iostream>
 
@@ -17,7 +19,7 @@ UI::UI(int object_id, int group_id) {
 void UI::consume_signal() {
     /*
     //get right signals
-    Magpie::Signal *s = Magpie::Signal(objID, grpID); 
+    Magpie::Signal *s = Magpie::Signal(objID, grpID);
     while (s != NULL) {
         std::string parsedSig = s->msg;
         if (parsedSig == "endgame") {
@@ -25,7 +27,7 @@ void UI::consume_signal() {
         }
         s = SignalQueue::getInstance().get(objID, grpID);
     }
-    */
+     */
 }
 
 void UI::stateChanger(char keyPressed) {

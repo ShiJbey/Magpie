@@ -71,6 +71,8 @@ CLIENT_NAMES =
 	compile_program
 	vertex_color_program
 	texture_program
+	highlight_program
+	transparent_program
 	depth_program
 	Scene
 	Mode
@@ -80,12 +82,14 @@ CLIENT_NAMES =
 	draw_text
 	Sound
 	TransformAnimation
+	FloorTile
+	Item
+	MagpieLevel
 	Navigation
 	load_level
 	GameAgent
 	Guard
 	Player
-	MagpieLevel
 	Signalable
 	MagpieGame
 	MagpieGameMode
@@ -94,6 +98,8 @@ CLIENT_NAMES =
 	UI
 	Map
 	Inventory
+	AssetLoader
+	GameCharacter
 	;
 
 if $(OS) = NT {

@@ -6,10 +6,6 @@
 
 namespace Magpie {
     
-    template <typename T> int sgn(T val) {
-        return (T(0) < val) - (val < T(0));
-    }
-
     class GameAgent {
     public:
 
@@ -17,7 +13,11 @@ namespace Magpie {
             DOWN = 0,
             LEFT,
             UP,
-            RIGHT
+            RIGHT,
+            //UP_RIGHT,
+            //UP_LEFT,
+            //DOWN_RIGHT,
+            //DOWN_LEFT
         };
 
         // TODO: Place more generally relevant functions here
@@ -25,25 +25,30 @@ namespace Magpie {
         virtual void interact() = 0;
         
         virtual void walk(float elapsed) = 0;
-        virtual void turnTo(glm::uvec2 destination);
+        virtual void turnTo(glm::vec3 destination);
+
+
         uint32_t get_state();
-        void set_state(uint32_t state);
-
         glm::vec2 getDirectionVec2();
+        Path* get_path();
+        DIRECTION get_orientation();
 
-        virtual void setDestination(glm::uvec2 destination);
+        void set_state(uint32_t state);
+        void set_path(Path path);
+        virtual void setDestination(glm::vec3 destination);
+
 
     protected:
         // All agents use an int to represent the current state
         // Specific enums may be introduced in chid classes for
         // simplicity
-        uint32_t current_state;
-
+        uint32_t current_state = 0;
         float movespeed = 1.0f;
         DIRECTION orientation;
-        glm::vec2 board_position;
-        glm::vec2 current_destination;
+        glm::ivec3 board_position;
+        glm::vec3 current_destination;
         bool at_destination;
         Path path;
+        uint32_t next_destination_index = 0;
     };
 }

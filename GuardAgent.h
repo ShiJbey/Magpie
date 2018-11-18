@@ -22,6 +22,7 @@ private:
     float chase_duration = 0.0f;
     std::vector<glm::vec2> destinations = {glm::vec2(2, 4), glm::vec2(2, 8), glm::vec2(8, 8), glm::vec2(8, 4)};
     int dest_index = 0;
+    glm::vec3 velocity;
 };
 
 
