@@ -37,7 +37,13 @@ namespace Magpie {
 
         // Returns true if the player is allowed to move to the
         // given position
-        bool can_move_to(uint32_t x, uint32_t y);
+        bool can_move_to(uint32_t current_room, uint32_t x, uint32_t y);
+        bool can_move_to(uint32_t current_room, float x, float y);
+
+        // Used when creating the level to get the current
+        // room of a player or guard
+        uint32_t get_tile_room_number(uint32_t x, uint32_t y);
+        uint32_t get_tile_room_number(float x, float y);
 
         uint32_t get_length();
         uint32_t get_width();
@@ -46,7 +52,7 @@ namespace Magpie {
         void set_movement_matrix_position(uint32_t x, uint32_t y, bool can_walk);
         std::map< uint32_t, std::vector< Magpie::Painting > >* get_paintings();
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
-        FloorTile**** get_floor_matrix();
+        FloorTile*** get_floor_matrix();
         std::vector< FloorTile* >* get_highlighted_tiles();
 
         void add_painting(uint32_t room_number, Painting painting);
@@ -77,6 +83,8 @@ namespace Magpie {
         FloorTile*** floor_matrix;
         // 2D array of Wall pointers
         Wall*** wall_matrix;
+        // 2D array of Doors
+        Door*** door_matrix;
 
         std::vector< FloorTile* > highlighted_tiles;
         std::vector< Wall* > transparent_walls;

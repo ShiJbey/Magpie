@@ -1,5 +1,6 @@
 #include "MagpieLevel.hpp"
 #include "FloorTile.hpp"
+#include "Door.hpp"
 
 Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     this->width = width;
@@ -18,7 +19,20 @@ Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     floor_matrix = new FloorTile**[width];
     for (uint32_t x = 0; x < width; x++) {
         floor_matrix[x] = new FloorTile*[length];
+        for (uint32_t y = 0; y < length; y++) {
+            floor_matrix[x][y] = nullptr;
+        }
     }
+
+    // Make Door Matrix;
+    door_matrix = new Door**[width];
+    for (uint32_t x = 0; x < width; x++) {
+        floor_matrix[x] = new FloorTile*[length];
+        for (uint32_t y = 0; y < length; y++) {
+            floor_matrix[x][y] = nullptr;
+        }
+    }
+
 };
 
 Magpie::MagpieLevel::~MagpieLevel() {
@@ -35,8 +49,8 @@ Magpie::MagpieLevel::~MagpieLevel() {
     free(floor_matrix);
 };
 
-Magpie::FloorTile**** Magpie::MagpieLevel::get_floor_matrix() {
-    return &floor_matrix;
+Magpie::FloorTile*** Magpie::MagpieLevel::get_floor_matrix() {
+    return floor_matrix;
 };
 
 
@@ -56,12 +70,33 @@ std::vector< Magpie::FloorTile* >* Magpie::MagpieLevel::get_highlighted_tiles() 
     return &highlighted_tiles;
 };
 
-bool Magpie::MagpieLevel::can_move_to(uint32_t row, uint32_t col) {
-    if (row < movement_matrix.size()) {
-        if (col < movement_matrix[row].size()) {
-            return this->movement_matrix[row][col];
+bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, float x, float y) {
+    if ((x >= 0 && x < (float)width) && (y >= 0 && y < (float)length)) {
+        FloorTile* floor_tile = floor_matrix[(uint32_t)x][(uint32_t)y];
+        if (floor_tile == nullptr) {
+            return false;
+        } else {
+            return current_room == floor_tile->room_number;
+        } 
+    }
+    return false;    
+};
+
+bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, uint32_t x, uint32_t y) {
+    if (x < width && y < length) {
+        FloorTile* floor_tile = floor_matrix[x][y];
+        if (floor_tile == nullptr) {
+            return false;
+        } else {
+            return current_room == floor_tile->room_number;
         }
     }
+    // OLD CODE
+    //if (row < movement_matrix.size()) {
+    //    if (col < movement_matrix[row].size()) {
+    //        return this->movement_matrix[row][col];
+    //    }
+    //}
     return false;    
 };
 
@@ -134,3 +169,17 @@ void Magpie::MagpieLevel::add_guard_path_position(uint32_t room_number, uint32_t
 void Magpie::MagpieLevel::handle_click() {
             
 };
+
+uint32_t Magpie::MagpieLevel::get_tile_room_number(uint32_t x, uint32_t y) {
+    if (x < width && y < length) {
+        return floor_matrix[x][y]->room_number;
+    }
+    return -1U;
+};
+
+uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
+    if ((x >= 0.0f && x < (float)width) && (y >= 0.0f && y < (float)length)) {
+        return floor_matrix[(uint32_t)x][(uint32_t)y]->room_number;
+    }
+    return -1U;
+}

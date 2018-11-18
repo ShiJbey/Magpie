@@ -63,36 +63,39 @@ void Magpie::GameCharacter::set_transform(Scene::Transform** transform) {
 void Magpie::GameCharacter::set_model_orientation(GameAgent::DIRECTION dir) {
     switch(dir) {
         case GameAgent::DIRECTION::RIGHT :
-            //std::cout << "DEBUG:: Facing right" << std::endl;
+            std::cout << "DEBUG:: Orienting right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case GameAgent::DIRECTION::LEFT :
-            //std::cout << "DEBUG:: Facing left" << std::endl;
+            std::cout << "DEBUG:: Orienting left" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case GameAgent::DIRECTION::UP :
-            //std::cout << "DEBUG:: Facing right" << std::endl;
+            std::cout << "DEBUG:: Orienting up" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case GameAgent::DIRECTION::DOWN:
-            //std::cout << "DEBUG:: Facing down" << std::endl;
+            std::cout << "DEBUG:: Orienting down" << std::endl;
             (*transform)->rotation = original_rotation;
             break;
-        case GameAgent::DIRECTION::UP_RIGHT :
-            //std::cout << "DEBUG:: Facing up-right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case GameAgent::DIRECTION::UP_LEFT :
-            //std::cout << "DEBUG:: Facing up-left" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case GameAgent::DIRECTION::DOWN_RIGHT :
-            //std::cout << "DEBUG:: right down-right" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            break;
-        case GameAgent::DIRECTION::DOWN_LEFT:
-            //std::cout << "DEBUG:: right down-left" << std::endl;
-            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(315.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //case GameAgent::DIRECTION::UP_RIGHT :
+        //    //std::cout << "DEBUG:: Facing up-right" << std::endl;
+        //    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //    break;
+        //case GameAgent::DIRECTION::UP_LEFT :
+        //    //std::cout << "DEBUG:: Facing up-left" << std::endl;
+        //    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //    break;
+        //case GameAgent::DIRECTION::DOWN_RIGHT :
+        //    //std::cout << "DEBUG:: right down-right" << std::endl;
+        //    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //    break;
+        //case GameAgent::DIRECTION::DOWN_LEFT:
+        //    //std::cout << "DEBUG:: right down-left" << std::endl;
+        //    (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(315.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //    break;
+        default:
+            std::cout << "ERROR:: Invalid orientation" << std::endl;
             break;
     }
 };

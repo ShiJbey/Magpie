@@ -51,16 +51,18 @@ namespace Magpie {
         init_program_info();
         load_level("demo_map_flipped.lvl");
 
-        create_player(glm::vec3(7.0f, 5.0f, 0.0f));
+        create_player(glm::vec3(7.0f, 6.0f, 0.0f));
+        game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
+
         create_guard(glm::vec3(7.0f, 8.0f, 0.0f));
         create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
         create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
-        game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
         game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
         game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
-        //Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
+        Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -77,9 +79,8 @@ namespace Magpie {
             game.get_guards()[i]->update(elapsed);
         }
 
-        
-        camera_trans->position.x = game.get_player()->get_position().x;
-        camera_trans->position.y = game.get_player()->get_position().y;
+        //camera_trans->position.x = game.get_player()->get_position().x;
+        //camera_trans->position.y = game.get_player()->get_position().y;
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -196,12 +197,8 @@ namespace Magpie {
         return animation_transforms;
     };
 
-    /**
-     * Creats a new player in the game and:
-     * 1. Sets up its animations
-     * 2. Places it a starting position
-     */
-    void MagpieGameMode::create_player(glm::vec3 position) {
+    
+    Player* MagpieGameMode::create_player(glm::vec3 position) {
         
         Magpie::Player* player = new Player();
 
@@ -247,9 +244,11 @@ namespace Magpie {
 
         // Add the player to the game
         game.set_player(player);
+
+        return player;
     };
 
-    void MagpieGameMode::create_guard(glm::vec3 position) {
+    Guard* MagpieGameMode::create_guard(glm::vec3 position) {
 
         Magpie::Guard* guard = new Guard();
 
@@ -309,6 +308,8 @@ namespace Magpie {
 
         // Add the guard to the game
         game.add_guard(guard);
+
+        return guard;
     };
 
     /**
@@ -321,8 +322,16 @@ namespace Magpie {
 
         MagpieLevel* level = level_pixel_data.load(data_path(level_file), &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
-            Scene::Object::ProgramInfo default_program_info = vertex_color_program_info;
-            default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+            Scene::Object::ProgramInfo default_program_info;
+            
+            if (m.find("wall") != std::string::npos) {
+                default_program_info = transparent_program_info;
+                default_program_info.vao = *highlighted_building_meshes_vao;
+            } else {
+                default_program_info = vertex_color_program_info;
+                default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+            }
+            
             obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
             MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
@@ -363,23 +372,22 @@ namespace Magpie {
      * the colors in the fragment shader.
      */
     void MagpieGameMode::highlight_path_tiles() {
-        //std::vector< FloorTile* >* highlighted_tiles = game.current_level->get_highlighted_tiles();
-        //if (!highlighted_tiles->empty()) {
-        //    for (uint32_t i = 0; i < highlighted_tiles->size(); i++) {
-        //        (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
-        //        (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
-        //    }
-        //}
-        //highlighted_tiles->clear();
-        //
-        //std::vector<glm::vec2> path = game.get_player()->get_path();
-        //FloorTile**** floor_matrix = game.current_level->get_floor_matrix();
-        //for (uint32_t i = 0; i < path.size(); i++) {
-        //    //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->active = false;
-        //    //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault] = highlight_program_info;
-        //    //(*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
-        //    highlighted_tiles->push_back((*floor_matrix)[(uint32_t)path[i].x][(uint32_t)path[i].y]);
-        //}
+        std::vector< FloorTile* >* highlighted_tiles = game.get_level()->get_highlighted_tiles();
+        if (!highlighted_tiles->empty()) {
+            for (uint32_t i = 0; i < highlighted_tiles->size(); i++) {
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
+            }
+        }
+        highlighted_tiles->clear();
+        
+        std::vector<glm::vec2> path = game.get_player()->get_path()->get_path();
+        FloorTile*** floor_matrix = game.get_level()->get_floor_matrix();
+        for (uint32_t i = 0; i < path.size(); i++) {
+            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault] = highlight_program_info;
+            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
+            highlighted_tiles->push_back(floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]);
+        }
     }
 
     /**
@@ -407,7 +415,7 @@ namespace Magpie {
      * Calculates the point at which the given ray intersects with the horizontal
      * plane defined by the x and y axes.
      */
-    glm::ivec3 MagpieGameMode::get_click_floor_intersect(Magpie::Ray click_ray, float floorHeight) {
+    glm::vec3 MagpieGameMode::get_click_floor_intersect(Magpie::Ray click_ray, float floorHeight) {
 
         // float dist = worldOrigin.z - floorHeight;
 
@@ -418,6 +426,12 @@ namespace Magpie {
         float t = (floorHeight- click_ray.origin.z) / click_ray.direction.z;
 
         glm::vec3 pointOfIntersect = click_ray.origin + t * click_ray.direction;
+
+        // Rounds the intersection to be a whole number tile position
+        pointOfIntersect.x = floor(pointOfIntersect.x + 0.5f);
+        pointOfIntersect.y = floor(pointOfIntersect.y + 0.5f);
+
+        printf("Player clicked tile: (%f, %f, %f)\n", pointOfIntersect.x, pointOfIntersect.y, pointOfIntersect.z);
 
         return pointOfIntersect;
     };
@@ -433,7 +447,8 @@ namespace Magpie {
         
         for (auto it = game.get_level()->get_paintings()->begin(); it != game.get_level()->get_paintings()->end(); it++) {
             for (auto paint_iter = it->second.begin(); paint_iter != it->second.end(); paint_iter++) {
-                if (paint_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+                if (paint_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction) 
+                    && paint_iter->get_scene_object()->active) {
                     paint_iter->steal(game.get_player());
                     paint_iter->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
@@ -444,7 +459,8 @@ namespace Magpie {
 
         for (auto it = game.get_level()->get_gems()->begin(); it != game.get_level()->get_gems()->end(); it++) {
             for (auto gem_iter = it->second.begin(); gem_iter != it->second.end(); gem_iter++) {
-                if (gem_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+                if (gem_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                 && gem_iter->get_scene_object()->active) {
                     gem_iter->steal(game.get_player());
                     gem_iter->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
@@ -461,12 +477,26 @@ namespace Magpie {
      * Sets the player's destination to be that position, and modifies the player's
      * state as needed.
      */
-    bool MagpieGameMode::handle_player_movement(glm::ivec3 click_floor_intersect) {
-        //sgame.get_player()->setDestination(glm::ivec2(click_floor_intersect.x, click_floor_intersect.y));
-        //if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-        //    game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-        //}
-        return true;
+    bool MagpieGameMode::handle_player_movement(glm::vec3 click_floor_intersect) {
+        if (game.get_level()->can_move_to(game.get_player()->get_current_room(), click_floor_intersect.x, click_floor_intersect.y)) {
+            game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
+                glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
+                glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
+            //highlight_path_tiles();
+            
+            std::cout << "DEBUG:: Player can move to that position" << std::endl;
+            glm::vec2 destination = game.get_player()->get_path()->next();
+            
+            game.get_player()->setDestination(glm::vec3(destination.x, destination.y, 0.0f));
+            
+            if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+                game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+            }
+            return true;
+        } else {
+            std::cout << "DEBUG:: Player can't move to that position" << std::endl;
+        } 
+        return false;
     };
 
     /**
@@ -477,12 +507,11 @@ namespace Magpie {
     bool MagpieGameMode::handle_screen_click(Magpie::Ray click_ray) {
         bool handled = false;
         if (!handled) {
-            handled =  handle_clickables(click_ray);
+            //handled =  handle_clickables(click_ray);
         }
         
         if (!handled) {
-            glm::ivec3 point_of_intersect_at_floor = get_click_floor_intersect(click_ray, 0.0f);
-            handled = handle_player_movement(point_of_intersect_at_floor);
+            handled = handle_player_movement(get_click_floor_intersect(click_ray, 0.0f));
         }
         return handled;
     };

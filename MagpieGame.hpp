@@ -26,7 +26,6 @@ namespace Magpie {
         MagpieLevel* get_level();
 
         void add_guard(Guard* guard);
-
         void set_player(Player* player);
         void set_guards(std::vector< Guard* > guard_vec);
         void set_level(MagpieLevel* level);

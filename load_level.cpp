@@ -173,15 +173,15 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                 temp_transform->name = "floor_" + std::to_string(i);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 level->set_movement_matrix_position(x, y, true);
-                FloorTile**** floor = level->get_floor_matrix();
-                (*floor)[x][y] = new FloorTile(temp_object);
+                FloorTile*** floor = level->get_floor_matrix();
+                floor[x][y] = new FloorTile(temp_object, room_number);
                 continue;
             }
 
             // Doors
             if (mesh_id == 4) {
                 std::string name = "Door_" + std::to_string(i);
-                temp_transform->name = std::string(name);
+                temp_transform->name = name;
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 level->set_movement_matrix_position(x, y, true);
 
@@ -214,8 +214,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
 
              // Walls
             if (mesh_id == 16) {
-                std::string name = "wall_" + std::to_string(i);
-                temp_transform->name = std::string(name);
+                temp_transform->name = "wall_" + std::to_string(i);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 
                 if (current_pixel.is_item_location()) {

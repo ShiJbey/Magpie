@@ -8,10 +8,14 @@ Magpie::Player::Player() {
 
     animation_manager = new AnimationManager();
 
-    current_destination = glm::vec2(-0.0f, -0.0f);
+    score = 0;
+
+    current_destination = glm::ivec3(0, 0, 0);
     orientation = DIRECTION::LEFT;
     movespeed = 2.0f;
 };
+
+
 
 // Runs the lambda functions for each task on the hit list
 // that has not been marked as completed
@@ -39,45 +43,75 @@ void Magpie::Player::print_tasks() {
     }
 };
 
-
-
+void Magpie::Player::setDestination(glm::vec3 destination) {
+    current_destination = destination;
+    //set_velocity(glm::normalize(destination - get_position()));
+    Player::turnTo(current_destination);
+    set_model_orientation(orientation);
+};
 
 void Magpie::Player::walk(float elapsed) {
 
-    //printf("Current Destination: ( %f, %f)\n", current_destination.x, current_destination.y);
-    //printf("Current Board Position: ( %f, %f)\n", board_position.x, board_position.y);
-    //printf("Current Trans Position: ( %f, %f)\n", (*transform)->position.x, (*transform)->position.y);
-    //turnTo(current_destination);
-    if (current_destination == glm::vec2(-1.0f, -1.0f)) {
-        current_destination = glm::vec2(get_position().x, get_position().y);
-    }
+    printf("Positions in path: %zd\n", path.get_path().size());
+    printf("Destination Index: %d\n", next_destination_index);
 
-    Player::set_position((*transform)->position + (velocity * elapsed));
-    float distance_to_destination = glm::length(glm::vec3((float)current_destination.x, (float)current_destination.y, 0.0f) - get_position());
-    
-    if (distance_to_destination <= 0.01f || current_destination == glm::vec2(-1.0f, -1.0f || distance_to_destination > 2.0f)){//|| glm::dot(vector_to, getDirectionVec2()) < 0) {
-        if (path.isEmpty()) {
-            printf("DEBUG:: DONE PATH\n");
+    //float distance = elapsed * movespeed;
+
+    //glm::vec2 displacement = getDirectionVec2() * distance;
+
+
+
+    //glm::vec3 vector_to =  current_destination - glm::vec3(get_position().x, get_position().y, 0.0f);
+
+    printf("Current Destination: (%f, %f, %f\n", current_destination.x, current_destination.y, current_destination.z);
+
+    //if (glm::length(vector_to) < distance || glm::dot(vector_to, glm::vec3(getDirectionVec2().x, getDirectionVec2().y, 0.0f)) < 0) {
+
+        if (next_destination_index == path.get_path().size()) {
+
             Player::set_state((uint32_t)Player::STATE::IDLE);
-            velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+            next_destination_index = 0;
             return;
+
         } else {
             
-            Player::set_position(glm::vec3(current_destination, 0.0f));
-            printf("DESTINATION REACHED\n");
-            glm::vec2 next_destination = path.next();
-            printf("NEXT DESTINATION: ( %f, %f)\n", next_destination.x, next_destination.y);
-            turnTo(next_destination);
-            current_destination = next_destination;
-            glm::vec3 vec_to_next_destination = glm::vec3((float)current_destination.x, (float)current_destination.y, 0.0f) - get_position();
-            if (glm::length(vec_to_next_destination) != 0.0f) {
-                velocity = glm::normalize(vec_to_next_destination) * 2.0f;
-            } else {
-                velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-            }
-            set_model_orientation(orientation);
+            //Player::set_position(current_destination);
+           
+            printf("Player Position: (%f, %f, %f\n", get_position().x, get_position().y, get_position().z);
+            //printf("DESTINATION REACHED\n");
+            
+            glm::vec2 next_destination = path.get_path()[next_destination_index];
+            next_destination_index++;
+            
+            current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
+            Player::set_position(current_destination);
+            printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
+
+            //turnTo(current_destination);
+
+            //set_model_orientation(orientation);
+
+            
+
+            
+
         }
+
+    //} else {
+
+        //Player::set_position((*transform)->position + glm::vec3(displacement, 0.0f));
+
+    //}
+
+    /*
+    set_position(get_position() + elapsed * velocity * movespeed);
+
+    if (glm::length(current_destination - get_position()) <= 0.01) {
+        set_position(current_destination);
+        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
+        set_state((uint32_t)Player::STATE::IDLE);
     }
+    */
 };
 
 void Magpie::Player::consume_signal() {
@@ -87,16 +121,15 @@ void Magpie::Player::consume_signal() {
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
     
-    /*
+    
     if (current_state == (uint32_t)Player::STATE::WALKING) {
         walk(elapsed);
     }
 
-    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
-        set_state((uint32_t)Player::STATE::IDLE);
-        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
-    }
-    */
+    //if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
+    //    set_state((uint32_t)Player::STATE::IDLE);
+    //    set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
+    //}
 };
 
 void Magpie::Player::update_state(float elapsed) {
@@ -109,7 +142,7 @@ void Magpie::Player::interact() {
 
 void Magpie::Player::set_position(glm::vec3 position) {
     Magpie::GameCharacter::set_position(position);
-    board_position = glm::uvec2(position);
+    board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 };
 
 void Magpie::Player::set_state(uint32_t state) {
@@ -200,6 +233,10 @@ Scene::Transform* Magpie::Player::load_model(Scene& scene, const ModelData* mode
     return model_group_transform;
 };
 
+/**
+ * Names of the transforms associated with animations need to be changes to fit the instancing
+ * naming convention
+ */
 std::vector< std::string > Magpie::Player::convert_animation_names(const TransformAnimation* tanim, std::string model_name) {
     std::vector< std::string > modified_names;
     std::vector< std::string > model_parts = { "GRP", "body", "head", "L_leg", "R_leg", "R_arm", "L_arm" };
@@ -214,3 +251,37 @@ std::vector< std::string > Magpie::Player::convert_animation_names(const Transfo
     return modified_names;
 };
 
+void Magpie::Player::set_current_room(uint32_t room_number) {
+    this->current_room = room_number;
+};
+
+uint32_t Magpie::Player::get_current_room() {
+    return this->current_room;
+};
+
+void Magpie::Player::turnTo(glm::vec3 destination) {
+
+    
+
+    float x_difference = destination.x - get_position().x;
+    float y_difference = destination.y - get_position().y;
+
+    // WARNING::Only handles movement in cardinal directions
+    if (x_difference > 0) {
+        std::cout << "DEBUG:: Facing right" << std::endl;
+        orientation = DIRECTION::RIGHT;
+    }
+    else if (x_difference < 0) {
+        std::cout << "DEBUG:: Facing left" << std::endl;
+        orientation = DIRECTION::LEFT;
+    }
+    else {
+        if (y_difference > 0) {
+            std::cout << "DEBUG:: Facing up" << std::endl;
+            orientation = DIRECTION::UP;
+        } else {
+            std::cout << "DEBUG:: Facing down" << std::endl;
+            orientation = DIRECTION::DOWN;
+        }
+    }
+};

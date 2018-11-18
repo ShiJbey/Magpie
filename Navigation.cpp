@@ -39,7 +39,8 @@ glm::vec2 Magpie::Path::top() {
 bool Magpie::Navigation::can_move_to(float x, float y) {
     if (this->movement_matrix == nullptr) {
         return false;
-    } 
+    }
+
     else if ((uint32_t)x >= (*movement_matrix).size() || (uint32_t)y >= (*movement_matrix)[(uint32_t)x].size()) {
         return false;
     }
@@ -63,6 +64,7 @@ void Magpie::Navigation::print_movement_matrix() {
 void Magpie::Navigation::reset_visited_matrix() {
     for (uint32_t x = 0; x < visited_matrix.size(); x++) {
         for (uint32_t y = 0; y < visited_matrix[x].size(); y++) {
+            //std::get<0>(visited_matrix[x][y]) = false;
             visited_matrix[x][y] = std::make_tuple(false, glm::vec2((float)x, (float)y), 100000.0f);
         }
     }
@@ -70,64 +72,46 @@ void Magpie::Navigation::reset_visited_matrix() {
 
 std::vector<glm::vec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
     std::vector<glm::vec2> adjacent_tiles;
-    
-    if (pos.x > 0) {
 
-        // Check position to the left
-        if (can_move_to(pos.x - 1, pos.y)) {
-            adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y));
-        }
-        
-        // Check position bottom left
-        if (pos.y > 0) {
-            if (can_move_to(pos.x - 1, pos.y - 1)) {
-                adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y - 1));
-            }
-        }
-
-        // Check upper left
-        if (pos.y < -1U) {
-            if (can_move_to(pos.x - 1, pos.y + 1)) {
-                adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y + 1));
-            }
-        }
-
+    // Check position to the left
+    if (can_move_to(pos.x - 1, pos.y)) {
+        adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y));
     }
 
-    if (pos.x < -1U) {
-        // Check to the right
-        if (can_move_to(pos.x + 1, pos.y)) {
-            adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y));
-        }
-
-        // Check position bottom right
-        if (pos.y > 0) {
-            if (can_move_to(pos.x + 1, pos.y - 1)) {
-                adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y - 1));
-            }
-        }
-
-        // Check upper right
-        if (pos.y < -1U) {
-            if (can_move_to(pos.x + 1, pos.y + 1)) {
-                adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y + 1));
-            }
-        }
+    // Check to the right
+    if (can_move_to(pos.x + 1, pos.y)) {
+        adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y));
     }
 
+    // Check above
+    if (can_move_to(pos.x, pos.y + 1)) {
+        adjacent_tiles.push_back(glm::vec2(pos.x, pos.y + 1));
+    }
 
-    if (pos.y < -1U) {
-        if (can_move_to(pos.x, pos.y + 1)) {
-            adjacent_tiles.push_back(glm::vec2(pos.x, pos.y + 1));
-        }
+    // Check below
+    if (can_move_to(pos.x, pos.y - 1)) {
+        adjacent_tiles.push_back(glm::vec2(pos.x, pos.y - 1));
     }
     
-    if (pos.y > 0) {
-        if (can_move_to(pos.x, pos.y - 1)) {
-            adjacent_tiles.push_back(glm::vec2(pos.x, pos.y - 1));
-        }
+    // Check position bottom left
+    if (can_move_to(pos.x - 1, pos.y - 1)) {
+        //adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y - 1));
+    }
+
+    // Check upper left
+    if (can_move_to(pos.x - 1, pos.y + 1)) {
+        //adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y + 1));
     }
     
+    // Check position bottom right
+    if (can_move_to(pos.x + 1, pos.y - 1)) {
+        //adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y - 1));
+    }
+
+    // Check upper right
+    if (can_move_to(pos.x + 1, pos.y + 1)) {
+        //adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y + 1));
+    }
     
     // From https://en.cppreference.com/w/cpp/algorithm/random_shuffle
     std::random_device rd;
@@ -218,4 +202,11 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
 
     return Path(path_vector);
 }
+
+void Magpie::Navigation::init(FloorTile*** floor_tiles, Door*** doors, uint32_t level_width, uint32_t level_height) {
+    this->floor_tiles = floor_tiles;
+    this->doors = doors;
+    this->level_width = level_width;
+    this->level_height = level_height;
+};
 

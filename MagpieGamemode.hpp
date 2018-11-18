@@ -66,11 +66,11 @@ namespace Magpie {
 
         // Adds a new guard to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
-        void create_guard(glm::vec3 position);
+        Guard* create_guard(glm::vec3 position);
 
         // Adds a new player to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
-        void create_player(glm::vec3 position);
+        Player* create_player(glm::vec3 position);
 
         // Highlights the tile meshes along the player's path
         // NOTE:: This function will most likely be deleted since
@@ -83,7 +83,7 @@ namespace Magpie {
 
         // Set play movement to the destination calculated by a raycast
         // from the players screen click
-        bool handle_player_movement(glm::ivec3 click_floor_intersect);
+        bool handle_player_movement(glm::vec3 click_floor_intersect);
 
         // Performs collision detection between the given ray
         // and Clickable objects in the worlds
@@ -91,7 +91,7 @@ namespace Magpie {
 
         //mouse pick sends a raycast from where the mouse has clicked and returns which tile
         //the user has landed in
-        glm::ivec3 get_click_floor_intersect(Magpie::Ray click_ray, float floorHeight);
+        glm::vec3 get_click_floor_intersect(Magpie::Ray click_ray, float floorHeight);
 
         // Creates a ray based on where the user clicks on the screen
         Ray create_click_ray(int mouseX, int mouseY, int screenWidth, int screenHeight, const Scene::Camera* cam);

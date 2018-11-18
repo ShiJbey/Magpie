@@ -62,6 +62,9 @@ namespace Magpie {
 
         void interact();
 
+        virtual void setDestination(glm::vec3 destination);
+        virtual void turnTo(glm::vec3 destination);
+
         // Loads Magpie model data specifically
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
@@ -72,9 +75,12 @@ namespace Magpie {
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
         void set_score(uint32_t score);
+        void set_current_room(uint32_t room_number);
+
         
         // GETTERS
         uint32_t get_score();
+        uint32_t get_current_room();
         
         
     protected:
@@ -86,6 +92,10 @@ namespace Magpie {
         // NOTE:: This is old code, but it may be used later
         //        when the game is in a more polished state
         std::vector < HitlistTask > hitlist;
+
+        // Used to force the player to walk through doors
+        uint32_t current_room = 0;
+        
 
     };
 }
