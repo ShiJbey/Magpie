@@ -269,7 +269,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                         temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                     else {
-                        uint8_t mesh_above = pixel_data[((y + 1) * level_width) + x].get_mesh_id();
+//                        uint8_t mesh_above = pixel_data[((y + 1) * level_width) + x].get_mesh_id();
                         uint8_t mesh_below = pixel_data[((y - 1) * level_width) + x].get_mesh_id();
                         if (mesh_below == 4 || (mesh_below >= 16 && mesh_below <= 19)) {
                             temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -284,7 +284,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                         temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                     else {
-                        uint8_t mesh_above = pixel_data[((y + 1) * level_width) + x].get_mesh_id();
+//                        uint8_t mesh_above = pixel_data[((y + 1) * level_width) + x].get_mesh_id();
                         uint8_t mesh_below = pixel_data[((y - 1) * level_width) + x].get_mesh_id();
                         if (mesh_below == 4 || (mesh_below >= 16 && mesh_below <= 19)) {
                             temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
