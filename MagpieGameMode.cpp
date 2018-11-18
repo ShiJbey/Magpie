@@ -604,6 +604,17 @@ namespace Magpie {
             return false;
         }
 
+        //keypress event handle
+        if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
+            if (evt.key.keysym.scancode == SDL_SCANCODE_M) { //M pressed for map
+                ui.stateChanger('m');
+                return true;
+            }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_I) { //I pressed for inventory
+                ui.stateChanger('i');
+                return true;
+            }
+        }
 
         if (evt.type == SDL_MOUSEBUTTONUP) {
             if (evt.button.button == SDL_BUTTON_LEFT) {

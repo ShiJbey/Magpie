@@ -1,8 +1,7 @@
 
-#include "Inventory.h"
-#include "Map.h"
-#include "SignalQueue.h"
+//#include "SignalQueue.h"
 #include "UI.h"
+#include <iostream>
 
 
 UI::UI(int object_id, int group_id) {
@@ -15,9 +14,10 @@ UI::UI(int object_id, int group_id) {
     inventory = Inventory();
 }
 
-void UI::consumeSignal(){
+void UI::consume_signal() {
+    /*
     //get right signals
-    Signal *s = SignalQueue::getInstance().get(objID, grpID); 
+    Magpie::Signal *s = Magpie::Signal(objID, grpID); 
     while (s != NULL) {
         std::string parsedSig = s->msg;
         if (parsedSig == "endgame") {
@@ -25,6 +25,7 @@ void UI::consumeSignal(){
         }
         s = SignalQueue::getInstance().get(objID, grpID);
     }
+    */
 }
 
 void UI::stateChanger(char keyPressed) {
@@ -32,11 +33,20 @@ void UI::stateChanger(char keyPressed) {
         //set state of inventory to OUT and state of map to OFF
         inventory.state = Inventory::OUT;
         map.state = Map::OFF;
+        std::cout<<"state of map is now: "<<map.state<<std::endl;
     }
     else if (keyPressed == 'm') {
-        //set state of inventory to IN and state of map to ON
+        //no matter if map is being called or dismissed inventory should not be out
         inventory.state = Inventory::IN;
-        map.state = Map::ON;
+        if (map.state == Map::OFF) {
+            //set state of map to ON
+            map.state = Map::ON;
+        }
+        else if (map.state == Map::ON) {
+            //set state of map to OFF
+            map.state = Map::OFF;
+        }
+        std::cout<<"state of map is now: "<<map.state<<std::endl;
     }
     else if (DONESCROLLING == true) { //d for done scrolling in
         //set state of inventory to IDLE

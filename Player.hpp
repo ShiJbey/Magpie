@@ -25,7 +25,7 @@ namespace Magpie {
 
     class Player: public GameAgent, public Signalable {
     public:
-        
+    
         // States specific to the magpie player
         enum class STATE {
             IDLE = 0,

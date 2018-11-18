@@ -2,15 +2,17 @@
 #ifndef UI_AGENT_H
 #define UI_AGENT_H
 
-#include "Agent.h"
+#include "Inventory.h"
+#include "Map.h"
+#include "Signalable.hpp"
 
-class UI : public Agent{
+class UI : public Magpie::Signalable{
 public:
     //constructor
     UI(int object_id, int group_id);
 
     //handling signals sent to UI for triggering endgame
-    void consumeSignal() override;
+    void consume_signal() override;
 
     //the function handles state changes between Inventory and Map.
     //when "m" is pressed, the inventory is put away if it is out and map takes up whole screen.

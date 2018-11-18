@@ -29,7 +29,7 @@ namespace Magpie {
 
     class Item {
     public:
-        Scene::Object* get_object_model() { this->object_model; }
+        //Scene::Object* get_object_model() { this->object_model; }
     protected:
         Scene::Object *object_model;
     };
