@@ -13,7 +13,7 @@ bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm
 
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
     glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
-    glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
+    //glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
 
     glm::vec3 delta = position - ray_origin;
 

@@ -4,6 +4,8 @@
 #include "MagpieLevel.hpp"
 #include "Navigation.h"
 
+#include "UI.h"
+
 #include "Mode.hpp"
 #include "TransformAnimation.hpp"
 #include "MeshBuffer.hpp"
@@ -47,5 +49,8 @@ namespace Magpie {
         void init_scene();
 
         Scene scene;
+
+        //UI testing
+        UI ui = UI(1, 1);
     };
 }

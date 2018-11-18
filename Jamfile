@@ -91,9 +91,9 @@ CLIENT_NAMES =
 	MagpieGameMode
 	AnimationManager
 	Clickable
+	UI
 	Map
 	Inventory
-	UI
 	;
 
 if $(OS) = NT {

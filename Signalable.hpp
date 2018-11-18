@@ -2,6 +2,7 @@
 
 #include <deque>
 #include <vector>
+#include <cstdint>
 
 namespace Magpie {
     class Signal {
