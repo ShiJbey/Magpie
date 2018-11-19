@@ -11,13 +11,13 @@ Inventory::~Inventory(){
 }
 
 void Inventory::drawInv(){
-    if (state == OUT) {
+    if (state == S_OUT) {
         ;
     }
-    else if (state == IN) {
+    else if (state == S_IN) {
         ;
     }
     else { //idle
-        assert(state == IDLE);
+        assert(state == S_IDLE);
     }
 }

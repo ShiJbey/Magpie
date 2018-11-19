@@ -4,6 +4,7 @@
 
 
 glm::vec2 Magpie::GameAgent::getDirectionVec2() {
+
     switch (orientation) {
         case DIRECTION::UP:
             return glm::vec2(0, 1);
@@ -86,7 +87,8 @@ Magpie::Path* Magpie::GameAgent::get_path() {
 };
 
 void Magpie::GameAgent::set_path(Magpie::Path path) {
-    this->path = path;
+    this->is_new_path = true;
+    this->new_path = path;
 
     this->next_destination_index = 0;
     printf("Reseting next destination index to %d\n", next_destination_index);

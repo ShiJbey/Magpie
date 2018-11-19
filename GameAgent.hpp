@@ -44,11 +44,15 @@ namespace Magpie {
         // simplicity
         uint32_t current_state = 0;
         float movespeed = 1.0f;
+		float accumulate_time = 0.0f;
+		glm::vec3 starting_point;
         DIRECTION orientation;
         glm::ivec3 board_position;
         glm::vec3 current_destination;
         bool at_destination;
         Path path;
+        Path new_path;
+        bool is_new_path;
         uint32_t next_destination_index = 0;
     };
 }
