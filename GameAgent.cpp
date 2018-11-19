@@ -87,9 +87,41 @@ Magpie::Path* Magpie::GameAgent::get_path() {
 };
 
 void Magpie::GameAgent::set_path(Magpie::Path path) {
-    this->is_new_path = true;
-    this->new_path = path;
+    // The magpie has finished the previous path and this one
+    // should replace the old one
+    if (this->next_destination_index > this->path.get_path().size() + 1 ||
+        this->next_destination_index == 0) {
+        
+        this->is_new_path = true;
+        this->new_path = path;
+        this->next_destination_index = 0;
+        printf("Reseting next destination index to %d\n", next_destination_index);
+    }
+    // The player has clicked for the magpie to move on a different path
+    // while the Magpie was currently navigating a path
+    else {
+        printf("PIZZA: Appending new path to previous\n");
+        // Remove all locations in the path vector after the current destination
+        // Append this path to the end of the old path and let the magpie continue
+        // as normal
+        std::vector<glm::vec2> modified_path = this->path.get_path();
+        std::vector<glm::vec2> new_path = path.get_path();
 
-    this->next_destination_index = 0;
-    printf("Reseting next destination index to %d\n", next_destination_index);
+        // Erase all locations after the next destination
+        modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
+        
+        // Append all the locations in the given path
+        for(auto &pos : new_path) {
+            modified_path.push_back(pos);
+        }
+
+        // print the new path
+        std::cout << "**== Modified Path ==**" << std::endl;
+        for(auto &pos : modified_path) {
+            std::cout << "\t( " << pos.x << ", " << pos.y << " )" << std::endl;
+        };
+
+        // Set the path to the newly modified one
+        this->path = modified_path;
+    }
 };

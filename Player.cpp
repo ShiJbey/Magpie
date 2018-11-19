@@ -53,12 +53,22 @@ void Magpie::Player::setDestination(glm::vec3 destination) {
 void Magpie::Player::walk(float elapsed) {
 
     if (is_new_path) {
+        
         is_new_path = false;
         path = new_path;
 
         next_destination_index = 0;
-		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index++], 0.0f);
+
+        printf("=====Starting on a new path=====\n");
+        printf("\tBeginning Destination Index: %d\n", next_destination_index);
+
+		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index], 0.0f);
+        next_destination_index++;
         current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
+
+        printf("\t#### Destination Set ####\n");
+        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+        printf("\tNext Destination Index is now: %d\n", next_destination_index);
 
         accumulate_time = 0;
 		turnTo(current_destination);
@@ -67,17 +77,17 @@ void Magpie::Player::walk(float elapsed) {
     }
 
 //    printf("Positions in path: %zd\n", path.get_path().size());
-//    printf("Destination Index: %d\n", next_destination_index);
-    for (int i = 0; i < path.get_path().size(); i++) {
+   
+//    for (int i = 0; i < path.get_path().size(); i++) {
 //        printf("(%f, %f),", path.get_path()[i].x, path.get_path()[i].y);
-    }
+//    }
 //    printf("\n");
 
     //float distance = elapsed * movespeed;
 
     //glm::vec2 displacement = getDirectionVec2() * distance;
 
-	if (next_destination_index == path.get_path().size() + 1)
+	if (next_destination_index > this->path.get_path().size())
 	{
 		Player::set_state((uint32_t)Player::STATE::IDLE);
 		next_destination_index = 0;
@@ -97,7 +107,7 @@ void Magpie::Player::walk(float elapsed) {
     if (vector_to.x != 0) vector_to.x = vector_to.x / abs(vector_to.x);
     if (vector_to.y != 0) vector_to.y = vector_to.y / abs(vector_to.y);
 
-//    printf("Current Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+//    
 
 	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
 //    printf("Moving Distance: (%f, %f, %f, %f, %f)\n", accumulate_time, vector_to.x, vector_to.y, moving_distance.x, moving_distance.y);
@@ -108,15 +118,26 @@ void Magpie::Player::walk(float elapsed) {
 	{
 		accumulate_time = 0;
 		current_position = current_destination;
-		glm::vec2 next_destination = path.get_path()[next_destination_index++];
-		current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
+        if (next_destination_index < this->path.get_path().size()) {
+            glm::vec2 next_destination = path.get_path()[next_destination_index++];
+		    current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f); 
+        } else {
+            next_destination_index++;
+        }
+
+        printf("\t#### Destination Set ####\n");
+            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+            printf("\tNext Destination Index is now: %d\n", next_destination_index);
+            turnTo(current_destination);
+            set_model_orientation(orientation);
+		
+        
 	}
 
-	printf("Current Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-    printf("Current Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
+	//printf("Current Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+    //printf("Current Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
     Player::set_position(current_position);
-    turnTo(current_destination);
-    set_model_orientation(orientation);
+    
 
 
 	/*
