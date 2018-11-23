@@ -71,6 +71,8 @@ CLIENT_NAMES =
 	compile_program
 	vertex_color_program
 	texture_program
+	highlight_program
+	transparent_program
 	depth_program
 	Scene
 	Mode
@@ -79,18 +81,25 @@ CLIENT_NAMES =
 	MeshBuffer
 	draw_text
 	Sound
-	Grid
 	TransformAnimation
-	Agent
+	FloorTile
+	Item
+	MagpieLevel
 	Navigation
-	MagpieGameMode
 	load_level
-	Entity
-	PlayerAgent
-	PlayerModel
-	GuardModel
-	GuardAgent
-	SignalQueue
+	GameAgent
+	Guard
+	Player
+	Signalable
+	MagpieGame
+	MagpieGameMode
+	AnimationManager
+	Clickable
+	Map
+	Inventory
+	AssetLoader
+	GameCharacter
+	UI
 	;
 
 if $(OS) = NT {
