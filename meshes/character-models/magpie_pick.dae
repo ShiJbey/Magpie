@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-11-08T23:55:25Z</created><keywords></keywords><modified>2018-11-08T23:55:25Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-11-23T05:26:31Z</created><keywords></keywords><modified>2018-11-23T05:26:31Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_materials>
     <material id="lambert1" name="lambert1">
       <instance_effect url="#lambert1-fx"/>
@@ -32,10 +32,10 @@
     </effect>
   </library_effects>
   <library_geometries>
-    <geometry id="magpieIdle_L_leg_MSH-lib" name="magpieIdle_L_leg_MSHMesh">
+    <geometry id="magpiePick_L_leg_MSH-lib" name="magpiePick_L_leg_MSHMesh">
       <mesh>
-        <source id="magpieIdle_L_leg_MSH-POSITION">
-          <float_array id="magpieIdle_L_leg_MSH-POSITION-array" count="48">
+        <source id="magpiePick_L_leg_MSH-POSITION">
+          <float_array id="magpiePick_L_leg_MSH-POSITION-array" count="48">
 0.041667 0.083333 0.041667
 0.125000 0.083333 0.041667
 0.041667 0.166667 0.041667
@@ -54,15 +54,15 @@
 0.125000 0.041667 -0.041667
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_leg_MSH-POSITION-array" count="16" stride="3">
+            <accessor source="#magpiePick_L_leg_MSH-POSITION-array" count="16" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_leg_MSH-Normal0">
-          <float_array id="magpieIdle_L_leg_MSH-Normal0-array" count="216">
+        <source id="magpiePick_L_leg_MSH-Normal0">
+          <float_array id="magpiePick_L_leg_MSH-Normal0-array" count="216">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -137,15 +137,15 @@
 -1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_leg_MSH-Normal0-array" count="72" stride="3">
+            <accessor source="#magpiePick_L_leg_MSH-Normal0-array" count="72" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_leg_MSH-UV0">
-          <float_array id="magpieIdle_L_leg_MSH-UV0-array" count="56">
+        <source id="magpiePick_L_leg_MSH-UV0">
+          <float_array id="magpiePick_L_leg_MSH-UV0-array" count="56">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -176,14 +176,14 @@
 0.125000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_leg_MSH-UV0-array" count="28" stride="2">
+            <accessor source="#magpiePick_L_leg_MSH-UV0-array" count="28" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_leg_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_L_leg_MSH-VERTEX_COLOR0-array" count="192">
+        <source id="magpiePick_L_leg_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_L_leg_MSH-VERTEX_COLOR0-array" count="192">
 0.410700 0.204900 0.056300 1.000000
 0.410700 0.204900 0.056300 1.000000
 0.410700 0.204900 0.056300 1.000000
@@ -234,7 +234,7 @@
 0.410700 0.204900 0.056300 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_leg_MSH-VERTEX_COLOR0-array" count="48" stride="4">
+            <accessor source="#magpiePick_L_leg_MSH-VERTEX_COLOR0-array" count="48" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -242,16 +242,16 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_L_leg_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_L_leg_MSH-POSITION"/>
+        <vertices id="magpiePick_L_leg_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_L_leg_MSH-POSITION"/>
         </vertices>
-        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_L_leg_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_L_leg_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_L_leg_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_L_leg_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 5 6 5 6 2 7 2 4 3 8 3 5 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 3 24 3 19 1 25 1 16 5 26 11 18 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 11 42 16 29 13 43 18 30 10 44 17 28 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 8 54 23 39 14 55 21 36 9 56 22 38 9 57 22 38 14 58 21 36 15 59 20 37 13 60 25 42 11 61 16 43 9 62 15 40 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
+        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_L_leg_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_L_leg_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_L_leg_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_L_leg_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 5 6 5 6 2 7 2 4 3 8 3 5 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 3 24 3 19 1 25 1 16 5 26 11 18 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 11 42 16 29 13 43 18 30 10 44 17 28 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 8 54 23 39 14 55 21 36 9 56 22 38 9 57 22 38 14 58 21 36 15 59 20 37 13 60 25 42 11 61 16 43 9 62 15 40 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="magpieIdle_R_leg_MSH-lib" name="magpieIdle_R_leg_MSHMesh">
+    <geometry id="magpiePick_R_leg_MSH-lib" name="magpiePick_R_leg_MSHMesh">
       <mesh>
-        <source id="magpieIdle_R_leg_MSH-POSITION">
-          <float_array id="magpieIdle_R_leg_MSH-POSITION-array" count="48">
+        <source id="magpiePick_R_leg_MSH-POSITION">
+          <float_array id="magpiePick_R_leg_MSH-POSITION-array" count="48">
 -0.125000 0.041667 0.166667
 -0.041667 0.041667 0.166667
 -0.125000 0.083333 0.166667
@@ -270,15 +270,15 @@
 -0.041667 0.083333 -0.041667
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_leg_MSH-POSITION-array" count="16" stride="3">
+            <accessor source="#magpiePick_R_leg_MSH-POSITION-array" count="16" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_leg_MSH-Normal0">
-          <float_array id="magpieIdle_R_leg_MSH-Normal0-array" count="216">
+        <source id="magpiePick_R_leg_MSH-Normal0">
+          <float_array id="magpiePick_R_leg_MSH-Normal0-array" count="216">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -353,15 +353,15 @@
 -1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_leg_MSH-Normal0-array" count="72" stride="3">
+            <accessor source="#magpiePick_R_leg_MSH-Normal0-array" count="72" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_leg_MSH-UV0">
-          <float_array id="magpieIdle_R_leg_MSH-UV0-array" count="56">
+        <source id="magpiePick_R_leg_MSH-UV0">
+          <float_array id="magpiePick_R_leg_MSH-UV0-array" count="56">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -392,14 +392,14 @@
 0.125000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_leg_MSH-UV0-array" count="28" stride="2">
+            <accessor source="#magpiePick_R_leg_MSH-UV0-array" count="28" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_leg_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_R_leg_MSH-VERTEX_COLOR0-array" count="192">
+        <source id="magpiePick_R_leg_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_R_leg_MSH-VERTEX_COLOR0-array" count="192">
 0.410700 0.204900 0.056300 1.000000
 0.410700 0.204900 0.056300 1.000000
 0.410700 0.204900 0.056300 1.000000
@@ -450,7 +450,7 @@
 0.410700 0.204900 0.056300 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_leg_MSH-VERTEX_COLOR0-array" count="48" stride="4">
+            <accessor source="#magpiePick_R_leg_MSH-VERTEX_COLOR0-array" count="48" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -458,16 +458,16 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_R_leg_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_R_leg_MSH-POSITION"/>
+        <vertices id="magpiePick_R_leg_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_R_leg_MSH-POSITION"/>
         </vertices>
-        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_R_leg_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_R_leg_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_R_leg_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_R_leg_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 0 18 8 15 6 19 6 12 1 20 9 14 1 21 9 14 6 22 6 12 7 23 7 13 5 24 11 18 3 25 3 19 1 26 1 16 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 13 42 18 30 10 43 17 28 11 44 16 29 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 11 60 16 43 9 61 15 40 13 62 25 42 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
+        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_R_leg_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_R_leg_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_R_leg_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_R_leg_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 0 18 8 15 6 19 6 12 1 20 9 14 1 21 9 14 6 22 6 12 7 23 7 13 5 24 11 18 3 25 3 19 1 26 1 16 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 13 42 18 30 10 43 17 28 11 44 16 29 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 11 60 16 43 9 61 15 40 13 62 25 42 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="magpieIdle_body_MSH-lib" name="magpieIdle_body_MSHMesh">
+    <geometry id="magpiePick_body_MSH-lib" name="magpiePick_body_MSHMesh">
       <mesh>
-        <source id="magpieIdle_body_MSH-POSITION">
-          <float_array id="magpieIdle_body_MSH-POSITION-array" count="84">
+        <source id="magpiePick_body_MSH-POSITION">
+          <float_array id="magpiePick_body_MSH-POSITION-array" count="84">
 -0.166667 0.166667 0.166667
 0.166667 0.166667 0.166667
 -0.166667 0.416667 0.166667
@@ -498,15 +498,15 @@
 0.166667 0.208333 -0.166667
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_body_MSH-POSITION-array" count="28" stride="3">
+            <accessor source="#magpiePick_body_MSH-POSITION-array" count="28" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_body_MSH-Normal0">
-          <float_array id="magpieIdle_body_MSH-Normal0-array" count="468">
+        <source id="magpiePick_body_MSH-Normal0">
+          <float_array id="magpiePick_body_MSH-Normal0-array" count="468">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -665,15 +665,15 @@
 1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_body_MSH-Normal0-array" count="156" stride="3">
+            <accessor source="#magpiePick_body_MSH-Normal0-array" count="156" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_body_MSH-UV0">
-          <float_array id="magpieIdle_body_MSH-UV0-array" count="88">
+        <source id="magpiePick_body_MSH-UV0">
+          <float_array id="magpiePick_body_MSH-UV0-array" count="88">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -720,14 +720,14 @@
 0.875000 0.045390
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_body_MSH-UV0-array" count="44" stride="2">
+            <accessor source="#magpiePick_body_MSH-UV0-array" count="44" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_body_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_body_MSH-VERTEX_COLOR0-array" count="416">
+        <source id="magpiePick_body_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_body_MSH-VERTEX_COLOR0-array" count="416">
 0.092234 0.170527 0.214000 1.000000
 0.092234 0.170527 0.214000 1.000000
 0.092234 0.170527 0.214000 1.000000
@@ -752,10 +752,10 @@
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
-0.764700 0.854500 1.000000 1.000000
-0.764700 0.854500 1.000000 1.000000
-0.764700 0.854500 1.000000 1.000000
-0.764700 0.854500 1.000000 1.000000
+0.717232 0.806220 0.944518 1.000000
+0.717232 0.806220 0.944518 1.000000
+0.717232 0.806220 0.944518 1.000000
+0.717232 0.806220 0.944518 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
@@ -834,7 +834,7 @@
 0.030380 0.048565 0.310000 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_body_MSH-VERTEX_COLOR0-array" count="104" stride="4">
+            <accessor source="#magpiePick_body_MSH-VERTEX_COLOR0-array" count="104" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -842,16 +842,16 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_body_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_body_MSH-POSITION"/>
+        <vertices id="magpiePick_body_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_body_MSH-POSITION"/>
         </vertices>
-        <triangles count="52" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_body_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_body_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_body_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_body_MSH-VERTEX_COLOR0"/><p> 24 0 38 2 25 1 39 3 0 2 0 0 24 3 38 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 26 14 41 8 7 15 7 10 26 16 41 8 27 17 42 9 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 27 24 43 18 24 25 38 19 1 26 1 16 1 27 1 16 7 28 10 17 27 29 43 18 25 30 39 22 6 31 12 20 0 32 0 21 6 33 12 20 25 34 39 22 26 35 40 23 3 36 3 26 2 37 2 27 9 38 15 24 3 39 3 26 9 40 15 24 8 41 14 25 2 42 2 30 10 43 16 28 9 44 15 29 10 45 16 28 2 46 2 30 4 47 13 31 11 48 18 34 10 49 17 35 4 50 4 32 11 51 18 34 4 52 4 32 5 53 5 33 5 54 11 38 3 55 3 39 8 56 14 36 8 57 14 36 11 58 19 37 5 59 11 38 8 60 14 42 9 61 15 43 13 62 21 40 8 63 14 42 13 64 21 40 12 65 20 41 9 66 15 46 14 67 22 44 13 68 21 45 14 69 22 44 9 70 15 46 10 71 16 47 15 72 24 50 14 73 23 51 10 74 17 48 15 75 24 50 10 76 17 48 11 77 18 49 11 78 19 54 8 79 14 55 12 80 20 52 12 81 20 52 15 82 25 53 11 83 19 54 12 84 20 58 13 85 21 59 17 86 27 56 12 87 20 58 17 88 27 56 16 89 26 57 13 90 21 62 18 91 28 60 17 92 27 61 18 93 28 60 13 94 21 62 14 95 22 63 19 96 30 66 18 97 29 67 14 98 23 64 19 99 30 66 14 100 23 64 15 101 24 65 15 102 25 70 12 103 20 71 16 104 26 68 16 105 26 68 19 106 31 69 15 107 25 70 16 108 26 74 17 109 27 75 21 110 33 72 16 111 26 74 21 112 33 72 20 113 32 73 17 114 27 78 22 115 34 76 21 116 33 77 22 117 34 76 17 118 27 78 18 119 28 79 23 120 36 82 22 121 35 83 18 122 29 80 23 123 36 82 18 124 29 80 19 125 30 81 19 126 31 86 16 127 26 87 20 128 32 84 20 129 32 84 23 130 37 85 19 131 31 86 20 132 32 90 21 133 33 91 25 134 39 88 20 135 32 90 25 136 39 88 24 137 38 89 21 138 33 94 26 139 40 92 25 140 39 93 26 141 40 92 21 142 33 94 22 143 34 95 27 144 42 98 26 145 41 99 22 146 35 96 27 147 42 98 22 148 35 96 23 149 36 97 23 150 37 102 20 151 32 103 24 152 38 100 24 153 38 100 27 154 43 101 23 155 37 102</p></triangles>
+        <triangles count="52" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_body_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_body_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_body_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_body_MSH-VERTEX_COLOR0"/><p> 24 0 38 2 25 1 39 3 0 2 0 0 24 3 38 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 26 14 41 8 7 15 7 10 26 16 41 8 27 17 42 9 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 27 24 43 18 24 25 38 19 1 26 1 16 1 27 1 16 7 28 10 17 27 29 43 18 25 30 39 22 6 31 12 20 0 32 0 21 6 33 12 20 25 34 39 22 26 35 40 23 3 36 3 26 2 37 2 27 9 38 15 24 3 39 3 26 9 40 15 24 8 41 14 25 2 42 2 30 10 43 16 28 9 44 15 29 10 45 16 28 2 46 2 30 4 47 13 31 11 48 18 34 10 49 17 35 4 50 4 32 11 51 18 34 4 52 4 32 5 53 5 33 5 54 11 38 3 55 3 39 8 56 14 36 8 57 14 36 11 58 19 37 5 59 11 38 8 60 14 42 9 61 15 43 13 62 21 40 8 63 14 42 13 64 21 40 12 65 20 41 9 66 15 46 14 67 22 44 13 68 21 45 14 69 22 44 9 70 15 46 10 71 16 47 15 72 24 50 14 73 23 51 10 74 17 48 15 75 24 50 10 76 17 48 11 77 18 49 11 78 19 54 8 79 14 55 12 80 20 52 12 81 20 52 15 82 25 53 11 83 19 54 12 84 20 58 13 85 21 59 17 86 27 56 12 87 20 58 17 88 27 56 16 89 26 57 13 90 21 62 18 91 28 60 17 92 27 61 18 93 28 60 13 94 21 62 14 95 22 63 19 96 30 66 18 97 29 67 14 98 23 64 19 99 30 66 14 100 23 64 15 101 24 65 15 102 25 70 12 103 20 71 16 104 26 68 16 105 26 68 19 106 31 69 15 107 25 70 16 108 26 74 17 109 27 75 21 110 33 72 16 111 26 74 21 112 33 72 20 113 32 73 17 114 27 78 22 115 34 76 21 116 33 77 22 117 34 76 17 118 27 78 18 119 28 79 23 120 36 82 22 121 35 83 18 122 29 80 23 123 36 82 18 124 29 80 19 125 30 81 19 126 31 86 16 127 26 87 20 128 32 84 20 129 32 84 23 130 37 85 19 131 31 86 20 132 32 90 21 133 33 91 25 134 39 88 20 135 32 90 25 136 39 88 24 137 38 89 21 138 33 94 26 139 40 92 25 140 39 93 26 141 40 92 21 142 33 94 22 143 34 95 27 144 42 98 26 145 41 99 22 146 35 96 27 147 42 98 22 148 35 96 23 149 36 97 23 150 37 102 20 151 32 103 24 152 38 100 24 153 38 100 27 154 43 101 23 155 37 102</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="magpieIdle_head_MSH-lib" name="magpieIdle_head_MSHMesh">
+    <geometry id="magpiePick_head_MSH-lib" name="magpiePick_head_MSHMesh">
       <mesh>
-        <source id="magpieIdle_head_MSH-POSITION">
-          <float_array id="magpieIdle_head_MSH-POSITION-array" count="360">
+        <source id="magpiePick_head_MSH-POSITION">
+          <float_array id="magpiePick_head_MSH-POSITION-array" count="360">
 -0.044655 0.500000 0.500000
 0.044655 0.500000 0.500000
 -0.044655 0.541667 0.500000
@@ -974,15 +974,15 @@
 -0.137131 0.624961 0.334546
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_head_MSH-POSITION-array" count="120" stride="3">
+            <accessor source="#magpiePick_head_MSH-POSITION-array" count="120" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_head_MSH-Normal0">
-          <float_array id="magpieIdle_head_MSH-Normal0-array" count="1728">
+        <source id="magpiePick_head_MSH-Normal0">
+          <float_array id="magpiePick_head_MSH-Normal0-array" count="1728">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -1561,15 +1561,15 @@
 0.000000 0.000001 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_head_MSH-Normal0-array" count="576" stride="3">
+            <accessor source="#magpiePick_head_MSH-Normal0-array" count="576" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_head_MSH-UV0">
-          <float_array id="magpieIdle_head_MSH-UV0-array" count="378">
+        <source id="magpiePick_head_MSH-UV0">
+          <float_array id="magpiePick_head_MSH-UV0-array" count="378">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -1761,14 +1761,14 @@
 0.422857 0.184787
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_head_MSH-UV0-array" count="189" stride="2">
+            <accessor source="#magpiePick_head_MSH-UV0-array" count="189" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_head_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_head_MSH-VERTEX_COLOR0-array" count="1536">
+        <source id="magpiePick_head_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_head_MSH-VERTEX_COLOR0-array" count="1536">
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
@@ -1824,8 +1824,7 @@
 0.016300 0.026100 0.167000 1.000000
 0.016300 0.026100 0.167000 1.000000
 0.016300 0.026100 0.167000 1.000000
-0.030380 0.048565 0.310000 1.000000
-0.030380 0.048565 0.310000 1.000000
+0.016300 0.026100 0.167000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
@@ -1855,7 +1854,8 @@
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.016300 0.026100 0.167000 1.000000
-0.030380 0.048565 0.310000 1.000000
+0.016300 0.026100 0.167000 1.000000
+0.016300 0.026100 0.167000 1.000000
 0.016300 0.026100 0.167000 1.000000
 0.030380 0.048565 0.310000 1.000000
 0.030380 0.048565 0.310000 1.000000
@@ -2155,7 +2155,7 @@
 0.005800 0.007200 0.021600 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_head_MSH-VERTEX_COLOR0-array" count="384" stride="4">
+            <accessor source="#magpiePick_head_MSH-VERTEX_COLOR0-array" count="384" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -2163,16 +2163,16 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_head_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_head_MSH-POSITION"/>
+        <vertices id="magpiePick_head_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_head_MSH-POSITION"/>
         </vertices>
-        <triangles count="192" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_head_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_head_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_head_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_head_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 6 18 6 12 7 19 7 13 1 20 9 14 6 21 6 12 1 22 9 14 0 23 8 15 3 24 3 19 7 25 10 17 5 26 11 18 7 27 10 17 3 28 3 19 1 29 1 16 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 11 42 16 29 12 43 19 31 10 44 17 28 12 45 19 31 11 46 16 29 13 47 18 30 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 13 60 25 42 11 61 16 43 9 62 15 40 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47 19 72 30 50 18 73 31 51 16 74 28 48 19 75 30 50 16 76 28 48 17 77 29 49 19 78 30 53 21 79 32 54 18 80 31 52 18 81 31 52 21 82 32 54 20 83 33 55 23 84 34 58 22 85 35 59 20 86 33 56 23 87 34 58 20 88 33 56 21 89 32 57 17 90 36 62 16 91 37 63 22 92 35 60 17 93 36 62 22 94 35 60 23 95 34 61 21 96 39 66 19 97 30 67 17 98 29 64 17 99 29 64 23 100 38 65 21 101 39 66 18 102 31 70 22 103 40 68 16 104 28 69 22 105 40 68 18 106 31 70 20 107 41 71 27 108 44 74 26 109 45 75 24 110 42 72 27 111 44 74 24 112 42 72 25 113 43 73 27 114 44 77 29 115 46 78 26 116 45 76 26 117 45 76 29 118 46 78 28 119 47 79 31 120 48 82 30 121 49 83 28 122 47 80 31 123 48 82 28 124 47 80 29 125 46 81 25 126 50 86 24 127 51 87 30 128 49 84 25 129 50 86 30 130 49 84 31 131 48 85 29 132 53 90 27 133 44 91 25 134 43 88 25 135 43 88 31 136 52 89 29 137 53 90 26 138 45 94 30 139 54 92 24 140 42 93 30 141 54 92 26 142 45 94 28 143 55 95 54 144 58 98 44 145 59 99 32 146 56 96 54 147 58 98 32 148 56 96 53 149 57 97 48 150 61 101 49 151 62 102 34 152 60 100 34 153 60 100 49 154 62 102 36 155 63 103 52 156 66 106 38 157 67 107 45 158 64 104 52 159 66 106 45 160 64 104 51 161 65 105 32 162 69 111 38 163 67 108 53 164 68 110 53 165 68 110 38 166 67 108 52 167 66 109 46 168 72 114 47 169 73 115 33 170 70 112 33 171 70 112 39 172 71 113 46 173 72 114 32 174 56 117 45 175 75 119 38 176 74 116 45 177 75 119 32 178 56 117 44 179 59 118 34 180 60 122 41 181 76 120 40 182 77 121 41 183 76 120 34 184 60 122 36 185 78 123 50 186 79 126 41 187 80 127 36 188 63 124 50 189 79 126 36 190 63 124 49 191 62 125 37 192 83 130 35 193 84 131 43 194 81 128 43 195 81 128 42 196 82 129 37 197 83 130 48 198 61 134 34 199 60 135 40 200 77 132 48 201 61 134 40 202 77 132 55 203 85 133 40 204 77 138 45 205 75 136 44 206 59 137 45 207 75 136 40 208 77 138 41 209 76 139 51 210 65 142 45 211 64 143 41 212 80 140 51 213 65 142 41 214 80 140 50 215 79 141 43 216 81 147 46 217 72 145 42 218 82 146 46 219 72 145 43 220 81 147 47 221 73 144 40 222 77 151 54 223 58 149 55 224 85 150 54 225 58 149 40 226 77 151 44 227 59 148 57 228 87 154 48 229 61 152 56 230 86 153 48 231 61 152 57 232 87 154 49 233 62 155 49 234 62 157 57 235 87 158 50 236 79 156 58 237 88 159 50 238 79 156 57 239 87 158 50 240 79 161 58 241 88 162 51 242 65 160 59 243 89 163 51 244 65 160 58 245 88 162 51 246 65 165 59 247 89 166 52 248 66 164 60 249 90 167 52 250 66 164 59 251 89 166 60 252 90 170 61 253 91 171 53 254 68 168 53 255 68 168 52 256 66 169 60 257 90 170 53 258 57 173 61 259 92 174 54 260 58 172 62 261 93 175 54 262 58 172 61 263 92 174 55 264 85 177 56 265 86 179 48 266 61 176 56 267 86 179 55 268 85 177 63 269 94 178 64 270 95 181 65 271 96 182 56 272 86 180 56 273 86 180 65 274 96 182 57 275 87 183 57 276 87 185 65 277 96 186 58 278 88 184 66 279 97 187 58 280 88 184 65 281 96 186 67 282 98 191 58 283 88 189 66 284 97 190 58 285 88 189 67 286 98 191 59 287 89 188 59 288 89 193 68 289 99 195 60 290 90 192 68 291 99 195 59 292 89 193 67 293 98 194 68 294 99 198 69 295 100 199 61 296 91 196 61 297 91 196 60 298 90 197 68 299 99 198 61 300 92 201 69 301 101 202 62 302 93 200 70 303 102 203 62 304 93 200 69 305 101 202 62 306 93 205 70 307 102 206 63 308 94 204 71 309 103 207 63 310 94 204 70 311 102 206 63 312 94 209 71 313 103 210 56 314 86 208 64 315 95 211 56 316 86 208 71 317 103 210 72 318 104 213 73 319 105 214 64 320 95 212 64 321 95 212 73 322 105 214 65 323 96 215 65 324 96 217 73 325 105 218 66 326 97 216 74 327 106 219 66 328 97 216 73 329 105 218 75 330 107 223 67 331 98 220 74 332 106 222 67 333 98 220 66 334 97 221 74 335 106 222 67 336 98 225 75 337 107 226 68 338 99 224 76 339 108 227 68 340 99 224 75 341 107 226 76 342 108 230 77 343 109 231 69 344 100 228 69 345 100 228 68 346 99 229 76 347 108 230 69 348 101 233 77 349 110 234 70 350 102 232 78 351 111 235 70 352 102 232 77 353 110 234 79 354 112 239 70 355 102 237 78 356 111 238 70 357 102 237 79 358 112 239 71 359 103 236 72 360 104 243 71 361 103 241 79 362 112 242 71 363 103 241 72 364 104 243 64 365 95 240 80 366 113 245 81 367 114 246 72 368 104 244 72 369 104 244 81 370 114 246 73 371 105 247 73 372 105 249 81 373 114 250 74 374 106 248 82 375 115 251 74 376 106 248 81 377 114 250 74 378 106 253 82 379 115 254 75 380 107 252 83 381 116 255 75 382 107 252 82 383 115 254 75 384 107 257 83 385 116 258 76 386 108 256 84 387 117 259 76 388 108 256 83 389 116 258 84 390 117 262 85 391 118 263 77 392 109 260 77 393 109 260 76 394 108 261 84 395 117 262 77 396 110 265 85 397 119 266 78 398 111 264 86 399 120 267 78 400 111 264 85 401 119 266 79 402 112 269 87 403 121 270 72 404 104 268 80 405 113 271 72 406 104 268 87 407 121 270 35 408 84 273 37 409 122 274 80 410 113 272 80 411 113 272 37 412 122 274 81 413 114 275 81 414 114 277 37 415 122 278 82 416 115 276 42 417 123 279 82 418 115 276 37 419 122 278 46 420 124 283 82 421 115 281 42 422 123 282 82 423 115 281 46 424 124 283 83 425 116 280 83 426 116 285 39 427 125 287 84 428 117 284 39 429 125 287 83 430 116 285 46 431 124 286 39 432 125 290 33 433 126 291 85 434 118 288 85 435 118 288 84 436 117 289 39 437 125 290 85 438 119 293 33 439 70 294 86 440 120 292 47 441 73 295 86 442 120 292 33 443 70 294 43 444 81 299 86 445 120 297 47 446 73 298 86 447 120 297 43 448 81 299 87 449 121 296 87 450 121 301 43 451 81 302 80 452 113 300 35 453 84 303 80 454 113 300 43 455 81 302 55 456 127 304 54 457 128 305 88 458 129 306 55 459 127 304 88 460 129 306 89 461 130 307 62 462 132 309 88 463 134 311 54 464 131 308 88 465 134 311 62 466 132 309 90 467 133 310 63 468 135 312 55 469 136 313 89 470 137 314 63 471 135 312 89 472 137 314 91 473 138 315 63 474 140 317 90 475 142 319 62 476 139 316 90 477 142 319 63 478 140 317 91 479 141 318 78 480 144 321 92 481 145 322 79 482 143 320 79 483 143 320 92 484 145 322 93 485 146 323 78 486 147 324 86 487 148 325 94 488 149 326 78 489 147 324 94 490 149 326 92 491 150 327 87 492 151 328 79 493 152 329 93 494 153 330 87 495 151 328 93 496 153 330 95 497 154 331 87 498 156 333 94 499 158 335 86 500 155 332 94 501 158 335 87 502 156 333 95 503 157 334 98 504 162 339 96 505 159 336 99 506 161 338 99 507 161 338 96 508 159 336 97 509 160 337 101 510 163 342 98 511 162 340 99 512 161 341 98 513 162 340 101 514 163 342 100 515 164 343 102 516 166 347 100 517 164 344 103 518 165 346 103 519 165 346 100 520 164 344 101 521 163 345 96 522 168 351 102 523 166 348 97 524 167 350 97 525 167 350 102 526 166 348 103 527 165 349 99 528 161 355 97 529 160 352 101 530 170 354 97 531 160 352 103 532 169 353 101 533 170 354 96 534 159 357 100 535 172 359 102 536 171 356 100 537 172 359 96 538 159 357 98 539 162 358 107 540 174 361 111 541 176 363 110 542 173 360 111 543 176 363 107 544 174 361 106 545 175 362 108 546 178 365 105 547 180 367 104 548 177 364 105 549 180 367 108 550 178 365 109 551 179 366 110 552 173 369 109 553 179 371 108 554 178 368 109 555 179 371 110 556 173 369 111 557 176 370 115 558 184 375 119 559 182 373 114 560 183 374 119 561 182 373 115 562 184 375 118 563 181 372 116 564 188 379 113 565 186 377 117 566 187 378 113 567 186 377 116 568 188 379 112 569 185 376 118 570 181 383 117 571 187 381 119 572 182 382 117 573 187 381 118 574 181 383 116 575 188 380</p></triangles>
+        <triangles count="192" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_head_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_head_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_head_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_head_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 6 13 6 11 4 14 4 8 7 15 7 10 4 16 4 8 5 17 5 9 6 18 6 12 7 19 7 13 1 20 9 14 6 21 6 12 1 22 9 14 0 23 8 15 3 24 3 19 7 25 10 17 5 26 11 18 7 27 10 17 3 28 3 19 1 29 1 16 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 11 42 16 29 12 43 19 31 10 44 17 28 12 45 19 31 11 46 16 29 13 47 18 30 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 13 60 25 42 11 61 16 43 9 62 15 40 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47 19 72 30 50 18 73 31 51 16 74 28 48 19 75 30 50 16 76 28 48 17 77 29 49 19 78 30 53 21 79 32 54 18 80 31 52 18 81 31 52 21 82 32 54 20 83 33 55 23 84 34 58 22 85 35 59 20 86 33 56 23 87 34 58 20 88 33 56 21 89 32 57 17 90 36 62 16 91 37 63 22 92 35 60 17 93 36 62 22 94 35 60 23 95 34 61 21 96 39 66 19 97 30 67 17 98 29 64 17 99 29 64 23 100 38 65 21 101 39 66 18 102 31 70 22 103 40 68 16 104 28 69 22 105 40 68 18 106 31 70 20 107 41 71 27 108 44 74 26 109 45 75 24 110 42 72 27 111 44 74 24 112 42 72 25 113 43 73 27 114 44 77 29 115 46 78 26 116 45 76 26 117 45 76 29 118 46 78 28 119 47 79 31 120 48 82 30 121 49 83 28 122 47 80 31 123 48 82 28 124 47 80 29 125 46 81 25 126 50 86 24 127 51 87 30 128 49 84 25 129 50 86 30 130 49 84 31 131 48 85 29 132 53 90 27 133 44 91 25 134 43 88 25 135 43 88 31 136 52 89 29 137 53 90 26 138 45 94 30 139 54 92 24 140 42 93 30 141 54 92 26 142 45 94 28 143 55 95 54 144 58 98 44 145 59 99 32 146 56 96 54 147 58 98 32 148 56 96 53 149 57 97 48 150 61 101 49 151 62 102 34 152 60 100 34 153 60 100 49 154 62 102 36 155 63 103 52 156 66 106 38 157 67 107 45 158 64 104 52 159 66 106 45 160 64 104 51 161 65 105 32 162 69 111 38 163 67 108 53 164 68 110 53 165 68 110 38 166 67 108 52 167 66 109 46 168 72 114 47 169 73 115 33 170 70 112 33 171 70 112 39 172 71 113 46 173 72 114 32 174 56 117 45 175 75 119 38 176 74 116 45 177 75 119 32 178 56 117 44 179 59 118 34 180 60 122 41 181 76 120 40 182 77 121 41 183 76 120 34 184 60 122 36 185 78 123 50 186 79 126 41 187 80 127 36 188 63 124 50 189 79 126 36 190 63 124 49 191 62 125 37 192 83 130 35 193 84 131 43 194 81 128 43 195 81 128 42 196 82 129 37 197 83 130 48 198 61 134 34 199 60 135 40 200 77 132 48 201 61 134 40 202 77 132 55 203 85 133 40 204 77 138 45 205 75 136 44 206 59 137 45 207 75 136 40 208 77 138 41 209 76 139 51 210 65 142 45 211 64 143 41 212 80 140 51 213 65 142 41 214 80 140 50 215 79 141 43 216 81 147 46 217 72 145 42 218 82 146 46 219 72 145 43 220 81 147 47 221 73 144 40 222 77 151 54 223 58 149 55 224 85 150 54 225 58 149 40 226 77 151 44 227 59 148 57 228 87 154 48 229 61 152 56 230 86 153 48 231 61 152 57 232 87 154 49 233 62 155 49 234 62 157 57 235 87 158 50 236 79 156 58 237 88 159 50 238 79 156 57 239 87 158 50 240 79 161 58 241 88 162 51 242 65 160 59 243 89 163 51 244 65 160 58 245 88 162 51 246 65 165 59 247 89 166 52 248 66 164 60 249 90 167 52 250 66 164 59 251 89 166 60 252 90 170 61 253 91 171 53 254 68 168 53 255 68 168 52 256 66 169 60 257 90 170 53 258 57 173 61 259 92 174 54 260 58 172 62 261 93 175 54 262 58 172 61 263 92 174 55 264 85 177 56 265 86 179 48 266 61 176 56 267 86 179 55 268 85 177 63 269 94 178 64 270 95 181 65 271 96 182 56 272 86 180 56 273 86 180 65 274 96 182 57 275 87 183 57 276 87 185 65 277 96 186 58 278 88 184 66 279 97 187 58 280 88 184 65 281 96 186 67 282 98 191 58 283 88 189 66 284 97 190 58 285 88 189 67 286 98 191 59 287 89 188 59 288 89 193 68 289 99 195 60 290 90 192 68 291 99 195 59 292 89 193 67 293 98 194 68 294 99 198 69 295 100 199 61 296 91 196 61 297 91 196 60 298 90 197 68 299 99 198 61 300 92 201 69 301 101 202 62 302 93 200 70 303 102 203 62 304 93 200 69 305 101 202 62 306 93 205 70 307 102 206 63 308 94 204 71 309 103 207 63 310 94 204 70 311 102 206 63 312 94 209 71 313 103 210 56 314 86 208 64 315 95 211 56 316 86 208 71 317 103 210 72 318 104 213 73 319 105 214 64 320 95 212 64 321 95 212 73 322 105 214 65 323 96 215 65 324 96 217 73 325 105 218 66 326 97 216 74 327 106 219 66 328 97 216 73 329 105 218 75 330 107 223 67 331 98 220 74 332 106 222 67 333 98 220 66 334 97 221 74 335 106 222 67 336 98 225 75 337 107 226 68 338 99 224 76 339 108 227 68 340 99 224 75 341 107 226 76 342 108 230 77 343 109 231 69 344 100 228 69 345 100 228 68 346 99 229 76 347 108 230 69 348 101 233 77 349 110 234 70 350 102 232 78 351 111 235 70 352 102 232 77 353 110 234 79 354 112 239 70 355 102 237 78 356 111 238 70 357 102 237 79 358 112 239 71 359 103 236 72 360 104 243 71 361 103 241 79 362 112 242 71 363 103 241 72 364 104 243 64 365 95 240 80 366 113 245 81 367 114 246 72 368 104 244 72 369 104 244 81 370 114 246 73 371 105 247 73 372 105 249 81 373 114 250 74 374 106 248 82 375 115 251 74 376 106 248 81 377 114 250 74 378 106 253 82 379 115 254 75 380 107 252 83 381 116 255 75 382 107 252 82 383 115 254 75 384 107 257 83 385 116 258 76 386 108 256 84 387 117 259 76 388 108 256 83 389 116 258 84 390 117 262 85 391 118 263 77 392 109 260 77 393 109 260 76 394 108 261 84 395 117 262 77 396 110 265 85 397 119 266 78 398 111 264 86 399 120 267 78 400 111 264 85 401 119 266 79 402 112 269 87 403 121 270 72 404 104 268 80 405 113 271 72 406 104 268 87 407 121 270 35 408 84 273 37 409 122 274 80 410 113 272 80 411 113 272 37 412 122 274 81 413 114 275 81 414 114 277 37 415 122 278 82 416 115 276 42 417 123 279 82 418 115 276 37 419 122 278 46 420 124 283 82 421 115 281 42 422 123 282 82 423 115 281 46 424 124 283 83 425 116 280 83 426 116 285 39 427 125 287 84 428 117 284 39 429 125 287 83 430 116 285 46 431 124 286 39 432 125 290 33 433 126 291 85 434 118 288 85 435 118 288 84 436 117 289 39 437 125 290 85 438 119 293 33 439 70 294 86 440 120 292 47 441 73 295 86 442 120 292 33 443 70 294 43 444 81 299 86 445 120 297 47 446 73 298 86 447 120 297 43 448 81 299 87 449 121 296 87 450 121 301 43 451 81 302 80 452 113 300 35 453 84 303 80 454 113 300 43 455 81 302 55 456 127 304 54 457 128 305 88 458 129 306 55 459 127 304 88 460 129 306 89 461 130 307 62 462 132 309 88 463 134 311 54 464 131 308 88 465 134 311 62 466 132 309 90 467 133 310 63 468 135 312 55 469 136 313 89 470 137 314 63 471 135 312 89 472 137 314 91 473 138 315 63 474 140 317 90 475 142 319 62 476 139 316 90 477 142 319 63 478 140 317 91 479 141 318 78 480 144 321 92 481 145 322 79 482 143 320 79 483 143 320 92 484 145 322 93 485 146 323 78 486 147 324 86 487 148 325 94 488 149 326 78 489 147 324 94 490 149 326 92 491 150 327 87 492 151 328 79 493 152 329 93 494 153 330 87 495 151 328 93 496 153 330 95 497 154 331 87 498 156 333 94 499 158 335 86 500 155 332 94 501 158 335 87 502 156 333 95 503 157 334 98 504 162 339 96 505 159 336 99 506 161 338 99 507 161 338 96 508 159 336 97 509 160 337 101 510 163 342 98 511 162 340 99 512 161 341 98 513 162 340 101 514 163 342 100 515 164 343 102 516 166 347 100 517 164 344 103 518 165 346 103 519 165 346 100 520 164 344 101 521 163 345 96 522 168 351 102 523 166 348 97 524 167 350 97 525 167 350 102 526 166 348 103 527 165 349 99 528 161 355 97 529 160 352 101 530 170 354 97 531 160 352 103 532 169 353 101 533 170 354 96 534 159 357 100 535 172 359 102 536 171 356 100 537 172 359 96 538 159 357 98 539 162 358 107 540 174 361 111 541 176 363 110 542 173 360 111 543 176 363 107 544 174 361 106 545 175 362 108 546 178 365 105 547 180 367 104 548 177 364 105 549 180 367 108 550 178 365 109 551 179 366 110 552 173 369 109 553 179 371 108 554 178 368 109 555 179 371 110 556 173 369 111 557 176 370 115 558 184 375 119 559 182 373 114 560 183 374 119 561 182 373 115 562 184 375 118 563 181 372 116 564 188 379 113 565 186 377 117 566 187 378 113 567 186 377 116 568 188 379 112 569 185 376 118 570 181 383 117 571 187 381 119 572 182 382 117 573 187 381 118 574 181 383 116 575 188 380</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="magpieIdle_R_arm_MSH-lib" name="magpieIdle_R_arm_MSHMesh">
+    <geometry id="magpiePick_R_arm_MSH-lib" name="magpiePick_R_arm_MSHMesh">
       <mesh>
-        <source id="magpieIdle_R_arm_MSH-POSITION">
-          <float_array id="magpieIdle_R_arm_MSH-POSITION-array" count="48">
+        <source id="magpiePick_R_arm_MSH-POSITION">
+          <float_array id="magpiePick_R_arm_MSH-POSITION-array" count="48">
 -0.250000 0.375000 0.083333
 -0.250000 0.208333 0.083333
 -0.166667 0.375000 0.083333
@@ -2191,15 +2191,15 @@
 -0.166667 0.166667 -0.416667
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_arm_MSH-POSITION-array" count="16" stride="3">
+            <accessor source="#magpiePick_R_arm_MSH-POSITION-array" count="16" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_arm_MSH-Normal0">
-          <float_array id="magpieIdle_R_arm_MSH-Normal0-array" count="216">
+        <source id="magpiePick_R_arm_MSH-Normal0">
+          <float_array id="magpiePick_R_arm_MSH-Normal0-array" count="216">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -2274,15 +2274,15 @@
 -1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_arm_MSH-Normal0-array" count="72" stride="3">
+            <accessor source="#magpiePick_R_arm_MSH-Normal0-array" count="72" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_arm_MSH-UV0">
-          <float_array id="magpieIdle_R_arm_MSH-UV0-array" count="56">
+        <source id="magpiePick_R_arm_MSH-UV0">
+          <float_array id="magpiePick_R_arm_MSH-UV0-array" count="56">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -2313,14 +2313,14 @@
 0.125000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_arm_MSH-UV0-array" count="28" stride="2">
+            <accessor source="#magpiePick_R_arm_MSH-UV0-array" count="28" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_R_arm_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_R_arm_MSH-VERTEX_COLOR0-array" count="192">
+        <source id="magpiePick_R_arm_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_R_arm_MSH-VERTEX_COLOR0-array" count="192">
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
@@ -2371,7 +2371,7 @@
 0.410700 0.204900 0.056300 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_R_arm_MSH-VERTEX_COLOR0-array" count="48" stride="4">
+            <accessor source="#magpiePick_R_arm_MSH-VERTEX_COLOR0-array" count="48" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -2379,16 +2379,16 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_R_arm_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_R_arm_MSH-POSITION"/>
+        <vertices id="magpiePick_R_arm_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_R_arm_MSH-POSITION"/>
         </vertices>
-        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_R_arm_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_R_arm_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_R_arm_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_R_arm_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 0 3 0 0 1 4 1 1 3 5 3 2 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 4 13 4 8 5 14 5 9 4 15 4 8 7 16 7 10 6 17 6 11 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 3 24 3 19 1 25 1 16 5 26 11 18 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 13 42 18 30 10 43 17 28 11 44 16 29 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 11 60 16 43 9 61 15 40 13 62 25 42 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
+        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_R_arm_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_R_arm_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_R_arm_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_R_arm_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 0 3 0 0 1 4 1 1 3 5 3 2 3 6 3 5 5 7 5 6 2 8 2 4 2 9 2 4 5 10 5 6 4 11 4 7 7 12 7 10 4 13 4 8 5 14 5 9 4 15 4 8 7 16 7 10 6 17 6 11 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 3 24 3 19 1 25 1 16 5 26 11 18 1 27 1 16 7 28 10 17 5 29 11 18 2 30 2 22 6 31 12 20 0 32 0 21 6 33 12 20 2 34 2 22 4 35 13 23 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 13 42 18 30 10 43 17 28 11 44 16 29 10 45 17 28 13 46 18 30 12 47 19 31 15 48 20 34 14 49 21 35 12 50 19 32 15 51 20 34 12 52 19 32 13 53 18 33 9 54 22 38 8 55 23 39 14 56 21 36 9 57 22 38 14 58 21 36 15 59 20 37 11 60 16 43 9 61 15 40 13 62 25 42 9 63 15 40 15 64 24 41 13 65 25 42 10 66 17 46 14 67 26 44 8 68 14 45 14 69 26 44 10 70 17 46 12 71 27 47</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="magpieIdle_L_arm_MSH-lib" name="magpieIdle_L_arm_MSHMesh">
+    <geometry id="magpiePick_L_arm_MSH-lib" name="magpiePick_L_arm_MSHMesh">
       <mesh>
-        <source id="magpieIdle_L_arm_MSH-POSITION">
-          <float_array id="magpieIdle_L_arm_MSH-POSITION-array" count="48">
+        <source id="magpiePick_L_arm_MSH-POSITION">
+          <float_array id="magpiePick_L_arm_MSH-POSITION-array" count="48">
 0.166667 0.229167 -0.041667
 0.333333 0.229167 -0.041667
 0.166667 0.229167 0.041667
@@ -2407,15 +2407,15 @@
 0.500000 0.354167 -0.041667
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_arm_MSH-POSITION-array" count="16" stride="3">
+            <accessor source="#magpiePick_L_arm_MSH-POSITION-array" count="16" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_arm_MSH-Normal0">
-          <float_array id="magpieIdle_L_arm_MSH-Normal0-array" count="216">
+        <source id="magpiePick_L_arm_MSH-Normal0">
+          <float_array id="magpiePick_L_arm_MSH-Normal0-array" count="216">
 0.000000 -1.000000 0.000000
 0.000000 -1.000000 0.000000
 0.000000 -1.000000 0.000000
@@ -2490,15 +2490,15 @@
 -1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_arm_MSH-Normal0-array" count="72" stride="3">
+            <accessor source="#magpiePick_L_arm_MSH-Normal0-array" count="72" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_arm_MSH-UV0">
-          <float_array id="magpieIdle_L_arm_MSH-UV0-array" count="56">
+        <source id="magpiePick_L_arm_MSH-UV0">
+          <float_array id="magpiePick_L_arm_MSH-UV0-array" count="56">
 0.375000 0.000000
 0.625000 0.000000
 0.375000 0.250000
@@ -2529,14 +2529,14 @@
 0.125000 0.250000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_arm_MSH-UV0-array" count="28" stride="2">
+            <accessor source="#magpiePick_L_arm_MSH-UV0-array" count="28" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="magpieIdle_L_arm_MSH-VERTEX_COLOR0">
-          <float_array id="magpieIdle_L_arm_MSH-VERTEX_COLOR0-array" count="192">
+        <source id="magpiePick_L_arm_MSH-VERTEX_COLOR0">
+          <float_array id="magpiePick_L_arm_MSH-VERTEX_COLOR0-array" count="192">
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
 0.005800 0.007200 0.021600 1.000000
@@ -2587,7 +2587,7 @@
 0.005800 0.007200 0.021600 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#magpieIdle_L_arm_MSH-VERTEX_COLOR0-array" count="48" stride="4">
+            <accessor source="#magpiePick_L_arm_MSH-VERTEX_COLOR0-array" count="48" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -2595,186 +2595,110 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="magpieIdle_L_arm_MSH-VERTEX">
-          <input semantic="POSITION" source="#magpieIdle_L_arm_MSH-POSITION"/>
+        <vertices id="magpiePick_L_arm_MSH-VERTEX">
+          <input semantic="POSITION" source="#magpiePick_L_arm_MSH-POSITION"/>
         </vertices>
-        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpieIdle_L_arm_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpieIdle_L_arm_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpieIdle_L_arm_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpieIdle_L_arm_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 5 6 5 6 4 7 4 7 2 8 2 4 5 9 5 6 2 10 2 4 3 11 3 5 4 12 4 8 5 13 5 9 7 14 7 10 4 15 4 8 7 16 7 10 6 17 6 11 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 5 24 11 18 3 25 3 19 1 26 1 16 5 27 11 18 1 28 1 16 7 29 10 17 2 30 2 22 4 31 13 23 6 32 12 20 2 33 2 22 6 34 12 20 0 35 0 21 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 12 42 19 31 11 43 16 29 13 44 18 30 11 45 16 29 12 46 19 31 10 47 17 28 12 48 19 32 13 49 18 33 15 50 20 34 12 51 19 32 15 52 20 34 14 53 21 35 9 54 22 38 8 55 23 39 14 56 21 36 14 57 21 36 15 58 20 37 9 59 22 38 13 60 25 42 11 61 16 43 9 62 15 40 13 63 25 42 9 64 15 40 15 65 24 41 10 66 17 46 12 67 27 47 14 68 26 44 10 69 17 46 14 70 26 44 8 71 14 45</p></triangles>
+        <triangles count="24" material="lambert1"><input semantic="VERTEX" offset="0" source="#magpiePick_L_arm_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#magpiePick_L_arm_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#magpiePick_L_arm_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#magpiePick_L_arm_MSH-VERTEX_COLOR0"/><p> 3 0 3 2 2 1 2 3 0 2 0 0 3 3 3 2 0 4 0 0 1 5 1 1 5 6 5 6 4 7 4 7 2 8 2 4 5 9 5 6 2 10 2 4 3 11 3 5 4 12 4 8 5 13 5 9 7 14 7 10 4 15 4 8 7 16 7 10 6 17 6 11 1 18 9 14 0 19 8 15 6 20 6 12 1 21 9 14 6 22 6 12 7 23 7 13 5 24 11 18 3 25 3 19 1 26 1 16 5 27 11 18 1 28 1 16 7 29 10 17 2 30 2 22 4 31 13 23 6 32 12 20 2 33 2 22 6 34 12 20 0 35 0 21 11 36 16 26 10 37 17 27 8 38 14 24 11 39 16 26 8 40 14 24 9 41 15 25 12 42 19 31 11 43 16 29 13 44 18 30 11 45 16 29 12 46 19 31 10 47 17 28 12 48 19 32 13 49 18 33 15 50 20 34 12 51 19 32 15 52 20 34 14 53 21 35 9 54 22 38 8 55 23 39 14 56 21 36 14 57 21 36 15 58 20 37 9 59 22 38 13 60 25 42 11 61 16 43 9 62 15 40 13 63 25 42 9 64 15 40 15 65 24 41 10 66 17 46 12 67 27 47 14 68 26 44 10 69 17 46 14 70 26 44 8 71 14 45</p></triangles>
       </mesh>
     </geometry>
   </library_geometries>
   <library_animations>
-    <animation id="magpieIdle_body_MSH-anim" name="magpieIdle_body_MSH"><animation><source id="magpieIdle_body_MSH-Matrix-animation-input"><float_array id="magpieIdle_body_MSH-Matrix-animation-input-array" count="60">
+    <animation id="magpiePick_body_MSH-anim" name="magpiePick_body_MSH"><animation><source id="magpiePick_body_MSH-Matrix-animation-input"><float_array id="magpiePick_body_MSH-Matrix-animation-input-array" count="15">
 
-0.041667 0.083333 0.125000 0.166667 0.208333 0.250000 0.291667 0.333333 0.375000 0.416667 0.458333 0.500000 0.541667 0.583333 0.625000 0.666667
-0.708333 0.750000 0.791667 0.833333 0.875000 0.916667 0.958333 1.000000 1.041667 1.083333 1.125000 1.166667 1.208333 1.250000 1.291667 1.333333
-1.375000 1.416667 1.458333 1.500000 1.541667 1.583333 1.625000 1.666667 1.708333 1.750000 1.791667 1.833333 1.875000 1.916667 1.958333 2.000000
-2.041667 2.083333 2.125000 2.166667 2.208333 2.250000 2.291667 2.333333 2.375000 2.416667 2.458333 2.500000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-Matrix-animation-input-array" count="60"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-Matrix-animation-output-transform"><float_array id="magpieIdle_body_MSH-Matrix-animation-output-transform-array" count="960">
+0.041667 0.083333 0.125000 0.166667 0.208333 0.250000 0.291667 0.333333 0.375000 0.416667 0.458333 0.500000 0.541667 0.583333 0.625000</float_array><technique_common><accessor source="#magpiePick_body_MSH-Matrix-animation-input-array" count="15"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_body_MSH-Matrix-animation-output-transform"><float_array id="magpiePick_body_MSH-Matrix-animation-output-transform-array" count="240">
 
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000081 0.000045 0.000000 -0.000081 1.000000 0.000014 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000317 0.000175 0.000000 -0.000317 1.000000 0.000053 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000696 0.000385 0.000000 -0.000696 1.000000 0.000116 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999999 0.001207 0.000668 0.000000 -0.001207 0.999999 0.000201 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999998 0.001839 0.001018 0.000000 -0.001839 0.999998 0.000306 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999997 0.002579 0.001428 0.000000 -0.002579 0.999997 0.000430 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999994 0.003417 0.001892 0.000000 -0.003417 0.999994 0.000569 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999991 0.004340 0.002403 0.000000 -0.004340 0.999991 0.000723 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999986 0.005339 0.002956 0.000000 -0.005339 0.999986 0.000890 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999980 0.006400 0.003545 0.000000 -0.006400 0.999980 0.001067 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999972 0.007513 0.004162 0.000000 -0.007513 0.999972 0.001252 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999962 0.008665 0.004801 0.000000 -0.008665 0.999962 0.001444 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999952 0.009847 0.005457 0.000000 -0.009847 0.999952 0.001641 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999939 0.011046 0.006122 0.000000 -0.011046 0.999939 0.001841 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999925 0.012250 0.006791 0.000000 -0.012250 0.999925 0.002042 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999910 0.013449 0.007457 0.000000 -0.013449 0.999910 0.002241 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999893 0.014630 0.008114 0.000000 -0.014630 0.999893 0.002438 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999875 0.015783 0.008755 0.000000 -0.015783 0.999875 0.002630 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999857 0.016896 0.009373 0.000000 -0.016896 0.999857 0.002816 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999839 0.017957 0.009964 0.000000 -0.017957 0.999839 0.002993 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999820 0.018955 0.010519 0.000000 -0.018955 0.999820 0.003159 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999802 0.019878 0.011033 0.000000 -0.019878 0.999802 0.003313 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999785 0.020716 0.011500 0.000000 -0.020716 0.999785 0.003453 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999770 0.021456 0.011912 0.000000 -0.021456 0.999770 0.003576 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999756 0.022087 0.012264 0.000000 -0.022087 0.999756 0.003681 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999745 0.022598 0.012548 0.000000 -0.022598 0.999745 0.003766 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999736 0.022977 0.012760 0.000000 -0.022977 0.999736 0.003829 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999731 0.023213 0.012891 0.000000 -0.023213 0.999731 0.003869 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999729 0.023294 0.012936 0.000000 -0.023294 0.999729 0.003882 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999730 0.023218 0.012894 0.000000 -0.023218 0.999730 0.003870 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999736 0.022997 0.012771 0.000000 -0.022997 0.999736 0.003833 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999744 0.022642 0.012573 0.000000 -0.022642 0.999744 0.003774 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999754 0.022162 0.012306 0.000000 -0.022162 0.999754 0.003694 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999767 0.021569 0.011975 0.000000 -0.021569 0.999767 0.003595 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999782 0.020872 0.011587 0.000000 -0.020872 0.999782 0.003479 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999798 0.020082 0.011147 0.000000 -0.020082 0.999798 0.003347 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999815 0.019209 0.010661 0.000000 -0.019209 0.999815 0.003201 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999833 0.018263 0.010134 0.000000 -0.018263 0.999833 0.003044 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999851 0.017256 0.009574 0.000000 -0.017256 0.999851 0.002876 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999869 0.016196 0.008984 0.000000 -0.016196 0.999869 0.002699 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999886 0.015095 0.008372 0.000000 -0.015095 0.999886 0.002516 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999903 0.013963 0.007743 0.000000 -0.013963 0.999903 0.002327 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999918 0.012811 0.007103 0.000000 -0.012811 0.999918 0.002135 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999932 0.011648 0.006457 0.000000 -0.011648 0.999932 0.001941 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999945 0.010485 0.005811 0.000000 -0.010485 0.999945 0.001747 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999956 0.009332 0.005171 0.000000 -0.009332 0.999956 0.001555 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999966 0.008200 0.004543 0.000000 -0.008200 0.999966 0.001367 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999975 0.007099 0.003933 0.000000 -0.007099 0.999975 0.001183 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999982 0.006040 0.003345 0.000000 -0.006040 0.999982 0.001007 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999987 0.005032 0.002787 0.000000 -0.005032 0.999987 0.000839 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999992 0.004086 0.002263 0.000000 -0.004086 0.999992 0.000681 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999995 0.003213 0.001779 0.000000 -0.003213 0.999995 0.000536 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999997 0.002423 0.001341 0.000000 -0.002423 0.999997 0.000404 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999999 0.001726 0.000955 0.000000 -0.001726 0.999999 0.000288 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999999 0.001132 0.000627 0.000000 -0.001132 0.999999 0.000189 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000652 0.000361 0.000000 -0.000652 1.000000 0.000109 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000297 0.000164 0.000000 -0.000297 1.000000 0.000049 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000076 0.000042 0.000000 -0.000076 1.000000 0.000013 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-Matrix-animation-output-transform-array" count="60" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-Interpolations"><Name_array id="magpieIdle_body_MSH-Interpolations-array" count="60">
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996732 -0.080776 0.000545 0.000000 0.080776 0.996732 -0.013463 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996559 -0.082889 0.001369 0.000000 0.082889 0.996559 -0.013815 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996091 -0.088334 0.003498 0.000000 0.088334 0.996091 -0.014722 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.995403 -0.095776 0.006418 0.000000 0.095776 0.995403 -0.015963 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.994590 -0.103878 0.009609 0.000000 0.103878 0.994590 -0.017313 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.993786 -0.111308 0.012548 0.000000 0.111308 0.993786 -0.018551 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.993163 -0.116738 0.014704 0.000000 0.116738 0.993163 -0.019456 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.992913 -0.118843 0.015541 0.000000 0.118843 0.992913 -0.019807 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.993163 -0.116737 0.014703 0.000000 0.116737 0.993163 -0.019456 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.993786 -0.111306 0.012548 0.000000 0.111306 0.993786 -0.018551 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.994590 -0.103876 0.009608 0.000000 0.103876 0.994590 -0.017313 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.995403 -0.095774 0.006417 0.000000 0.095774 0.995403 -0.015962 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996091 -0.088333 0.003498 0.000000 0.088333 0.996091 -0.014722 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996559 -0.082889 0.001369 0.000000 0.082889 0.996559 -0.013815 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 0.000000 0.000000 0.996732 -0.080776 0.000545 0.000000 0.080776 0.996732 -0.013463 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_body_MSH-Matrix-animation-output-transform-array" count="15" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="magpiePick_body_MSH-Interpolations"><Name_array id="magpiePick_body_MSH-Interpolations-array" count="15">
  LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR</Name_array><technique_common><accessor source="#magpieIdle_body_MSH-Interpolations-array" count="60"><param type="name"/></accessor></technique_common></source><sampler id="magpieIdle_body_MSH-Matrix-animation-transform"><input semantic="INPUT" source="#magpieIdle_body_MSH-Matrix-animation-input"/><input semantic="OUTPUT" source="#magpieIdle_body_MSH-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#magpieIdle_body_MSH-Interpolations"/></sampler><channel source="#magpieIdle_body_MSH-Matrix-animation-transform" target="magpieIdle_body_MSH/matrix"/></animation><animation><source id="magpieIdle_body_MSH-visibility-animation-input"><float_array id="magpieIdle_body_MSH-visibility-animation-input-array" count="3">
+LINEAR LINEAR LINEAR LINEAR</Name_array><technique_common><accessor source="#magpiePick_body_MSH-Interpolations-array" count="15"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_body_MSH-Matrix-animation-transform"><input semantic="INPUT" source="#magpiePick_body_MSH-Matrix-animation-input"/><input semantic="OUTPUT" source="#magpiePick_body_MSH-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#magpiePick_body_MSH-Interpolations"/></sampler><channel source="#magpiePick_body_MSH-Matrix-animation-transform" target="magpiePick_body_MSH/matrix"/></animation><animation><source id="magpiePick_body_MSH-visibility-animation-input"><float_array id="magpiePick_body_MSH-visibility-animation-input-array" count="3">
 
-0.041667 1.250000 2.500000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-visibility-animation-input-array" count="3"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-visibility-animation-output"><float_array id="magpieIdle_body_MSH-visibility-animation-output-array" count="3">
+0.041667 0.333333 0.625000</float_array><technique_common><accessor source="#magpiePick_body_MSH-visibility-animation-input-array" count="3"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_body_MSH-visibility-animation-output"><float_array id="magpiePick_body_MSH-visibility-animation-output-array" count="3">
 
-1.000000 1.000000 1.000000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-visibility-animation-output-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-visibility-animation-intan"><float_array id="magpieIdle_body_MSH-visibility-animation-intan-array" count="3">
+1.000000 1.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_body_MSH-visibility-animation-output-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpiePick_body_MSH-visibility-animation-intan"><float_array id="magpiePick_body_MSH-visibility-animation-intan-array" count="3">
 
-0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-visibility-animation-intan-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-visibility-animation-outtan"><float_array id="magpieIdle_body_MSH-visibility-animation-outtan-array" count="3">
+0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_body_MSH-visibility-animation-intan-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpiePick_body_MSH-visibility-animation-outtan"><float_array id="magpiePick_body_MSH-visibility-animation-outtan-array" count="3">
 
-0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpieIdle_body_MSH-visibility-animation-outtan-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_body_MSH-visibility-animation-interpolation"><Name_array id="magpieIdle_body_MSH-visibility-animation-interpolation-array" count="3">
- BEZIER STEP STEP</Name_array><technique_common><accessor source="#magpieIdle_body_MSH-visibility-animation-interpolation-array" count="3"><param type="name"/></accessor></technique_common></source><sampler id="magpieIdle_body_MSH-visibility-animation"><input semantic="INPUT" source="#magpieIdle_body_MSH-visibility-animation-input"/><input semantic="OUTPUT" source="#magpieIdle_body_MSH-visibility-animation-output"/><input semantic="IN_TANGENT" source="#magpieIdle_body_MSH-visibility-animation-intan"/><input semantic="OUT_TANGENT" source="#magpieIdle_body_MSH-visibility-animation-outtan"/><input semantic="INTERPOLATION" source="#magpieIdle_body_MSH-visibility-animation-interpolation"/></sampler><channel source="#magpieIdle_body_MSH-visibility-animation" target="magpieIdle_body_MSH/visibility"/></animation></animation>
-    <animation id="magpieIdle_head_MSH-anim" name="magpieIdle_head_MSH"><animation><source id="magpieIdle_head_MSH-Matrix-animation-input"><float_array id="magpieIdle_head_MSH-Matrix-animation-input-array" count="60">
+0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_body_MSH-visibility-animation-outtan-array" count="3"><param type="float"/></accessor></technique_common></source><source id="magpiePick_body_MSH-visibility-animation-interpolation"><Name_array id="magpiePick_body_MSH-visibility-animation-interpolation-array" count="3">
+ STEP STEP STEP</Name_array><technique_common><accessor source="#magpiePick_body_MSH-visibility-animation-interpolation-array" count="3"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_body_MSH-visibility-animation"><input semantic="INPUT" source="#magpiePick_body_MSH-visibility-animation-input"/><input semantic="OUTPUT" source="#magpiePick_body_MSH-visibility-animation-output"/><input semantic="IN_TANGENT" source="#magpiePick_body_MSH-visibility-animation-intan"/><input semantic="OUT_TANGENT" source="#magpiePick_body_MSH-visibility-animation-outtan"/><input semantic="INTERPOLATION" source="#magpiePick_body_MSH-visibility-animation-interpolation"/></sampler><channel source="#magpiePick_body_MSH-visibility-animation" target="magpiePick_body_MSH/visibility"/></animation></animation>
+    <animation id="magpiePick_head_MSH-anim" name="magpiePick_head_MSH"><animation><source id="magpiePick_head_MSH-Matrix-animation-input"><float_array id="magpiePick_head_MSH-Matrix-animation-input-array" count="13">
 
-0.041667 0.083333 0.125000 0.166667 0.208333 0.250000 0.291667 0.333333 0.375000 0.416667 0.458333 0.500000 0.541667 0.583333 0.625000 0.666667
-0.708333 0.750000 0.791667 0.833333 0.875000 0.916667 0.958333 1.000000 1.041667 1.083333 1.125000 1.166667 1.208333 1.250000 1.291667 1.333333
-1.375000 1.416667 1.458333 1.500000 1.541667 1.583333 1.625000 1.666667 1.708333 1.750000 1.791667 1.833333 1.875000 1.916667 1.958333 2.000000
-2.041667 2.083333 2.125000 2.166667 2.208333 2.250000 2.291667 2.333333 2.375000 2.416667 2.458333 2.500000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-Matrix-animation-input-array" count="60"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-Matrix-animation-output-transform"><float_array id="magpieIdle_head_MSH-Matrix-animation-output-transform-array" count="960">
+0.041667 0.083333 0.125000 0.166667 0.208333 0.250000 0.291667 0.333333 0.375000 0.416667 0.458333 0.500000 0.541667</float_array><technique_common><accessor source="#magpiePick_head_MSH-Matrix-animation-input-array" count="13"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_head_MSH-Matrix-animation-output-transform"><float_array id="magpiePick_head_MSH-Matrix-animation-output-transform-array" count="208">
 
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999914 -0.013139 0.013129 0.000000 0.013139 0.999914 -0.005170 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999925 -0.012276 0.012264 0.000000 0.012276 0.999925 -0.004830 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999936 -0.011344 0.011331 0.000000 0.011344 0.999936 -0.004464 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999946 -0.010363 0.010349 0.000000 0.010363 0.999946 -0.004078 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999956 -0.009350 0.009335 0.000000 0.009350 0.999956 -0.003679 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999965 -0.008320 0.008305 0.000000 0.008320 0.999965 -0.003274 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999973 -0.007290 0.007276 0.000000 0.007290 0.999973 -0.002869 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999980 -0.006275 0.006261 0.000000 0.006275 0.999980 -0.002469 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999986 -0.005287 0.005274 0.000000 0.005287 0.999986 -0.002080 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999991 -0.004342 0.004330 0.000000 0.004342 0.999991 -0.001708 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999994 -0.003452 0.003443 0.000000 0.003452 0.999994 -0.001358 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999997 -0.002633 0.002625 0.000000 0.002633 0.999997 -0.001036 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999998 -0.001897 0.001891 0.000000 0.001897 0.999998 -0.000746 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999999 -0.001259 0.001255 0.000000 0.001259 0.999999 -0.000495 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000734 0.000732 0.000000 0.000734 1.000000 -0.000289 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000338 0.000337 0.000000 0.000338 1.000000 -0.000133 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000088 0.000087 0.000000 0.000088 1.000000 -0.000035 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000081 0.000081 0.000000 0.000081 1.000000 -0.000032 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000317 0.000316 0.000000 0.000317 1.000000 -0.000125 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000696 0.000694 0.000000 0.000696 1.000000 -0.000274 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999999 -0.001208 0.001204 0.000000 0.001208 0.999999 -0.000475 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999998 -0.001839 0.001833 0.000000 0.001839 0.999998 -0.000724 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999997 -0.002579 0.002572 0.000000 0.002579 0.999997 -0.001015 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999994 -0.003417 0.003408 0.000000 0.003417 0.999994 -0.001345 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999991 -0.004341 0.004330 0.000000 0.004341 0.999991 -0.001708 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999986 -0.005339 0.005327 0.000000 0.005339 0.999986 -0.002101 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999980 -0.006401 0.006387 0.000000 0.006401 0.999980 -0.002519 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999972 -0.007514 0.007499 0.000000 0.007514 0.999972 -0.002957 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999962 -0.008667 0.008652 0.000000 0.008667 0.999962 -0.003410 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999952 -0.009849 0.009834 0.000000 0.009849 0.999952 -0.003875 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999939 -0.011047 0.011034 0.000000 0.011047 0.999939 -0.004347 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999925 -0.012252 0.012240 0.000000 0.012252 0.999925 -0.004821 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999910 -0.013451 0.013442 0.000000 0.013451 0.999910 -0.005293 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999893 -0.014633 0.014626 0.000000 0.014633 0.999893 -0.005758 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999875 -0.015786 0.015782 0.000000 0.015786 0.999875 -0.006211 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999857 -0.016898 0.016899 0.000000 0.016898 0.999857 -0.006649 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999839 -0.017960 0.017964 0.000000 0.017960 0.999839 -0.007067 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999820 -0.018958 0.018967 0.000000 0.018958 0.999820 -0.007459 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999802 -0.019882 0.019895 0.000000 0.019882 0.999802 -0.007823 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999785 -0.020719 0.020737 0.000000 0.020719 0.999785 -0.008152 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999770 -0.021459 0.021481 0.000000 0.021459 0.999770 -0.008444 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999756 -0.022091 0.022116 0.000000 0.022091 0.999756 -0.008692 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999745 -0.022602 0.022630 0.000000 0.022602 0.999745 -0.008893 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999736 -0.022981 0.023012 0.000000 0.022981 0.999736 -0.009042 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999730 -0.023217 0.023249 0.000000 0.023217 0.999730 -0.009135 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999729 -0.023298 0.023331 0.000000 0.023298 0.999729 -0.009167 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999732 -0.023141 0.023173 0.000000 0.023141 0.999732 -0.009105 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999742 -0.022703 0.022732 0.000000 0.022703 0.999742 -0.008933 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999757 -0.022036 0.022061 0.000000 0.022036 0.999757 -0.008671 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999775 -0.021191 0.021211 0.000000 0.021191 0.999775 -0.008338 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999796 -0.020218 0.020233 0.000000 0.020218 0.999796 -0.007955 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999816 -0.019169 0.019179 0.000000 0.019169 0.999816 -0.007543 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999836 -0.018095 0.018100 0.000000 0.018095 0.999836 -0.007120 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999855 -0.017046 0.017047 0.000000 0.017046 0.999855 -0.006707 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999871 -0.016073 0.016071 0.000000 0.016073 0.999871 -0.006324 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999884 -0.015228 0.015223 0.000000 0.015228 0.999884 -0.005992 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999894 -0.014561 0.014554 0.000000 0.014561 0.999894 -0.005729 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999900 -0.014123 0.014115 0.000000 0.014123 0.999900 -0.005557 0.000000 0.000000 0.000000 1.000000
-1.000000 0.000000 0.000000 0.000000 0.000000 0.999902 -0.013966 0.013958 0.000000 0.013966 0.999902 -0.005495 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-Matrix-animation-output-transform-array" count="60" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-Interpolations"><Name_array id="magpieIdle_head_MSH-Interpolations-array" count="60">
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.993728 -0.111827 0.004706 0.000000 0.111827 0.993728 -0.062751 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.995536 -0.094382 0.003917 0.000000 0.094382 0.995536 -0.055486 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.998082 -0.061909 0.002790 0.000000 0.061909 0.998082 -0.041961 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.999014 -0.044394 0.002365 0.000000 0.044394 0.999014 -0.034665 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.998082 -0.061913 0.002790 0.000000 0.061913 0.998082 -0.041962 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.995536 -0.094384 0.003917 0.000000 0.094384 0.995536 -0.055487 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.993728 -0.111827 0.004706 0.000000 0.111827 0.993728 -0.062751 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.995536 -0.094382 0.003917 0.000000 0.094382 0.995536 -0.055486 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.998082 -0.061909 0.002790 0.000000 0.061909 0.998082 -0.041961 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.999014 -0.044394 0.002365 0.000000 0.044394 0.999014 -0.034665 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.998082 -0.061913 0.002790 0.000000 0.061913 0.998082 -0.041962 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.995536 -0.094384 0.003917 0.000000 0.094384 0.995536 -0.055487 0.000000 0.000000 0.000000 1.000000
+1.000000 0.000000 0.000000 -0.000000 0.000000 0.993728 -0.111827 0.004706 0.000000 0.111827 0.993728 -0.062751 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_head_MSH-Matrix-animation-output-transform-array" count="13" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="magpiePick_head_MSH-Interpolations"><Name_array id="magpiePick_head_MSH-Interpolations-array" count="13">
  LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
-LINEAR</Name_array><technique_common><accessor source="#magpieIdle_head_MSH-Interpolations-array" count="60"><param type="name"/></accessor></technique_common></source><sampler id="magpieIdle_head_MSH-Matrix-animation-transform"><input semantic="INPUT" source="#magpieIdle_head_MSH-Matrix-animation-input"/><input semantic="OUTPUT" source="#magpieIdle_head_MSH-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#magpieIdle_head_MSH-Interpolations"/></sampler><channel source="#magpieIdle_head_MSH-Matrix-animation-transform" target="magpieIdle_head_MSH/matrix"/></animation><animation><source id="magpieIdle_head_MSH-visibility-animation-input"><float_array id="magpieIdle_head_MSH-visibility-animation-input-array" count="4">
+LINEAR LINEAR</Name_array><technique_common><accessor source="#magpiePick_head_MSH-Interpolations-array" count="13"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_head_MSH-Matrix-animation-transform"><input semantic="INPUT" source="#magpiePick_head_MSH-Matrix-animation-input"/><input semantic="OUTPUT" source="#magpiePick_head_MSH-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#magpiePick_head_MSH-Interpolations"/></sampler><channel source="#magpiePick_head_MSH-Matrix-animation-transform" target="magpiePick_head_MSH/matrix"/></animation><animation><source id="magpiePick_head_MSH-visibility-animation-input"><float_array id="magpiePick_head_MSH-visibility-animation-input-array" count="5">
 
-0.041667 0.750000 1.958333 2.500000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-visibility-animation-input-array" count="4"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-visibility-animation-output"><float_array id="magpieIdle_head_MSH-visibility-animation-output-array" count="4">
+0.041667 0.166667 0.291667 0.416667 0.541667</float_array><technique_common><accessor source="#magpiePick_head_MSH-visibility-animation-input-array" count="5"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_head_MSH-visibility-animation-output"><float_array id="magpiePick_head_MSH-visibility-animation-output-array" count="5">
 
-1.000000 1.000000 1.000000 1.000000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-visibility-animation-output-array" count="4"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-visibility-animation-intan"><float_array id="magpieIdle_head_MSH-visibility-animation-intan-array" count="4">
+1.000000 1.000000 1.000000 1.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_head_MSH-visibility-animation-output-array" count="5"><param type="float"/></accessor></technique_common></source><source id="magpiePick_head_MSH-visibility-animation-intan"><float_array id="magpiePick_head_MSH-visibility-animation-intan-array" count="5">
 
-0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-visibility-animation-intan-array" count="4"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-visibility-animation-outtan"><float_array id="magpieIdle_head_MSH-visibility-animation-outtan-array" count="4">
+0.000000 0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_head_MSH-visibility-animation-intan-array" count="5"><param type="float"/></accessor></technique_common></source><source id="magpiePick_head_MSH-visibility-animation-outtan"><float_array id="magpiePick_head_MSH-visibility-animation-outtan-array" count="5">
 
-0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpieIdle_head_MSH-visibility-animation-outtan-array" count="4"><param type="float"/></accessor></technique_common></source><source id="magpieIdle_head_MSH-visibility-animation-interpolation"><Name_array id="magpieIdle_head_MSH-visibility-animation-interpolation-array" count="4">
- STEP BEZIER STEP STEP</Name_array><technique_common><accessor source="#magpieIdle_head_MSH-visibility-animation-interpolation-array" count="4"><param type="name"/></accessor></technique_common></source><sampler id="magpieIdle_head_MSH-visibility-animation"><input semantic="INPUT" source="#magpieIdle_head_MSH-visibility-animation-input"/><input semantic="OUTPUT" source="#magpieIdle_head_MSH-visibility-animation-output"/><input semantic="IN_TANGENT" source="#magpieIdle_head_MSH-visibility-animation-intan"/><input semantic="OUT_TANGENT" source="#magpieIdle_head_MSH-visibility-animation-outtan"/><input semantic="INTERPOLATION" source="#magpieIdle_head_MSH-visibility-animation-interpolation"/></sampler><channel source="#magpieIdle_head_MSH-visibility-animation" target="magpieIdle_head_MSH/visibility"/></animation></animation>
+0.000000 0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_head_MSH-visibility-animation-outtan-array" count="5"><param type="float"/></accessor></technique_common></source><source id="magpiePick_head_MSH-visibility-animation-interpolation"><Name_array id="magpiePick_head_MSH-visibility-animation-interpolation-array" count="5">
+ STEP STEP STEP STEP STEP</Name_array><technique_common><accessor source="#magpiePick_head_MSH-visibility-animation-interpolation-array" count="5"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_head_MSH-visibility-animation"><input semantic="INPUT" source="#magpiePick_head_MSH-visibility-animation-input"/><input semantic="OUTPUT" source="#magpiePick_head_MSH-visibility-animation-output"/><input semantic="IN_TANGENT" source="#magpiePick_head_MSH-visibility-animation-intan"/><input semantic="OUT_TANGENT" source="#magpiePick_head_MSH-visibility-animation-outtan"/><input semantic="INTERPOLATION" source="#magpiePick_head_MSH-visibility-animation-interpolation"/></sampler><channel source="#magpiePick_head_MSH-visibility-animation" target="magpiePick_head_MSH/visibility"/></animation></animation>
+    <animation id="magpiePick_L_arm_MSH-anim" name="magpiePick_L_arm_MSH"><animation><source id="magpiePick_L_arm_MSH-Matrix-animation-input"><float_array id="magpiePick_L_arm_MSH-Matrix-animation-input-array" count="15">
+
+0.041667 0.083333 0.125000 0.166667 0.208333 0.250000 0.291667 0.333333 0.375000 0.416667 0.458333 0.500000 0.541667 0.583333 0.625000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-Matrix-animation-input-array" count="15"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-Matrix-animation-output-transform"><float_array id="magpiePick_L_arm_MSH-Matrix-animation-output-transform-array" count="240">
+
+0.217891 0.000000 -0.975973 0.130352 -0.000000 1.000000 -0.000000 0.000000 0.975973 0.000000 0.217891 -0.162662 0.000000 0.000000 0.000000 1.000000
+0.205229 0.000000 -0.978714 0.132462 0.000000 1.000000 0.000000 -0.000000 0.978714 0.000000 0.205229 -0.163119 0.000000 0.000000 0.000000 1.000000
+0.192533 0.000000 -0.981291 0.134578 -0.000000 1.000000 -0.000000 0.000000 0.981291 0.000000 0.192533 -0.163548 0.000000 0.000000 0.000000 1.000000
+0.224682 0.000000 -0.974432 0.129220 0.000000 1.000000 0.000000 0.000000 0.974432 0.000000 0.224682 -0.162405 0.000000 0.000000 0.000000 1.000000
+0.286027 0.000000 -0.958222 0.118996 0.000000 1.000000 -0.000000 -0.000000 0.958222 0.000000 0.286027 -0.159704 0.000000 0.000000 0.000000 1.000000
+0.325357 0.000000 -0.945591 0.112441 0.000000 1.000000 0.000000 0.000000 0.945591 0.000000 0.325357 -0.157599 0.000000 0.000000 0.000000 1.000000
+0.330097 -0.012586 -0.943863 0.115321 0.038448 0.999261 0.000121 -0.006192 0.943164 -0.036330 0.330337 -0.146598 0.000000 0.000000 0.000000 1.000000
+0.324400 -0.024925 -0.945591 0.119870 0.076608 0.997061 -0.000000 -0.011911 0.942813 -0.072440 0.325357 -0.136007 0.000000 0.000000 0.000000 1.000000
+0.326219 -0.016525 -0.945150 0.117117 0.050607 0.998719 0.000006 -0.008061 0.943939 -0.047833 0.326637 -0.143372 0.000000 0.000000 0.000000 1.000000
+0.325321 -0.004795 -0.945591 0.113845 0.014738 0.999891 -0.000000 -0.002425 0.945489 -0.013936 0.325357 -0.153517 0.000000 0.000000 0.000000 1.000000
+0.326219 -0.016526 -0.945150 0.117117 0.050610 0.998718 0.000006 -0.008061 0.943938 -0.047836 0.326637 -0.143371 0.000000 0.000000 0.000000 1.000000
+0.324400 -0.024925 -0.945591 0.119870 0.076608 0.997061 -0.000000 -0.011911 0.942813 -0.072440 0.325357 -0.136007 0.000000 0.000000 0.000000 1.000000
+0.296291 -0.016184 -0.954961 0.122005 0.049288 0.998783 -0.001634 -0.007860 0.953825 -0.046584 0.296728 -0.145384 0.000000 0.000000 0.000000 1.000000
+0.251105 -0.005743 -0.967943 0.126491 0.016866 0.999857 -0.001558 -0.002769 0.967813 -0.015934 0.251166 -0.156655 0.000000 0.000000 0.000000 1.000000
+0.217891 0.000000 -0.975973 0.130352 -0.000000 1.000000 -0.000000 0.000000 0.975973 0.000000 0.217891 -0.162662 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-Matrix-animation-output-transform-array" count="15" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-Interpolations"><Name_array id="magpiePick_L_arm_MSH-Interpolations-array" count="15">
+ LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR LINEAR
+LINEAR LINEAR LINEAR LINEAR</Name_array><technique_common><accessor source="#magpiePick_L_arm_MSH-Interpolations-array" count="15"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_L_arm_MSH-Matrix-animation-transform"><input semantic="INPUT" source="#magpiePick_L_arm_MSH-Matrix-animation-input"/><input semantic="OUTPUT" source="#magpiePick_L_arm_MSH-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#magpiePick_L_arm_MSH-Interpolations"/></sampler><channel source="#magpiePick_L_arm_MSH-Matrix-animation-transform" target="magpiePick_L_arm_MSH/matrix"/></animation><animation><source id="magpiePick_L_arm_MSH-visibility-animation-input"><float_array id="magpiePick_L_arm_MSH-visibility-animation-input-array" count="7">
+
+0.041667 0.125000 0.250000 0.333333 0.416667 0.500000 0.625000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-visibility-animation-input-array" count="7"><param name="TIME" type="float"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-visibility-animation-output"><float_array id="magpiePick_L_arm_MSH-visibility-animation-output-array" count="7">
+
+1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-visibility-animation-output-array" count="7"><param type="float"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-visibility-animation-intan"><float_array id="magpiePick_L_arm_MSH-visibility-animation-intan-array" count="7">
+
+0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-visibility-animation-intan-array" count="7"><param type="float"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-visibility-animation-outtan"><float_array id="magpiePick_L_arm_MSH-visibility-animation-outtan-array" count="7">
+
+0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</float_array><technique_common><accessor source="#magpiePick_L_arm_MSH-visibility-animation-outtan-array" count="7"><param type="float"/></accessor></technique_common></source><source id="magpiePick_L_arm_MSH-visibility-animation-interpolation"><Name_array id="magpiePick_L_arm_MSH-visibility-animation-interpolation-array" count="7">
+ STEP STEP STEP STEP STEP STEP STEP</Name_array><technique_common><accessor source="#magpiePick_L_arm_MSH-visibility-animation-interpolation-array" count="7"><param type="name"/></accessor></technique_common></source><sampler id="magpiePick_L_arm_MSH-visibility-animation"><input semantic="INPUT" source="#magpiePick_L_arm_MSH-visibility-animation-input"/><input semantic="OUTPUT" source="#magpiePick_L_arm_MSH-visibility-animation-output"/><input semantic="IN_TANGENT" source="#magpiePick_L_arm_MSH-visibility-animation-intan"/><input semantic="OUT_TANGENT" source="#magpiePick_L_arm_MSH-visibility-animation-outtan"/><input semantic="INTERPOLATION" source="#magpiePick_L_arm_MSH-visibility-animation-interpolation"/></sampler><channel source="#magpiePick_L_arm_MSH-visibility-animation" target="magpiePick_L_arm_MSH/visibility"/></animation></animation>
   </library_animations>
   <library_visual_scenes>
-    <visual_scene id="magpie_idle" name="magpie_idle">
-      <node name="magpieIdle_GRP" id="magpieIdle_GRP" sid="magpieIdle_GRP"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="magpieIdle_L_leg_MSH" id="magpieIdle_L_leg_MSH" sid="magpieIdle_L_leg_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_L_leg_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpieIdle_R_leg_MSH" id="magpieIdle_R_leg_MSH" sid="magpieIdle_R_leg_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_R_leg_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpieIdle_body_MSH" id="magpieIdle_body_MSH" sid="magpieIdle_body_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_body_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="magpieIdle_head_MSH" id="magpieIdle_head_MSH" sid="magpieIdle_head_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.999914 -0.013139 0.013129 0.000000 0.013139 0.999914 -0.005170 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_head_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpieIdle_R_arm_MSH" id="magpieIdle_R_arm_MSH" sid="magpieIdle_R_arm_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_R_arm_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpieIdle_L_arm_MSH" id="magpieIdle_L_arm_MSH" sid="magpieIdle_L_arm_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpieIdle_L_arm_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node></node></node>
+    <visual_scene id="magpie_pick" name="magpie_pick">
+      <node name="magpiePick_GRP" id="magpiePick_GRP" sid="magpiePick_GRP"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="magpiePick_L_leg_MSH" id="magpiePick_L_leg_MSH" sid="magpiePick_L_leg_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_L_leg_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpiePick_R_leg_MSH" id="magpiePick_R_leg_MSH" sid="magpiePick_R_leg_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_R_leg_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpiePick_body_MSH" id="magpiePick_body_MSH" sid="magpiePick_body_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.996732 -0.080776 0.000545 0.000000 0.080776 0.996732 -0.013463 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_body_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="magpiePick_head_MSH" id="magpiePick_head_MSH" sid="magpiePick_head_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 -0.000000 0.000000 0.993728 -0.111827 0.004706 0.000000 0.111827 0.993728 -0.062751 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_head_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpiePick_R_arm_MSH" id="magpiePick_R_arm_MSH" sid="magpiePick_R_arm_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_R_arm_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node><node name="magpiePick_L_arm_MSH" id="magpiePick_L_arm_MSH" sid="magpiePick_L_arm_MSH"><matrix sid="matrix">0.217891 0.000000 -0.975973 0.130352 -0.000000 1.000000 -0.000000 0.000000 0.975973 0.000000 0.217891 -0.162662 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#magpiePick_L_arm_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node></node></node>
       <extra><technique profile="MAX3D"><frame_rate>24.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.041667</start_time><end_time>8.333333</end_time></technique></extra>
     </visual_scene>
   </library_visual_scenes>
   <scene>
-    <instance_visual_scene url="#magpie_idle"></instance_visual_scene>
+    <instance_visual_scene url="#magpie_pick"></instance_visual_scene>
   </scene>
 </COLLADA>
