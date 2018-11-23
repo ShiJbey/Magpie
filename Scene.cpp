@@ -214,6 +214,9 @@ void Scene::draw(glm::mat4 const &world_to_clip, Object::ProgramType program_typ
 		//don't draw if no program of this type attached to object:
 		if (object->programs[program_type].program == 0) continue;
 
+		// Do not draw if the object is not active
+		if (!object->active) continue;
+
 		glm::mat4 local_to_world = object->transform->make_local_to_world();
 
 		//compute modelview+projection (object space to clip space) matrix for this object:

@@ -5,7 +5,6 @@
 #include "Load.hpp"
 
 //The 'GameMode' mode plays the game:
-#include "GameMode.hpp"
 #include "MagpieGamemode.hpp"
 
 //The 'Sound' header has functions for managing sound:
@@ -36,7 +35,7 @@ int main(int argc, char **argv) {
 #endif
 	struct {
 		//TODO: this is where you set the title and size of your game window
-		std::string title = "TODO: Game Title";
+		std::string title = "Magpie";
 		glm::uvec2 size = glm::uvec2(640, 400);
 	} config;
 

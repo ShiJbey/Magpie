@@ -60,6 +60,7 @@ struct Scene {
 
 	//"Object"s contain information needed to render meshes:
 	struct Object {
+		bool active = true;
 		Transform *transform; //objects must be attached to transforms.
 		Object(Transform *transform_) : transform(transform_) {
 			assert(transform);

@@ -138,8 +138,8 @@ if (__name__ == "__main__"):
     # Byte stream to hold output
     output = b''
 
-    # Iterate over all pixels
-    for row in range(0, img_shape[0], args.stride):
+    # Iterate over all pixels (starting from the bottom Left)
+    for row in range(img_shape[0] - 1, -1, -args.stride):
         for col in range(0, img_shape[1], args.stride):
             
             # By default CV2 is BGR instead of RGB
@@ -157,7 +157,7 @@ if (__name__ == "__main__"):
 
 
     blob = open(args.out_file, 'wb')
-    blob.write(struct.pack('4s', b'levl'))       # Header
+    blob.write(struct.pack('4s', b'levl'))      # Header
     blob.write(struct.pack('i', img_shape[0]))  # Length of the image
     blob.write(struct.pack('i', img_shape[1]))  # Width of the image
     blob.write(output)                          # Pixel Data
