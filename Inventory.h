@@ -1,5 +1,6 @@
-#pragma once
 
+#ifndef INVENTORY_H
+#define INVENTORY_H
 struct Inventory {
 
     //constructor
@@ -10,14 +11,12 @@ struct Inventory {
     //draw inventory
     void drawInv();
     
-    //three states, OUT for rolling out, IN for rolling in and IDLE for not interacted
-    enum STATE{
-        OUT,
-        IN,
-        IDLE
-    };
+    enum STATE { S_OUT, S_IN, S_IDLE };
+
     //set initial state of inventory to idle
-    enum STATE state = IDLE;
+    enum STATE state = S_IDLE;
 
 };
 
+
+#endif

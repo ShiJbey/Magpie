@@ -1,0 +1,3 @@
+[submodule "kit-libs-win"]
+	path = kit-libs-win
+	url = git@github.com:ixchow/kit-libs-win.git

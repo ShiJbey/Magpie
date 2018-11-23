@@ -497,11 +497,6 @@ namespace Magpie {
                 glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
             //highlight_path_tiles();
 
-            std::cout << "DEBUG:: Player can move to that position" << std::endl;
-            glm::vec2 destination = game.get_player()->get_path()->next();
-
-            game.get_player()->setDestination(glm::vec3(destination.x, destination.y, 0.0f));
-
             if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                 game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
             }

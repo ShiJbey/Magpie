@@ -12,6 +12,7 @@ Magpie::Guard::Guard() {
 };
 
 void Magpie::Guard::walk(float elapsed) {
+
     /*
     float distance = elapsed * movespeed;
 

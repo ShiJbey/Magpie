@@ -1,6 +1,5 @@
 
 //#include "SignalQueue.h"
-#include "Inventory.h"
 #include "Map.h"
 #include "UI.h"
 #include <iostream>
@@ -33,13 +32,13 @@ void UI::consume_signal() {
 void UI::stateChanger(char keyPressed) {
     if (keyPressed == 'i') {
         //set state of inventory to OUT and state of map to OFF
-        inventory.state = Inventory::OUT;
+        inventory.state = Inventory::S_OUT;
         map.state = Map::OFF;
         std::cout<<"state of map is now: "<<map.state<<std::endl;
     }
     else if (keyPressed == 'm') {
         //no matter if map is being called or dismissed inventory should not be out
-        inventory.state = Inventory::IN;
+        inventory.state = Inventory::S_IN;
         if (map.state == Map::OFF) {
             //set state of map to ON
             map.state = Map::ON;
@@ -52,7 +51,7 @@ void UI::stateChanger(char keyPressed) {
     }
     else if (DONESCROLLING == true) { //d for done scrolling in
         //set state of inventory to IDLE
-        inventory.state = Inventory::IDLE;
+        inventory.state = Inventory::S_IDLE;
     }
 }
 
