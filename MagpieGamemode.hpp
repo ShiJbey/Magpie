@@ -54,6 +54,8 @@ namespace Magpie {
         //        Magpie Specific Functions           //
         ////////////////////////////////////////////////
 
+        void make_close_walls_transparent();
+
         // Loads a level from a file, instantiates all the
         // meshes and positions the camera
         void load_level(std::string level_file);

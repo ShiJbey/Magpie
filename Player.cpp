@@ -201,10 +201,10 @@ void Magpie::Player::update(float elapsed) {
         walk(elapsed);
     }
 
-    //if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
-    //    set_state((uint32_t)Player::STATE::IDLE);
-    //    set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
-    //}
+    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
+        set_state((uint32_t)Player::STATE::IDLE);
+        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
+    }
 };
 
 void Magpie::Player::update_state(float elapsed) {

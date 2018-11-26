@@ -216,6 +216,8 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
             if (mesh_id == 16) {
                 temp_transform->name = "wall_" + std::to_string(i);
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+                level->set_wall(new Wall(temp_object), x, y);
                 
                 if (current_pixel.is_item_location()) {
                     potential_wall_locations.push_back(temp_transform);
@@ -412,6 +414,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                 Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
                 // TODO:: Get the actual room
                 level->add_gem(1, Gem(obj));
+                assert(obj != nullptr);
             }
         }
     }

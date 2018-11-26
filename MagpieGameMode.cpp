@@ -32,6 +32,8 @@
 #include <random>
 #include <unordered_map>
 #include <cstdlib>
+#include <deque>
+#include <tuple>
 
 namespace Magpie {
 
@@ -63,6 +65,8 @@ namespace Magpie {
         game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
+
+        make_close_walls_transparent();
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -79,8 +83,8 @@ namespace Magpie {
             game.get_guards()[i]->update(elapsed);
         }
 
-        //camera_trans->position.x = game.get_player()->get_position().x;
-        //camera_trans->position.y = game.get_player()->get_position().y;
+        camera_trans->position.x = game.get_player()->get_position().x;
+        camera_trans->position.y = game.get_player()->get_position().y;
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -336,6 +340,7 @@ namespace Magpie {
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info;
 
+            /*
             if (m.find("wall") != std::string::npos) {
                 default_program_info = transparent_program_info;
                 default_program_info.vao = *highlighted_building_meshes_vao;
@@ -343,7 +348,10 @@ namespace Magpie {
                 default_program_info = vertex_color_program_info;
                 default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
             }
+            */
 
+            default_program_info = vertex_color_program_info;
+            default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
             obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
             MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
             obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
@@ -400,7 +408,71 @@ namespace Magpie {
             floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
             highlighted_tiles->push_back(floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]);
         }
-    }
+    };
+
+    /**
+     * Performs a BFS on the walls in the player's current_room
+     * and makes all room walls to the left and below the character
+     * transparent
+     */
+    void Magpie::MagpieGameMode::make_close_walls_transparent() {
+
+        uint32_t level_width = game.get_level()->get_width();
+        uint32_t level_length = game.get_level()->get_length();
+
+        float player_pos_x = game.get_player()->get_position().x;
+        float player_pos_y = game.get_player()->get_position().y;
+
+        std::vector< glm::vec2 > visited;
+        // Unexplored grid positions
+        std::deque< glm::vec2 > frontier;
+        frontier.emplace_back(glm::uvec2(player_pos_x, player_pos_y));
+        visited.push_back(glm::uvec2(player_pos_x, player_pos_y));
+
+        while (!frontier.empty()) {
+
+            glm::vec2 current = frontier.front();
+            frontier.pop_front();
+
+            std::vector< glm::vec2 > adjacent_tiles;
+            adjacent_tiles.emplace_back(current.x + 1, current.y);
+            adjacent_tiles.emplace_back(current.x - 1, current.y);
+            adjacent_tiles.emplace_back(current.x, current.y + 1);
+            adjacent_tiles.emplace_back(current.x, current.y - 1);
+
+            for (auto &pos: adjacent_tiles) {
+                //printf("Pos - (x: %f, y: %f)\n", pos.x, pos.y);
+                 // Check the tile above this one
+                if (game.get_level()->is_wall(pos.x, pos.y)) {
+                    // check if the position has been visited
+                    if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
+                        // Swap out the program information
+                        if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
+                            Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = transparent_program_info;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
+                            visited.push_back(pos);
+                        }
+                        else if(pos.x < player_pos_x && (game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
+                            Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = transparent_program_info;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
+                            visited.push_back(pos);
+                        }
+                    }
+                }
+                else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y)) {
+                    
+                    if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
+                        // Add this position to the frontier
+                        visited.push_back(pos);
+                        frontier.push_back(pos);
+                    }
+                }
+            }
+        }
+
+    };
 
     /**
      * Creates a ray projected from the camera, onto the world.
@@ -419,6 +491,7 @@ namespace Magpie {
         glm::vec3 localOrigin = glm::vec3(normDeviceX*halfImageWidth, normDeviceY*halfImageHeight, -cam->near);
         glm::vec3 worldOrigin = camLocalToWorld*glm::vec4(localOrigin, 1.0f);
         glm::vec3 worldDir = camLocalToWorld*glm::vec4(localOrigin, 0.0f);
+        worldDir = glm::normalize(worldDir);
 
         return Magpie::Ray(worldOrigin, worldDir);
     };
@@ -515,7 +588,7 @@ namespace Magpie {
     bool MagpieGameMode::handle_screen_click(Magpie::Ray click_ray) {
         bool handled = false;
         if (!handled) {
-            //handled =  handle_clickables(click_ray);
+            handled =  handle_clickables(click_ray);
         }
 
         if (!handled) {
