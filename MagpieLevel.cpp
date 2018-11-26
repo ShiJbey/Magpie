@@ -33,6 +33,15 @@ Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
         }
     }
 
+    // Make the wall Matrix
+    wall_matrix = new Wall**[width];
+    for (uint32_t x = 0; x < width; x++) {
+        wall_matrix[x] = new Wall*[length];
+        for (uint32_t y = 0; y < length; y++) {
+            wall_matrix[x][y] = nullptr;
+        }
+    }
+
 };
 
 Magpie::MagpieLevel::~MagpieLevel() {
@@ -98,6 +107,56 @@ bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, uint32_t x, uint32_
     //    }
     //}
     return false;    
+};
+
+bool Magpie::MagpieLevel::is_wall(float x, float y) {
+    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
+        Wall* wall = wall_matrix[(uint32_t)x][(uint32_t)y];
+        if (wall == nullptr) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    return false;
+};
+
+bool Magpie::MagpieLevel::is_wall(uint32_t x, uint32_t y) {
+    if (x < width && y < length) {
+        Wall* wall = wall_matrix[x][y];
+        if (wall == nullptr) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    return false;
+};
+
+Magpie::Wall* Magpie::MagpieLevel::get_wall(float x, float y) {
+    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
+        return wall_matrix[(uint32_t)x][(uint32_t)y];
+    }
+    return nullptr;
+};
+
+Magpie::Wall* Magpie::MagpieLevel::get_wall(uint32_t x, uint32_t y) {
+    if (x < width && y < length) {
+        return wall_matrix[x][y];
+    }
+    return nullptr;
+};
+
+void Magpie::MagpieLevel::set_wall(Wall* wall, uint32_t x, uint32_t y) {
+    if (x < width && y < length) {
+        wall_matrix[x][y] = wall;
+    }
+};
+
+void Magpie::MagpieLevel::set_wall(Wall* wall, float x, float y) {
+    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
+        wall_matrix[(uint32_t)x][(uint32_t)y] = wall;
+    }
 };
 
 uint32_t Magpie::MagpieLevel::get_length() { 

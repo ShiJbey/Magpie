@@ -39,6 +39,13 @@ namespace Magpie {
         // given position
         bool can_move_to(uint32_t current_room, uint32_t x, uint32_t y);
         bool can_move_to(uint32_t current_room, float x, float y);
+        bool is_wall(float x, float y);
+        bool is_wall(uint32_t x, uint32_t y);
+        Wall* get_wall(float x, float y);
+        Wall* get_wall(uint32_t x, uint32_t y);
+        void set_wall(Wall* wall, uint32_t x, uint32_t y);
+        void set_wall(Wall* wall, float x, float y);
+
 
         // Used when creating the level to get the current
         // room of a player or guard
@@ -61,7 +68,7 @@ namespace Magpie {
         // Adds a position to a guards path
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);
     protected:
-
+ 
         // Size of the entire level
         uint32_t length;    // Dimension of the level in the y-direction
         uint32_t width;     // Dimension of the level in the x-direction
