@@ -10,6 +10,25 @@
 #include <map>
 
 namespace Magpie {
+    // DONUT
+    extern Load< MeshBuffer > donut_mesh;
+
+    extern Load< GLuint > donut_mesh_vao;
+
+    // ANIMATED DOORS
+    extern Load< MeshBuffer > door_mesh;
+
+    extern Load< GLuint > door_mesh_vao;
+
+    extern Load< TransformAnimation > door_tanim;
+
+    extern Load< Magpie::ModelData > door_model;
+
+    // VISIBLE BOUNDING BOXES
+    extern Load< MeshBuffer > bounding_box_mesh;
+
+    extern Load< GLuint > bounding_box_mesh_vao;
+
     // BUILDING TILES
     extern Load< MeshBuffer > building_meshes;
 
@@ -45,6 +64,42 @@ namespace Magpie {
     extern Load< TransformAnimation > magpie_steal_tanim;
 
     extern Load< Magpie::ModelData > magpie_steal_model;
+
+    // PLAYER PICKING
+    extern Load< MeshBuffer > magpie_pick_mesh;
+
+    extern Load< GLuint > magpie_pick_mesh_vao;
+
+    extern Load< TransformAnimation > magpie_pick_tanim;
+
+    extern Load< Magpie::ModelData > magpie_pick_model;
+
+    // PLAYER BREAKING
+    extern Load< MeshBuffer > magpie_break_mesh;
+
+    extern Load< GLuint > magpie_break_mesh_vao;
+
+    extern Load< TransformAnimation > magpie_break_tanim;
+
+    extern Load< Magpie::ModelData > magpie_break_model;
+
+    // PLAYER DISGUISE IDLE
+    extern Load< MeshBuffer > magpie_disguise_idle_mesh;
+
+    extern Load< GLuint > magpie_disguise_idle_mesh_vao;
+
+    extern Load< TransformAnimation > magpie_disguise_idle_tanim;
+
+    extern Load< Magpie::ModelData > magpie_disguise_idle_model;
+
+    // PLAYER DISGUISE WALKING
+    extern Load< MeshBuffer > magpie_disguise_walk_mesh;
+
+    extern Load< GLuint > magpie_disguise_walk_mesh_vao;
+
+    extern Load< TransformAnimation > magpie_disguise_walk_tanim;
+
+    extern Load< Magpie::ModelData > magpie_disguise_walk_model;
 
     // GUARD PATROLING
     extern Load< MeshBuffer > guard_dog_patrol_mesh;
@@ -99,6 +154,15 @@ namespace Magpie {
     extern Load< TransformAnimation > guard_dog_idle_tanim;
 
     extern Load< Magpie::ModelData > guard_dog_idle_model;
+
+    // GUARD EATING
+    extern Load< MeshBuffer > guard_dog_eat_mesh;
+
+    extern Load< GLuint > guard_dog_eat_vao;
+
+    extern Load< TransformAnimation > guard_dog_eat_tanim;
+
+    extern Load< Magpie::ModelData > guard_dog_eat_model;
 
     // MAP OF VAO NAMES TO VAO POINTERS
     extern Load< std::map< std::string, GLuint > > vertex_color_vaos;

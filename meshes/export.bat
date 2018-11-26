@@ -29,15 +29,15 @@ rem Export bounding box meshes for debuging
 blender --background --python export-meshes.py -- bounding_box.blend:1 %DIST%/levels/bounding_box.pnc
 
 rem Export the Donut
-blender --background --python export-meshes.py -- donut.blend:1 %DIST%/magpie/donut.pnc
+blender --background --python export-meshes.py -- donut.blend:1 %DIST%/levels/donut.pnc
 
 rem Export the level scenery mesh data
 blender --background --python export-meshes.py -- building-tiles.blend:1 %DIST%/levels/building_tiles.pnc
 
 rem Export door model animation and mesh_data
 blender --background --python export-meshes.py -- door_openAnim.blend:1 %DIST%/levels/door.pnc
-blender --background --python export-scene.py -- door_openAnim.blend:1 %DIST%/magpie/door.model
-blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend doorOpen_GRP 0 15 %DIST%/levels/door_openAnim.tanim
+blender --background --python export-scene.py -- door_openAnim.blend:1 %DIST%/levels/door.model
+blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend doorOpen_GRP 0 15 %DIST%/levels/door.tanim
 
 rem Export the Magpie model as a scene to preserve the transform hierarchy of character models
 blender --background --python export-scene.py -- magpie_idle.blend:1 %DIST%/magpie/magpie_idle.model
@@ -64,7 +64,7 @@ blender --background --python export-transform-animation-hierarchy.py -- magpie_
 blender --background --python export-transform-animation-hierarchy.py -- magpie_pick.blend magpiePick_GRP 0 15 %DIST%/magpie/magpie_pick.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpie_break.blend magpieBreak_GRP 0 15 %DIST%/magpie/magpie_break.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpieDisguise_idle.blend magpieDisguiseIdle_GRP 0 1 %DIST%/magpie/magpieDisguise_idle.tanim
-blender --background --python export-transform-animation-hierarchy.py -- magpieDisguise_walk.blend magpieDisguiseWalk_GRP 0 40 %DIST%/magpie/magpieDisguiseWalk_GRP.tanim
+blender --background --python export-transform-animation-hierarchy.py -- magpieDisguise_walk.blend magpieDisguiseWalk_GRP 0 40 %DIST%/magpie/magpieDisguise_walk.tanim
 
 
 rem Export the Guard Dog animations
