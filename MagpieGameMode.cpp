@@ -51,16 +51,27 @@ namespace Magpie {
         init_program_info();
         load_level("demo_map_flipped.lvl");
 
-        create_player(glm::vec3(7.0f, 6.0f, 0.0f));
+        create_player(glm::vec3(2.0f, 4.0f, 0.0f));
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
 
-        create_guard(glm::vec3(7.0f, 8.0f, 0.0f));
-        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
-        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
+        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
+//        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
+//        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
         game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
-        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
+
+        std::vector<glm::vec3> points = {
+                glm::vec3(9.0f, 8.0f, 0.0f),
+                glm::vec3(4.0f, 8.0f, 0.0f),
+                glm::vec3(4.0f, 4.0f, 0.0f),
+                glm::vec3(9.0f, 4.0f, 0.0f)
+        };
+
+        game.get_guards()[0]->set_patrol_points(
+                points
+        );
+//        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
+//        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
     };
