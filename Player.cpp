@@ -45,7 +45,6 @@ void Magpie::Player::print_tasks() {
 
 void Magpie::Player::setDestination(glm::vec3 destination) {
     current_destination = destination;
-    //set_velocity(glm::normalize(destination - get_position()));
     Player::turnTo(current_destination);
     set_model_orientation(orientation);
 };
@@ -107,7 +106,7 @@ void Magpie::Player::walk(float elapsed) {
     if (vector_to.x != 0) vector_to.x = vector_to.x / abs(vector_to.x);
     if (vector_to.y != 0) vector_to.y = vector_to.y / abs(vector_to.y);
 
-//    
+
 
 	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
 //    printf("Moving Distance: (%f, %f, %f, %f, %f)\n", accumulate_time, vector_to.x, vector_to.y, moving_distance.x, moving_distance.y);
@@ -137,56 +136,6 @@ void Magpie::Player::walk(float elapsed) {
 	//printf("Current Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
     //printf("Current Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
     Player::set_position(current_position);
-    
-
-
-	/*
-    //if (glm::length(vector_to) < distance || glm::dot(vector_to, glm::vec3(getDirectionVec2().x, getDirectionVec2().y, 0.0f)) < 0) {
-
-        if (next_destination_index == path.get_path().size()) {
-
-            Player::set_state((uint32_t)Player::STATE::IDLE);
-            next_destination_index = 0;
-            return;
-
-        } else {
-            
-            //Player::set_position(current_destination);
-           
-            printf("Player Position: (%f, %f, %f\n", get_position().x, get_position().y, get_position().z);
-            //printf("DESTINATION REACHED\n");
-            
-            glm::vec2 next_destination = path.get_path()[next_destination_index];
-            next_destination_index++;
-            
-            current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
-            Player::set_position(current_destination);
-            printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
-
-            //turnTo(current_destination);
-
-            //set_model_orientation(orientation);
-
-            
-
-            
-
-        }
-
-    //} else {
-
-        //Player::set_position((*transform)->position + glm::vec3(displacement, 0.0f));
-
-    //}
-
-    set_position(get_position() + elapsed * velocity * movespeed);
-
-    if (glm::length(current_destination - get_position()) <= 0.01) {
-        set_position(current_destination);
-        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
-        set_state((uint32_t)Player::STATE::IDLE);
-    }
-	*/
 };
 
 void Magpie::Player::consume_signal() {

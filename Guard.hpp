@@ -17,7 +17,8 @@ namespace Magpie {
             CHASING,
             ALERT,
             CONFUSED,
-            CAUTIOUS
+            CAUTIOUS,
+            EATING
         }; 
 
         Guard();

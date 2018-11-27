@@ -36,7 +36,11 @@ namespace Magpie {
         enum class STATE {
             IDLE = 0,
             WALKING,
-            STEALING
+            STEALING,
+            PICKING,
+            BREAKING,
+            DISGUISE_IDLE,
+            DISGUISE_WALK
         };
 
         Player();
