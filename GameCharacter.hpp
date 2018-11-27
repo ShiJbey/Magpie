@@ -2,7 +2,6 @@
 
 #include "Scene.hpp"
 #include "AnimationManager.hpp"
-#include "GameAgent.hpp"
 #include "TransformAnimation.hpp"
 
 #include <vector>
@@ -64,7 +63,7 @@ namespace Magpie {
         void set_position(glm::vec3 position);
         void set_transform(Scene::Transform** transform);
         void set_velocity(glm::vec3 velocity);
-        void set_model_orientation(GameAgent::DIRECTION dir);
+        virtual void set_model_orientation(uint32_t dir);
 
         // GETTERS
         glm::vec3 get_position();

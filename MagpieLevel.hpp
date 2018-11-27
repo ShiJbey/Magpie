@@ -61,6 +61,8 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
         FloorTile*** get_floor_matrix();
         std::vector< FloorTile* >* get_highlighted_tiles();
+        std::vector< Door* >* get_doors();
+        
 
         void add_painting(uint32_t room_number, Painting painting);
         void add_gem(uint32_t room_number, Gem gem);
@@ -103,6 +105,7 @@ namespace Magpie {
         // Maps room numbers to the vectors of items placed within that room
         std::map< uint32_t, std::vector< Gem > > gems;
         std::map< uint32_t, std::vector< Painting > > paintings;
+        std::vector< Door* > doors;
 
         // Maps room numbers to clickable objects in  the room
         std::map< uint32_t, std::vector< Clickable > >interactables;

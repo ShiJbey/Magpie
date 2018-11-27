@@ -70,7 +70,7 @@ namespace Magpie {
         virtual void turnTo(glm::vec3 destination);
 
         // Loads Magpie model data specifically
-        Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
+        virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
 
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
@@ -80,6 +80,7 @@ namespace Magpie {
         void set_state(uint32_t state);
         void set_score(uint32_t score);
         void set_current_room(uint32_t room_number);
+        virtual void set_model_orientation(uint32_t dir);
 
 
         // GETTERS

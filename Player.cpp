@@ -46,7 +46,7 @@ void Magpie::Player::print_tasks() {
 void Magpie::Player::setDestination(glm::vec3 destination) {
     current_destination = destination;
     Player::turnTo(current_destination);
-    set_model_orientation(orientation);
+    set_model_orientation((uint32_t)orientation);
 };
 
 void Magpie::Player::walk(float elapsed) {
@@ -71,7 +71,7 @@ void Magpie::Player::walk(float elapsed) {
 
         accumulate_time = 0;
 		turnTo(current_destination);
-		set_model_orientation(orientation);
+		set_model_orientation((uint32_t)orientation);
 		return;
     }
 
@@ -128,7 +128,7 @@ void Magpie::Player::walk(float elapsed) {
             printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
             printf("\tNext Destination Index is now: %d\n", next_destination_index);
             turnTo(current_destination);
-            set_model_orientation(orientation);
+            set_model_orientation((uint32_t)orientation);
 		
         
 	}
@@ -307,5 +307,29 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
             std::cout << "DEBUG:: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
+    }
+};
+
+void Magpie::Player::set_model_orientation(uint32_t dir) {
+    switch(dir) {
+        case (uint32_t)GameAgent::DIRECTION::RIGHT :
+            std::cout << "DEBUG:: Orienting right" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::LEFT :
+            std::cout << "DEBUG:: Orienting left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::UP :
+            std::cout << "DEBUG:: Orienting up" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::DOWN:
+            std::cout << "DEBUG:: Orienting down" << std::endl;
+            (*transform)->rotation = original_rotation;
+            break;
+        default:
+            std::cout << "ERROR:: Invalid orientation" << std::endl;
+            break;
     }
 };

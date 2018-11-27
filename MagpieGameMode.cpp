@@ -60,13 +60,13 @@ namespace Magpie {
         create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
         create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
-        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
+        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
         game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
         game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
 
-        make_close_walls_transparent();
+        make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().x);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -78,10 +78,17 @@ namespace Magpie {
         // Update the player
         game.get_player()->update(elapsed);
 
-        // Update the position of the guards
+        // Update the guards
         for (uint32_t i = 0; i < game.get_guards().size(); i++) {
             game.get_guards()[i]->update(elapsed);
         }
+
+        // Update any objects in the scene running animations
+        for (uint32_t i = 0; i < animated_scene_objects.size(); i++) {
+            animated_scene_objects[i]->get_animation_manager()->update(elapsed);
+        }
+
+        
 
         camera_trans->position.x = game.get_player()->get_position().x;
         camera_trans->position.y = game.get_player()->get_position().y;
@@ -171,6 +178,8 @@ namespace Magpie {
         return model_group_transform;
     };
 
+
+
     /**
      * Initializes each of the program information structs with everything
      * except for the vao which is set when we instantiate models
@@ -222,6 +231,10 @@ namespace Magpie {
         Scene::Transform *player_idle_trans = load_character_model(player, magpie_idle_model.value, "Idle", "magpieIdle", vertex_color_program_info, magpie_idle_mesh.value);
         Scene::Transform *player_walk_trans = load_character_model(player, magpie_walk_model.value, "Walk", "magpieWalk", vertex_color_program_info, magpie_walk_mesh.value);
         Scene::Transform *player_steal_trans = load_character_model(player, magpie_steal_model.value, "Steal", "magpieSteal", vertex_color_program_info, magpie_steal_mesh.value);
+        Scene::Transform *player_pick_trans = load_character_model(player, magpie_pick_model.value, "Pick", "magpiePick", vertex_color_program_info, magpie_pick_mesh.value);
+        Scene::Transform *player_break_trans = load_character_model(player, magpie_break_model.value, "Break", "magpieBreak", vertex_color_program_info, magpie_break_mesh.value);
+        Scene::Transform *player_disguise_idle_trans = load_character_model(player, magpie_disguise_idle_model.value, "DisguiseIdle", "magpieDisguiseIdle", vertex_color_program_info, magpie_disguise_idle_mesh.value);
+        Scene::Transform *player_disguise_walk_trans = load_character_model(player, magpie_disguise_walk_model.value, "DisguiseWalk", "magpieDisguiseWalk", vertex_color_program_info, magpie_disguise_walk_mesh.value);
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
@@ -238,16 +251,28 @@ namespace Magpie {
         std::vector< Scene::Transform* > player_model_idle_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_idle_tanim.value, "Idle"));
         std::vector< Scene::Transform* > player_model_walk_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_walk_tanim.value, "Walk"));
         std::vector< Scene::Transform* > player_model_steal_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_steal_tanim.value, "Steal"));
+        std::vector< Scene::Transform* > player_model_pick_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_pick_tanim.value, "Pick"));
+        std::vector< Scene::Transform* > player_model_break_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_break_tanim.value, "Break"));
+        std::vector< Scene::Transform* > player_model_disguise_idle_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_disguise_idle_tanim.value, "DisguiseIdle"));
+        std::vector< Scene::Transform* > player_model_disguise_walk_transforms = get_animation_transforms(name_to_transform, player->convert_animation_names(magpie_disguise_walk_tanim.value, "DisguiseWalk"));
 
         // Start constructing animations
         TransformAnimationPlayer* magpie_idle_animation = new TransformAnimationPlayer(*magpie_idle_tanim, player_model_idle_transforms, 1.0f, true);
         TransformAnimationPlayer* magpie_walk_animation = new TransformAnimationPlayer(*magpie_walk_tanim, player_model_walk_transforms, 1.0f, true);
         TransformAnimationPlayer* magpie_steal_animation = new TransformAnimationPlayer(*magpie_steal_tanim, player_model_steal_transforms, 1.0f, false);
+        TransformAnimationPlayer* magpie_pick_animation = new TransformAnimationPlayer(*magpie_pick_tanim, player_model_pick_transforms, 1.0f, false);
+        TransformAnimationPlayer* magpie_break_animation = new TransformAnimationPlayer(*magpie_break_tanim, player_model_break_transforms, 1.0f, false);
+        TransformAnimationPlayer* magpie_disguise_idle_animation = new TransformAnimationPlayer(*magpie_disguise_idle_tanim, player_model_disguise_idle_transforms, 1.0f, true);
+        TransformAnimationPlayer* magpie_disguise_walk_animation = new TransformAnimationPlayer(*magpie_disguise_walk_tanim, player_model_disguise_walk_transforms, 1.0f, true);
 
         // Set animation states
         player->get_animation_manager()->add_state(new AnimationState(player_idle_trans, magpie_idle_animation));
         player->get_animation_manager()->add_state(new AnimationState(player_walk_trans, magpie_walk_animation));
         player->get_animation_manager()->add_state(new AnimationState(player_steal_trans, magpie_steal_animation));
+        player->get_animation_manager()->add_state(new AnimationState(player_pick_trans, magpie_pick_animation));
+        player->get_animation_manager()->add_state(new AnimationState(player_break_trans, magpie_break_animation));
+        player->get_animation_manager()->add_state(new AnimationState(player_disguise_idle_trans, magpie_disguise_idle_animation));
+        player->get_animation_manager()->add_state(new AnimationState(player_disguise_walk_trans, magpie_disguise_walk_animation));
 
         // Finally, set the transform for this player
         player->set_transform(player->get_animation_manager()->init(position, (uint32_t)Player::STATE::IDLE));
@@ -276,6 +301,7 @@ namespace Magpie {
         Scene::Transform *guard_alert_trans = load_character_model(guard, guard_dog_alert_model.value, "Alert", "guardAlert", vertex_color_program_info, guard_dog_alert_mesh.value);
         Scene::Transform *guard_confused_trans = load_character_model(guard, guard_dog_confused_model.value, "Confused", "guardConfused", vertex_color_program_info, guard_dog_confused_mesh.value);
         Scene::Transform *guard_cautious_trans = load_character_model(guard, guard_dog_cautious_model.value, "Cautious", "guardCautious", vertex_color_program_info, guard_dog_cautious_mesh.value);
+        Scene::Transform *guard_eat_trans = load_character_model(guard, guard_dog_eat_model.value, "Eat", "guardEat", vertex_color_program_info, guard_dog_eat_mesh.value);
 
         //look up various transforms for animations
         std::unordered_map< std::string, Scene::Transform * > name_to_transform;
@@ -295,6 +321,7 @@ namespace Magpie {
         std::vector< Scene::Transform* > guard_model_alert_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_alert_tanim.value, "Alert"));
         std::vector< Scene::Transform* > guard_model_confused_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_confused_tanim.value, "Confused"));
         std::vector< Scene::Transform* > guard_model_cautious_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_cautious_tanim.value, "Cautious"));
+        std::vector< Scene::Transform* > guard_model_eat_transforms  = get_animation_transforms(name_to_transform, guard->convert_animation_names(guard_dog_eat_tanim.value, "Eat"));
 
         // Contructing Animations
         TransformAnimationPlayer* guard_idle_animation = new TransformAnimationPlayer(*guard_dog_idle_tanim, guard_model_idle_transforms, 1.0f, true);
@@ -303,7 +330,7 @@ namespace Magpie {
         TransformAnimationPlayer* guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
         TransformAnimationPlayer* guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
-
+        TransformAnimationPlayer* guard_eat_animation = new TransformAnimationPlayer(*guard_dog_eat_tanim, guard_model_eat_transforms, 1.0f, false);
 
         // Set animation states
         guard->get_animation_manager()->add_state(new AnimationState(guard_idle_trans, guard_idle_animation));
@@ -312,6 +339,7 @@ namespace Magpie {
         guard->get_animation_manager()->add_state(new AnimationState(guard_alert_trans, guard_alert_animation));
         guard->get_animation_manager()->add_state(new AnimationState(guard_confused_trans, guard_confused_animation));
         guard->get_animation_manager()->add_state(new AnimationState(guard_cautious_trans, guard_cautious_animation));
+        guard->get_animation_manager()->add_state(new AnimationState(guard_eat_trans, guard_eat_animation));
 
         // Finally, set the transform for this guard
         guard->set_transform(guard->get_animation_manager()->init(position, (uint32_t)Guard::STATE::IDLE));
@@ -328,6 +356,53 @@ namespace Magpie {
         return guard;
     };
 
+    Door* MagpieGameMode::create_animated_door(Door* door) {
+        // Get the door at the position given
+        assert(door != nullptr);
+
+        glm::vec3 position = door->scene_object->transform->position;
+        Scene::Transform* temp = door->scene_object->transform;
+        glm::quat old_rot = temp->rotation;
+        scene.delete_object(door->scene_object);
+        scene.delete_transform(temp);
+        door->scene_object = nullptr;
+        
+
+        
+        // Load the model data for the door
+        Scene::Transform *door_trans = load_character_model(door, door_model.value, "Open", "door", vertex_color_program_info, door_mesh.value);
+
+        //look up various transforms for animations
+        std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+        for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
+            if (t->name.find("Door") != std::string::npos) {
+                auto ret = name_to_transform.insert(std::make_pair(t->name, t));
+                if (!ret.second) {
+                    std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
+                }
+            }
+        }
+
+        std::vector< Scene::Transform* > door_transforms = get_animation_transforms(name_to_transform, door->convert_animation_names(door_tanim.value, "door"));
+
+
+        TransformAnimationPlayer* door_animation = new TransformAnimationPlayer(*door_tanim, door_transforms, 1.0f, false);
+
+        door->get_animation_manager()->add_state(new AnimationState(door_trans, door_animation));
+
+        // Finally, set the transform for this guard
+        door->set_transform(door->get_animation_manager()->init(position, 0));
+        if (door->get_transform() == nullptr) {
+            std::cerr << "ERROR:: Door Transform not found" << std::endl;
+        }
+
+        // Set the guard at the proper place
+        door->set_position(position);
+        door->set_model_orientation(1);
+        
+        return door;
+    };
+
     /**
      * Initializes the current level and positions the guards
      * and the player
@@ -339,17 +414,6 @@ namespace Magpie {
         MagpieLevel* level = level_pixel_data.load(data_path(level_file), &scene, building_meshes.value, [&](Scene &s, Scene::Transform *t, std::string const &m){
             Scene::Object *obj = s.new_object(t);
             Scene::Object::ProgramInfo default_program_info;
-
-            /*
-            if (m.find("wall") != std::string::npos) {
-                default_program_info = transparent_program_info;
-                default_program_info.vao = *highlighted_building_meshes_vao;
-            } else {
-                default_program_info = vertex_color_program_info;
-                default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
-            }
-            */
-
             default_program_info = vertex_color_program_info;
             default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
             obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
@@ -395,8 +459,11 @@ namespace Magpie {
         std::vector< FloorTile* >* highlighted_tiles = game.get_level()->get_highlighted_tiles();
         if (!highlighted_tiles->empty()) {
             for (uint32_t i = 0; i < highlighted_tiles->size(); i++) {
+                Scene::Object::ProgramInfo old_info = (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault];
                 (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
                 (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+                (*highlighted_tiles)[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
             }
         }
         highlighted_tiles->clear();
@@ -404,9 +471,12 @@ namespace Magpie {
         std::vector<glm::vec2> path = game.get_player()->get_path()->get_path();
         FloorTile*** floor_matrix = game.get_level()->get_floor_matrix();
         for (uint32_t i = 0; i < path.size(); i++) {
+            Scene::Object::ProgramInfo old_info = floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault];
             floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault] = highlight_program_info;
             floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
             highlighted_tiles->push_back(floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]);
+            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
         }
     };
 
@@ -415,13 +485,22 @@ namespace Magpie {
      * and makes all room walls to the left and below the character
      * transparent
      */
-    void Magpie::MagpieGameMode::make_close_walls_transparent() {
+    void Magpie::MagpieGameMode::make_close_walls_transparent(float x, float y) {
+
+        for (uint32_t i = 0; i < transparent_walls.size(); i++ ) {
+            Scene::Object::ProgramInfo old_info = transparent_walls[i]->scene_object->programs[Scene::Object::ProgramTypeDefault];
+            transparent_walls[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = vertex_color_program_info;
+            transparent_walls[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
+            transparent_walls[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+            transparent_walls[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
+        }
+        transparent_walls.clear();
 
         uint32_t level_width = game.get_level()->get_width();
         uint32_t level_length = game.get_level()->get_length();
 
-        float player_pos_x = game.get_player()->get_position().x;
-        float player_pos_y = game.get_player()->get_position().y;
+        float player_pos_x = x;
+        float player_pos_y = y;
 
         std::vector< glm::vec2 > visited;
         // Unexplored grid positions
@@ -449,15 +528,23 @@ namespace Magpie {
                         // Swap out the program information
                         if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
+                            Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = transparent_program_info;
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
                             visited.push_back(pos);
+                            transparent_walls.push_back(wall);
                         }
                         else if(pos.x < player_pos_x && (game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
+                            Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = transparent_program_info;
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
                             visited.push_back(pos);
+                            transparent_walls.push_back(wall);
                         }
                     }
                 }
@@ -554,6 +641,55 @@ namespace Magpie {
             }
         }
 
+        for (uint32_t i = 0; i < game.get_level()->get_doors()->size(); i++) {
+            if ((*game.get_level()->get_doors())[i]->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+                
+                if ((*game.get_level()->get_doors())[i]->opened) {
+                    Door* door = (*game.get_level()->get_doors())[i];
+                    if (door->room_a.x == (int)game.get_player()->get_position().x &&
+                        door->room_a.y == (int)game.get_player()->get_position().y) {
+
+                        game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
+                            glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
+                            glm::vec2(door->room_b.x, door->room_b.y)));
+
+                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)door->room_b.x, (float)door->room_b.y));
+                        
+                        if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                        }
+
+                        make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
+                        
+                    }
+
+                     if (door->room_b.x == (int)game.get_player()->get_position().x &&
+                        door->room_b.y == (int)game.get_player()->get_position().y) {
+
+                        game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
+                            glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
+                            glm::vec2(door->room_a.x, door->room_a.y)));
+
+                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)door->room_a.x, (float)door->room_a.y));
+                        
+                        if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                        }
+
+                        make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
+                        
+                    }
+                    return true;
+                } else {
+                    (*game.get_level()->get_doors())[i]->on_click();
+                    Door* door = create_animated_door((*game.get_level()->get_doors())[i]);
+                    animated_scene_objects.push_back(door);
+                    return true;
+                }
+                
+            }
+        }
+
         return false;
     };
 
@@ -568,6 +704,7 @@ namespace Magpie {
             game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
                 glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
                 glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
+            
             //highlight_path_tiles();
 
             if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {

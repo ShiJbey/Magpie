@@ -60,21 +60,21 @@ void Magpie::GameCharacter::set_transform(Scene::Transform** transform) {
     original_rotation = (*transform)->rotation;
 };
 
-void Magpie::GameCharacter::set_model_orientation(GameAgent::DIRECTION dir) {
+void Magpie::GameCharacter::set_model_orientation(uint32_t dir) {
     switch(dir) {
-        case GameAgent::DIRECTION::RIGHT :
+        case 3 :
             std::cout << "DEBUG:: Orienting right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
-        case GameAgent::DIRECTION::LEFT :
+        case 1 :
             std::cout << "DEBUG:: Orienting left" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
-        case GameAgent::DIRECTION::UP :
+        case 2 :
             std::cout << "DEBUG:: Orienting up" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
-        case GameAgent::DIRECTION::DOWN:
+        case 0:
             std::cout << "DEBUG:: Orienting down" << std::endl;
             (*transform)->rotation = original_rotation;
             break;

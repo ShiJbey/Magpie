@@ -184,16 +184,20 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                 temp_transform->name = name;
                 temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 level->set_movement_matrix_position(x, y, true);
-
+                Door* door;
+                
                 // Get the meshes that surround this wall
                 if (x == 0) {
                     temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door = new Door(glm::ivec2(int(x) + 1, (int)y), glm::ivec2(int(x) - 1, (int)y), temp_object);
                 }
                 else if (x == level_width - 1) {
                     temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door = new Door(glm::ivec2(int(x) - 1, (int)y), glm::ivec2(int(x) + 1, (int)y), temp_object);
                 }
                 else if (y == 0 || y == level_length - 1) {
                     temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
                 }
                 else {
                     uint8_t mesh_below = pixel_data[((y - 1) * level_width) + x].get_mesh_id();
@@ -203,13 +207,22 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(std::string const &filename, Scen
                     
                     if ((mesh_to_left == 4 || (mesh_to_left >= 16 && mesh_to_left <= 19))
                         || (mesh_to_right == 4 || (mesh_to_right >= 16 && mesh_to_right <= 19))) {
-                        //temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                        door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
+                        
                     }
                     else if ((mesh_above == 4 || (mesh_above >= 16 && mesh_above <= 19))
                         || (mesh_below == 4 || (mesh_below >= 16 && mesh_below <= 19))) {
                         temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        door = new Door(glm::ivec2(int(x) - 1, (int)y), glm::ivec2(int(x) + 1, (int)y), temp_object);
                     }
-                }                
+                    else {
+                        door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
+                    }
+                }
+
+
+                level->get_doors()->push_back(door);                         
             }
 
              // Walls

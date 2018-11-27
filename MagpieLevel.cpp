@@ -241,4 +241,8 @@ uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
         return floor_matrix[(uint32_t)x][(uint32_t)y]->room_number;
     }
     return -1U;
-}
+};
+
+std::vector< Magpie::Door* >* Magpie::MagpieLevel::get_doors() {
+    return &doors;
+};
