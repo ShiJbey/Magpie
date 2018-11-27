@@ -52,7 +52,7 @@ namespace Magpie {
         bool at_destination;
         Path path;
         Path new_path;
-        bool is_new_path;
+        bool is_new_path = false;
         uint32_t next_destination_index = 0;
     };
 }
