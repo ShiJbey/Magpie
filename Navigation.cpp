@@ -156,9 +156,9 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
     std::deque< glm::vec2 > frontier;
 
     uint64_t start_x = trunc(start.x);
-    double decimal_x = start.x - trunc(start.x);
+//    double decimal_x = start.x - trunc(start.x);
     uint64_t start_y = trunc(start.y);
-    double decimal_y = start.y - trunc(start.y);
+//    double decimal_y = start.y - trunc(start.y);
 
 
 

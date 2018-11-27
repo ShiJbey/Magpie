@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <deque>
 #include <tuple>
+#include <algorithm>
 
 namespace Magpie {
 
@@ -51,7 +52,7 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         init_program_info();
-        load_level("demo_map_flipped.lvl");
+        load_level("final-map.lvl");
 
         create_player(glm::vec3(7.0f, 6.0f, 0.0f));
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
@@ -417,8 +418,8 @@ namespace Magpie {
      */
     void Magpie::MagpieGameMode::make_close_walls_transparent() {
 
-        uint32_t level_width = game.get_level()->get_width();
-        uint32_t level_length = game.get_level()->get_length();
+//        uint32_t level_width = game.get_level()->get_width();
+//        uint32_t level_length = game.get_level()->get_length();
 
         float player_pos_x = game.get_player()->get_position().x;
         float player_pos_y = game.get_player()->get_position().y;
