@@ -10,10 +10,10 @@ namespace Magpie {
     public:
 
         enum class DIRECTION {
-            DOWN = 0,
-            LEFT,
-            UP,
+            UP = 0,
             RIGHT,
+            DOWN,
+            LEFT,
             //UP_RIGHT,
             //UP_LEFT,
             //DOWN_RIGHT,

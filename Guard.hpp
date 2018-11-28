@@ -3,10 +3,13 @@
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
 #include "GameCharacter.hpp"
+#include "Player.hpp"
 
 namespace Magpie {
     class Guard: public GameCharacter, public GameAgent, public Signalable {
     public:
+
+        Player* player;
 
         // This is incremented each time we create a new player
         static uint32_t instance_count;
@@ -18,6 +21,13 @@ namespace Magpie {
             ALERT,
             CONFUSED,
             CAUTIOUS
+        };
+
+        enum class SIGHT {
+            NOTHING,
+            MAGPIE_ALERT,
+            MAGPIE_NOTICE,
+            DONUT
         };
 
         Guard();
@@ -34,13 +44,13 @@ namespace Magpie {
 
         void set_state(uint32_t state);
 
-        void handle_state_idle();
-        void handle_state_patrolling();
-        void handle_state_cautious();
-        void handle_state_alert();
-        void handle_state_chasing();
-        void handle_state_confused();
-        bool check_view();
+        void handle_state_idle(enum SIGHT);
+        void handle_state_patrolling(enum SIGHT);
+        void handle_state_cautious(enum SIGHT);
+        void handle_state_alert(enum SIGHT);
+        void handle_state_chasing(enum SIGHT);
+        void handle_state_confused(enum SIGHT);
+        uint32_t check_view();
 
         void set_patrol_points(std::vector<glm::vec3>);
 
@@ -61,6 +71,8 @@ namespace Magpie {
         enum STATE last_state = STATE::IDLE;
 
         std::vector<glm::vec3> patrol_points;
+        glm::vec3 interest_point;
         int patrol_index = 0;
+        bool cautious = false;
     };
 }

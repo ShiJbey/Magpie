@@ -1,6 +1,7 @@
 #include "Guard.hpp"
 
 #include <iostream>
+#include "GameAgent.hpp"
 
 uint32_t Magpie::Guard::instance_count = 0;
 
@@ -9,6 +10,7 @@ Magpie::Guard::Guard() {
     instance_count++;
 
     animation_manager = new AnimationManager();
+    orientation = DIRECTION::LEFT;
 };
 
 void Magpie::Guard::consume_signal() {
@@ -33,26 +35,27 @@ void Magpie::Guard::update_state(float elapsed) {
 
     state_duration += elapsed;
 
-    if (check_view()) return;
+    // Check the guard's sight
+    enum SIGHT view_state = (enum SIGHT) check_view();
 
     switch ((enum STATE) current_state) {
         case STATE::IDLE:
-            handle_state_idle();
+            handle_state_idle(view_state);
             break;
         case STATE::PATROLING:
-            handle_state_patrolling();
+            handle_state_patrolling(view_state);
             break;
         case STATE::CAUTIOUS:
-            handle_state_cautious();
+            handle_state_cautious(view_state);
             break;
         case STATE::ALERT:
-            handle_state_alert();
+            handle_state_alert(view_state);
             break;
         case STATE::CHASING:
-            handle_state_chasing();
+            handle_state_chasing(view_state);
             break;
         case STATE::CONFUSED:
-            handle_state_confused();
+            handle_state_confused(view_state);
             break;
         default:
             break;
@@ -60,7 +63,22 @@ void Magpie::Guard::update_state(float elapsed) {
 };
 
 // IDLE State
-void Magpie::Guard::handle_state_idle() {
+void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
+
+    cautious = false;
+
+    if (view_state == SIGHT::MAGPIE_ALERT) {
+        set_state((uint32_t) STATE::ALERT);
+        interest_point = player->get_position();
+        return;
+    }
+
+    if (view_state == SIGHT::MAGPIE_NOTICE) {
+        set_state((uint32_t) STATE::CAUTIOUS);
+        interest_point = player->get_position();
+        return;
+    }
+
     if (state_duration > 1.5f) {
         patrol_index = (patrol_index + 1) % patrol_points.size();
         std::cout << "NEXT PATROL POINT " << patrol_index << " (" << patrol_points[patrol_index].x << "," << patrol_points[patrol_index].y << ")" << std::endl;
@@ -72,32 +90,119 @@ void Magpie::Guard::handle_state_idle() {
 
 }
 
-void Magpie::Guard::handle_state_patrolling(){
-    float distance = glm::length(current_destination - get_position());
+void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
+    if (view_state == SIGHT::MAGPIE_ALERT) {
+        set_state((uint32_t) STATE::ALERT);
+        interest_point = player->get_position();
+        return;
+    }
 
-    if (distance < 0.1) {
-//        set_state((uint32_t) STATE::IDLE);
+    if (view_state == SIGHT::MAGPIE_NOTICE && !cautious) {
+        cautious = true;
+        set_state((uint32_t) STATE::CAUTIOUS);
+        interest_point = player->get_position();
+        return;
     }
 };
 
-void Magpie::Guard::handle_state_cautious() {
+void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
+    if (view_state == SIGHT::MAGPIE_ALERT) {
+        set_state((uint32_t) STATE::ALERT);
+        interest_point = player->get_position();
+        return;
+    }
 
+    if (state_duration > 1.5f) {
+        setDestination(interest_point);
+        set_state((uint32_t) STATE::PATROLING);
+    }
 }
 
-void Magpie::Guard::handle_state_alert() {
-
+void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
+    if (state_duration > 1.5f) {
+        setDestination(interest_point);
+        set_state((uint32_t) STATE::CHASING);
+    }
 }
 
-void Magpie::Guard::handle_state_chasing() {
-
+void Magpie::Guard::handle_state_chasing(enum SIGHT view_state) {
+    if (view_state != SIGHT::NOTHING) {
+        set_state((uint32_t) STATE::CONFUSED);
+        return;
+    }
 }
 
-void Magpie::Guard::handle_state_confused() {
+void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
 
+    if (view_state == SIGHT::MAGPIE_ALERT) {
+        set_state((uint32_t) STATE::ALERT);
+        interest_point = player->get_position();
+        return;
+    }
+
+    if (view_state == SIGHT::MAGPIE_NOTICE) {
+        set_state((uint32_t) STATE::CAUTIOUS);
+        interest_point = player->get_position();
+        return;
+    }
+
+    if (state_duration > 4.0f) {
+        patrol_index = 0;
+        setDestination(patrol_points[patrol_index]);
+        set_state((uint32_t) STATE::PATROLING);
+        cautious = false;
+    }
 }
 
-bool Magpie::Guard::check_view() {
-    return false;
+uint32_t Magpie::Guard::check_view() {
+    glm::vec3 v = glm::vec3(board_position.x, board_position.y, 0) - player->get_position();
+
+    glm::vec3 o_v3;
+
+    switch (orientation) {
+        case DIRECTION::UP:
+            o_v3 = glm::vec3(-1.0, -1.0, 0.0);
+            break;
+        case DIRECTION::DOWN:
+            o_v3 = glm::vec3(1.0, 1.0, 0.0);
+            break;
+        case DIRECTION::RIGHT:
+            o_v3 = glm::vec3(-1.0, 1.0, 0.0);
+            break;
+        case DIRECTION::LEFT:
+            o_v3 = glm::vec3(1.0, -1.0, 0.0);
+            break;
+    }
+
+    glm::vec3 vv = v * o_v3;
+
+
+    float x = vv.x;
+    float y = vv.y;
+
+    if (orientation == DIRECTION::UP || orientation == DIRECTION::DOWN) {
+        x = abs(x);
+    }
+
+    if (orientation == DIRECTION::LEFT || orientation == DIRECTION::RIGHT) {
+        y = abs(y);
+
+        float t = x;
+        x = y;
+        y = t;
+    }
+
+//    std::cout << "O:" << (uint32_t)orientation <<  " o_v:" << o_v3.x << "," << o_v3.y << " v:" << x << "," << y << " vv:" << vv.x << "," << vv.y << std::endl;
+
+    if (x <= 2 && y < 4 && y > 2) {
+        return (uint32_t) SIGHT::MAGPIE_NOTICE;
+    }
+
+    if (x <= 2 && y <= 2 && y > 0) {
+        return (uint32_t) SIGHT::MAGPIE_ALERT;
+    }
+
+    return (uint32_t)SIGHT::NOTHING;
 }
 
 void Magpie::Guard::set_patrol_points(std::vector<glm::vec3> points) {
@@ -111,7 +216,12 @@ void Magpie::Guard::interact() {
 
 void Magpie::Guard::walk(float elapsed) {
 
-    if (current_state == (uint32_t)STATE::IDLE) return;
+    if (
+            current_state == (uint32_t)STATE::IDLE ||
+            current_state == (uint32_t)STATE::CAUTIOUS ||
+            current_state == (uint32_t)STATE::ALERT ||
+            current_state == (uint32_t)STATE::CONFUSED
+    ) return;
 
     if (is_new_path) {
         is_new_path = false;
