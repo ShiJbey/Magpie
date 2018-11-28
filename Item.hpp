@@ -11,10 +11,13 @@ namespace Magpie {
     // stealing
     class Item {
     public:
+        static uint32_t instance_count;
+        Item(Scene::Object* obj);
         void set_scene_object(Scene::Object* obj);
         Scene::Object* get_scene_object();
     protected:
         Scene::Object* scene_object;
+        uint32_t instance_id;
     };
 
     // Defines anything that can be stolen in the game (e.g. gems and paintings)
