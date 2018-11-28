@@ -284,6 +284,7 @@ namespace Magpie {
     Guard* MagpieGameMode::create_guard(glm::vec3 position) {
 
         Magpie::Guard* guard = new Guard();
+        guard->player = game.get_player();
 
         // Use one main transform and swap it to point between
         // one of the three other specific transforms
