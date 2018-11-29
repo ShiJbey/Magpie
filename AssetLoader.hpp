@@ -178,5 +178,4 @@ namespace Magpie {
     extern Load< Scene::Object::ProgramInfo > vertex_color_program_info;
     extern Load< Scene::Object::ProgramInfo > highlight_program_info;
     extern Load< Scene::Object::ProgramInfo > transparent_program_info;
-    
 }
