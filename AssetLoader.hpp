@@ -166,6 +166,5 @@ namespace Magpie {
 
     // MAP OF VAO NAMES TO VAO POINTERS
     extern Load< std::map< std::string, GLuint > > vertex_color_vaos;
-
-    
+       
 }
