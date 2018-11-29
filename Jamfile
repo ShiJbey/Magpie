@@ -100,6 +100,7 @@ CLIENT_NAMES =
 	AssetLoader
 	GameCharacter
 	UI
+	Door
 	;
 
 if $(OS) = NT {

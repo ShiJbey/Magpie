@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-11-30T00:22:22Z</created><keywords></keywords><modified>2018-11-30T00:22:22Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-11-29T23:38:51Z</created><keywords></keywords><modified>2018-11-29T23:38:51Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_materials>
     <material id="lambert1" name="lambert1">
       <instance_effect url="#lambert1-fx"/>
@@ -32,10 +32,10 @@
     </effect>
   </library_effects>
   <library_geometries>
-    <geometry id="door_purple_MSH-lib" name="door_purple_MSHMesh">
+    <geometry id="door_keycardGreen_MSH-lib" name="door_keycardGreen_MSHMesh">
       <mesh>
-        <source id="door_purple_MSH-POSITION">
-          <float_array id="door_purple_MSH-POSITION-array" count="144">
+        <source id="door_keycardGreen_MSH-POSITION">
+          <float_array id="door_keycardGreen_MSH-POSITION-array" count="162">
 -0.437500 0.034717 -0.062500
 0.437500 0.034717 -0.062500
 -0.437500 0.034717 0.062500
@@ -56,6 +56,12 @@
 0.375000 0.812500 0.125000
 0.250000 0.812500 0.062500
 0.375000 0.812500 0.062500
+-0.156250 1.156250 0.064862
+0.156250 1.156250 0.064862
+-0.156250 1.343750 0.064862
+0.156250 1.343750 0.064862
+-0.156250 1.187500 0.064862
+0.156250 1.187500 0.064862
 -0.500250 0.000000 0.500250
 0.500250 0.000000 0.500250
 -0.500250 0.041667 0.500250
@@ -86,15 +92,15 @@
 -0.500250 2.001000 -0.250000
 </float_array>
           <technique_common>
-            <accessor source="#door_purple_MSH-POSITION-array" count="48" stride="3">
+            <accessor source="#door_keycardGreen_MSH-POSITION-array" count="54" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="door_purple_MSH-Normal0">
-          <float_array id="door_purple_MSH-Normal0-array" count="432">
+        <source id="door_keycardGreen_MSH-Normal0">
+          <float_array id="door_keycardGreen_MSH-Normal0-array" count="468">
 0.000000 -1.000000 0.000000
 0.000000 -1.000000 0.000000
 0.000000 -1.000000 0.000000
@@ -167,6 +173,18 @@
 -1.000000 0.000000 0.000000
 -1.000000 0.000000 0.000000
 -1.000000 0.000000 0.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
 0.000000 -0.000012 -1.000000
 0.000000 -0.000012 -1.000000
 0.000000 -0.000012 -1.000000
@@ -241,15 +259,15 @@
 1.000000 0.000000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#door_purple_MSH-Normal0-array" count="144" stride="3">
+            <accessor source="#door_keycardGreen_MSH-Normal0-array" count="156" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="door_purple_MSH-UV0">
-          <float_array id="door_purple_MSH-UV0-array" count="144">
+        <source id="door_keycardGreen_MSH-UV0">
+          <float_array id="door_keycardGreen_MSH-UV0-array" count="156">
 0.375000 0.000000
 0.625000 0.000000
 0.625000 0.250000
@@ -288,6 +306,12 @@
 0.875000 0.250000
 0.125000 0.000000
 0.125000 0.250000
+0.000000 0.110505
+1.000000 0.110505
+1.000000 0.600000
+0.000000 0.600000
+0.000000 0.000000
+1.000000 0.000000
 0.376040 0.513060
 0.624588 0.508710
 0.623648 0.740608
@@ -324,22 +348,22 @@
 -0.001812 0.000424
 </float_array>
           <technique_common>
-            <accessor source="#door_purple_MSH-UV0-array" count="72" stride="2">
+            <accessor source="#door_keycardGreen_MSH-UV0-array" count="78" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="door_purple_MSH-VERTEX_COLOR0">
-          <float_array id="door_purple_MSH-VERTEX_COLOR0-array" count="384">
+        <source id="door_keycardGreen_MSH-VERTEX_COLOR0">
+          <float_array id="door_keycardGreen_MSH-VERTEX_COLOR0-array" count="416">
 0.000000 0.000000 0.000000 0.000000
 0.000000 0.000000 0.000000 0.000000
 0.000000 0.000000 0.000000 0.000000
 0.000000 0.000000 0.000000 0.000000
-0.000000 0.000000 0.000000 0.000000
-0.000000 0.000000 0.000000 0.000000
-0.000000 0.000000 0.000000 0.000000
-0.000000 0.000000 0.000000 0.000000
+0.132000 0.061776 0.069265 1.000000
+0.132000 0.061776 0.069265 1.000000
+0.132000 0.061776 0.069265 1.000000
+0.132000 0.061776 0.069265 1.000000
 0.132000 0.061776 0.069265 1.000000
 0.132000 0.061776 0.069265 1.000000
 0.132000 0.061776 0.069265 1.000000
@@ -380,26 +404,34 @@
 0.467000 0.366519 0.155511 1.000000
 0.467000 0.366519 0.155511 1.000000
 0.467000 0.366519 0.155511 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.020573 0.015850 0.025000 1.000000
+0.020573 0.015850 0.025000 1.000000
+0.020573 0.015850 0.025000 1.000000
+0.020573 0.015850 0.025000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+1.000000 0.000000 1.000000 1.000000
+1.000000 0.000000 1.000000 1.000000
+1.000000 0.000000 1.000000 1.000000
+1.000000 0.000000 1.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
 0.183128 0.123170 0.218000 1.000000
 0.183128 0.123170 0.218000 1.000000
 0.183128 0.123170 0.218000 1.000000
@@ -416,10 +448,10 @@
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
 0.310905 0.259160 0.341000 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
-0.132000 0.061776 0.069265 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
+0.000000 1.000000 0.000000 1.000000
 0.429840 0.358350 0.471421 1.000000
 0.429840 0.358350 0.471421 1.000000
 0.429840 0.358350 0.471421 1.000000
@@ -430,7 +462,7 @@
 0.310905 0.259160 0.341000 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#door_purple_MSH-VERTEX_COLOR0-array" count="96" stride="4">
+            <accessor source="#door_keycardGreen_MSH-VERTEX_COLOR0-array" count="104" stride="4">
               <param name="R" type="double"/>
               <param name="G" type="double"/>
               <param name="B" type="double"/>
@@ -438,20 +470,20 @@
             </accessor>
           </technique_common>
         </source>
-        <vertices id="door_purple_MSH-VERTEX">
-          <input semantic="POSITION" source="#door_purple_MSH-POSITION"/>
+        <vertices id="door_keycardGreen_MSH-VERTEX">
+          <input semantic="POSITION" source="#door_keycardGreen_MSH-POSITION"/>
         </vertices>
-        <triangles count="48" material="lambert1"><input semantic="VERTEX" offset="0" source="#door_purple_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#door_purple_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#door_purple_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#door_purple_MSH-VERTEX_COLOR0"/><p> 2 0 3 3 1 1 1 1 3 2 2 2 1 3 1 1 2 4 3 3 0 5 0 0 7 6 6 6 4 7 4 4 5 8 5 5 4 9 4 4 7 10 6 6 6 11 7 7 5 12 10 10 8 13 11 11 9 14 8 8 5 15 10 10 9 16 8 8 7 17 9 9 11 18 14 14 4 19 15 15 6 20 12 12 11 21 14 14 6 22 12 12 10 23 13 13 9 24 18 18 10 25 19 19 6 26 16 16 9 27 18 18 6 28 16 16 7 29 17 17 5 30 22 22 4 31 23 23 11 32 20 20 5 33 22 22 11 34 20 20 8 35 21 21 15 36 26 26 14 37 27 27 12 38 24 24 15 39 26 26 12 40 24 24 13 41 25 25 17 42 28 30 16 43 29 31 14 44 27 28 17 45 28 30 14 46 27 28 15 47 26 29 16 48 29 32 17 49 28 33 19 50 30 34 16 51 29 32 19 52 30 34 18 53 31 35 13 54 32 38 12 55 33 39 18 56 31 36 13 57 32 38 18 58 31 36 19 59 30 37 17 60 35 42 15 61 26 43 13 62 25 40 17 63 35 42 13 64 25 40 19 65 34 41 14 66 27 46 16 67 37 47 18 68 36 44 14 69 27 46 18 70 36 44 12 71 24 45 27 72 40 50 26 73 41 51 24 74 38 48 27 75 40 50 24 76 38 48 25 77 39 49 20 78 43 53 21 79 44 54 22 80 42 52 23 81 45 55 22 82 42 52 21 83 44 54 22 84 42 58 26 85 46 56 20 86 43 57 26 87 46 56 22 88 42 58 24 89 47 59 21 90 44 61 27 91 48 62 23 92 45 60 23 93 45 60 27 94 48 62 25 95 49 63 23 96 45 66 24 97 38 64 22 98 42 65 24 99 38 64 23 100 45 66 25 101 39 67 28 102 50 68 29 103 51 69 30 104 52 70 28 105 50 68 30 106 52 70 31 107 53 71 31 108 53 74 34 109 54 72 33 110 55 73 34 111 54 72 31 112 53 74 30 113 52 75 32 114 56 77 35 115 57 78 28 116 50 76 29 117 51 79 28 118 50 76 35 119 57 78 32 120 59 82 34 121 58 80 35 122 57 81 34 123 58 80 32 124 59 82 33 125 55 83 38 126 62 86 36 127 60 84 37 128 61 85 36 129 60 84 38 130 62 86 39 131 63 87 40 132 64 88 43 133 65 89 42 134 66 90 40 135 64 88 42 136 66 90 41 137 67 91 46 138 70 94 45 139 71 95 44 140 68 92 46 141 70 94 44 142 68 92 47 143 69 93</p></triangles>
+        <triangles count="52" material="lambert1"><input semantic="VERTEX" offset="0" source="#door_keycardGreen_MSH-VERTEX"/><input semantic="NORMAL" offset="1" source="#door_keycardGreen_MSH-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#door_keycardGreen_MSH-UV0"/><input semantic="COLOR" offset="3" set="0" source="#door_keycardGreen_MSH-VERTEX_COLOR0"/><p> 2 0 3 3 1 1 1 1 3 2 2 2 1 3 1 1 2 4 3 3 0 5 0 0 7 6 6 6 4 7 4 4 5 8 5 5 4 9 4 4 7 10 6 6 6 11 7 7 5 12 10 10 8 13 11 11 9 14 8 8 5 15 10 10 9 16 8 8 7 17 9 9 11 18 14 14 4 19 15 15 6 20 12 12 11 21 14 14 6 22 12 12 10 23 13 13 9 24 18 18 10 25 19 19 6 26 16 16 9 27 18 18 6 28 16 16 7 29 17 17 5 30 22 22 4 31 23 23 11 32 20 20 5 33 22 22 11 34 20 20 8 35 21 21 15 36 26 26 14 37 27 27 12 38 24 24 15 39 26 26 12 40 24 24 13 41 25 25 17 42 28 30 16 43 29 31 14 44 27 28 17 45 28 30 14 46 27 28 15 47 26 29 16 48 29 32 17 49 28 33 19 50 30 34 16 51 29 32 19 52 30 34 18 53 31 35 13 54 32 38 12 55 33 39 18 56 31 36 13 57 32 38 18 58 31 36 19 59 30 37 17 60 35 42 15 61 26 43 13 62 25 40 17 63 35 42 13 64 25 40 19 65 34 41 14 66 27 46 16 67 37 47 18 68 36 44 14 69 27 46 18 70 36 44 12 71 24 45 23 72 40 50 22 73 41 51 24 74 38 48 23 75 40 50 24 76 38 48 25 77 39 49 25 78 39 54 24 79 38 55 20 80 42 52 25 81 39 54 20 82 42 52 21 83 43 53 33 84 46 58 32 85 47 59 30 86 44 56 33 87 46 58 30 88 44 56 31 89 45 57 26 90 49 61 27 91 50 62 28 92 48 60 29 93 51 63 28 94 48 60 27 95 50 62 28 96 48 66 32 97 52 64 26 98 49 65 32 99 52 64 28 100 48 66 30 101 53 67 27 102 50 69 33 103 54 70 29 104 51 68 29 105 51 68 33 106 54 70 31 107 55 71 29 108 51 74 30 109 44 72 28 110 48 73 30 111 44 72 29 112 51 74 31 113 45 75 34 114 56 76 35 115 57 77 36 116 58 78 34 117 56 76 36 118 58 78 37 119 59 79 37 120 59 82 40 121 60 80 39 122 61 81 40 123 60 80 37 124 59 82 36 125 58 83 38 126 62 85 41 127 63 86 34 128 56 84 35 129 57 87 34 130 56 84 41 131 63 86 38 132 65 90 40 133 64 88 41 134 63 89 40 135 64 88 38 136 65 90 39 137 61 91 44 138 68 94 42 139 66 92 43 140 67 93 42 141 66 92 44 142 68 94 45 143 69 95 46 144 70 96 49 145 71 97 48 146 72 98 46 147 70 96 48 148 72 98 47 149 73 99 52 150 76 102 51 151 77 103 50 152 74 100 52 153 76 102 50 154 74 100 53 155 75 101</p></triangles>
       </mesh>
     </geometry>
   </library_geometries>
   <library_visual_scenes>
-    <visual_scene id="door_purple" name="door_purple">
-      <node name="door_purple_MSH" id="door_purple_MSH" sid="door_purple_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#door_purple_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+    <visual_scene id="doorKeycard_green" name="doorKeycard_green">
+      <node name="door_keycardGreen_MSH" id="door_keycardGreen_MSH" sid="door_keycardGreen_MSH"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#door_keycardGreen_MSH-lib"><bind_material><technique_common><instance_material symbol="lambert1" target="#lambert1"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <extra><technique profile="MAX3D"><frame_rate>24.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.041667</start_time><end_time>8.333333</end_time></technique></extra>
     </visual_scene>
   </library_visual_scenes>
   <scene>
-    <instance_visual_scene url="#door_purple"></instance_visual_scene>
+    <instance_visual_scene url="#doorKeycard_green"></instance_visual_scene>
   </scene>
 </COLLADA>

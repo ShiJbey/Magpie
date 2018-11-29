@@ -61,6 +61,8 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
         FloorTile*** get_floor_matrix();
         std::vector< FloorTile* >* get_highlighted_tiles();
+        std::vector< Door* >* get_doors();
+        
 
         void add_painting(uint32_t room_number, Painting painting);
         void add_gem(uint32_t room_number, Gem gem);
@@ -86,15 +88,12 @@ namespace Magpie {
         // Maps room number to the floor tiles in those rooms
         std::map< uint32_t, std::vector< FloorTile > > floor_tiles;
 
-        // 2D array of pointers to FloorTiles for quick look-up
+        // 2D array of FloorTile pointers
         FloorTile*** floor_matrix;
         // 2D array of Wall pointers
         Wall*** wall_matrix;
-        // 2D array of Doors
+        // 2D array of Door Pointers
         Door*** door_matrix;
-
-        std::vector< FloorTile* > highlighted_tiles;
-        std::vector< Wall* > transparent_walls;
 
         // Probably going to use this to modify wall transparency when
         // the player moves
@@ -103,15 +102,29 @@ namespace Magpie {
         // Maps room numbers to the vectors of items placed within that room
         std::map< uint32_t, std::vector< Gem > > gems;
         std::map< uint32_t, std::vector< Painting > > paintings;
+        
+        // All the doors in the level
+        std::vector< Door* > doors;
 
         // Maps room numbers to clickable objects in  the room
         std::map< uint32_t, std::vector< Clickable > >interactables;
 
-        // References to places where we can place gems/paintings
-        std::vector< Scene::Transform* > potential_pedestal_locations;
-        std::vector< Scene::Transform* > potential_wall_locations;
-
+        // Maps room numbers to transforms of pedestals
+        // where gems could be placed
+        // TODO:: Create functions that give us the ability
+        //        to place gems at specific locations
+        //        or all of the locations
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_gem_locations;
+        
+        // Maps room numbers to transforms of walls
+        // where paintings could be placed
+        // TODO:: Create functions that give us the ability
+        //        to place paintings at specific locations
+        //        or all of the locations
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_painting_locations;
+        
         // Maps room numbers to maps of guard numbers to vectors of movement positions
+        // TODO:: Create functions to cleanly retrieve guard paths from the level
         std::map< uint32_t, std::map< uint32_t, std::vector< glm::vec2 > > > guard_paths_by_room;
     };
 }
