@@ -246,7 +246,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
     
     // Temporary pointers for tracking objects
     Scene::Transform *temp_transform;
-    Scene::Object *temp_object;
+    Scene::Object *temp_object = nullptr;
 
     // Iterate along x-axis
     for (uint32_t y = 0; y < level_data->level_length; y++) {
