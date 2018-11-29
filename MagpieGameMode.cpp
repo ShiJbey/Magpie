@@ -7,6 +7,8 @@
 #include "load_level.hpp"
 #include "MagpieGame.hpp"
 #include "GameCharacter.hpp"
+#include "ui_shader_program.hpp"
+#include "draw_freetype_text.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -148,6 +150,66 @@ namespace Magpie {
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
+        }
+        /*
+        {
+            // Experimenting with drawing text boxes with character textures
+            // Might add some typewriter text functionality later
+            glm::vec2 box_dim = glm::vec2(200.0f, 100.0f);
+            glm::vec2 box_top_left = glm::vec2(100.0f, 100.0f);
+
+            glm::vec2 box_dim_normalized = glm::vec2((box_dim.x - (float)drawable_size.x) / (float)drawable_size.x, (box_dim.y - (float)drawable_size.y) / (float)drawable_size.y);
+            glm::vec2 box_top_left_normalized = glm::vec2((box_top_left.x - (float)drawable_size.x) / (float)drawable_size.x, (box_top_left.y - (float)drawable_size.y) / (float)drawable_size.y);
+
+            float vertices[] = {
+                // first triangle
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y, 0.0f, // top right
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f, // bottom right
+                box_top_left_normalized.x, box_top_left_normalized.y, 0.0f, // top left 
+                // second triangle
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f, // bottom right
+                box_top_left_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f,  // bottom left
+                box_top_left_normalized.x, box_top_left_normalized.y, 0.0f   // top left
+            };
+
+            GLuint vbo;
+            unsigned int VAO;
+            glGenVertexArrays(1, &VAO);
+            glBindVertexArray(VAO);
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            GL_ERRORS();
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            GL_ERRORS();
+            glEnableVertexAttribArray(0);  
+            GL_ERRORS();
+            glUseProgram(ui_program->program);
+            GL_ERRORS();
+            
+            float height = (float)drawable_size.y;
+            float aspect = (float)drawable_size.x / (float)drawable_size.y;
+            glm::vec2 anchor = glm::vec2(0.0f, 0.0f);
+            glm::mat4 projection = glm::mat4(
+			    height / aspect, 0.0f, 0.0f, 0.0f,
+			    0.0f, height, 0.0f, 0.0f,
+			    0.0f, 0.0f, 1.0f, 0.0f,
+			    anchor.x / aspect, anchor.y, 0.0f, 1.0f
+		    );
+            glUniformMatrix4fv(ui_program->projection_mat4, 1, GL_FALSE, glm::value_ptr(projection));
+            GL_ERRORS();
+            glBindVertexArray(VAO);
+            GL_ERRORS();
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            GL_ERRORS();
+            
+        }
+        */
+
+        {
+            //draw_text("PIZZA", glm::vec2(0.0f, 0.0f), 0.2f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            GL_ERRORS();
         }
 
         GL_ERRORS();
