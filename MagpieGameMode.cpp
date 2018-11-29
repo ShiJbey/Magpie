@@ -6,9 +6,8 @@
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
 #include "MagpieGame.hpp"
-#include "GameCharacter.hpp"
-#include "ui_shader_program.hpp"
 #include "draw_freetype_text.hpp"
+#include "AnimatedModel.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -36,14 +35,18 @@
 #include <cstdlib>
 #include <deque>
 #include <tuple>
+#include <algorithm>
+
+#define FREE_FLIGHT
 
 namespace Magpie {
 
-    // Off screen position to place the guard and player meshes that are not being used
-    glm::vec3 OFF_SCREEN_POS(-10000.0f, -10000.0f, -10000.0f);
-
     // Basic Vertex Color Program
     Scene::Object::ProgramInfo vertex_color_program_info;
+    vertex_color_program_info.program = vertex_color_program->program;
+    vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+    vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+    vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
 
     // Program for highlighting the path
     Scene::Object::ProgramInfo highlight_program_info;
@@ -53,7 +56,8 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         init_program_info();
-        load_level("demo_map_flipped.lvl");
+        load_level("final-map.lvl");
+
 
         create_player(glm::vec3(7.0f, 6.0f, 0.0f));
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
@@ -91,9 +95,10 @@ namespace Magpie {
         }
 
         
-
+#ifndef FREE_FLIGHT
         camera_trans->position.x = game.get_player()->get_position().x;
         camera_trans->position.y = game.get_player()->get_position().y;
+#endif
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -121,6 +126,25 @@ namespace Magpie {
                 return true;
             }
         }
+
+#ifdef FREE_FLIGHT
+        if (evt.type == SDL_KEYDOWN) {
+            switch(evt.key.keysym.scancode) {
+                case SDL_SCANCODE_LEFT:
+                    camera_trans->position.y += 1.0f;
+                    break;
+                case SDL_SCANCODE_RIGHT:
+                    camera_trans->position.y -= 1.0f;
+                    break;
+                case SDL_SCANCODE_UP:
+                    camera_trans->position.x += 1.0f;
+                    break;
+                case SDL_SCANCODE_DOWN:
+                    camera_trans->position.x -= 1.0f;
+                    break;
+            }
+        }
+#endif
 
         return false;
     };
@@ -220,7 +244,7 @@ namespace Magpie {
      * Once the model is loaded it is moved off screen and apointer to the
      * head transform is retured
      */
-    Scene::Transform* MagpieGameMode::load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key,
+    Scene::Transform* MagpieGameMode::load_character_model(AnimatedModel* character, const ModelData* model_data, std::string model_name, std::string vao_key,
             Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
 
         Scene::Transform* model_group_transform = nullptr;
@@ -247,10 +271,7 @@ namespace Magpie {
      * except for the vao which is set when we instantiate models
      */
     void MagpieGameMode::init_program_info() {
-        vertex_color_program_info.program = vertex_color_program->program;
-        vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
-        vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
-        vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+        
 
         highlight_program_info.program = highlight_program->program;
         highlight_program_info.mvp_mat4 = highlight_program->object_to_clip_mat4;
@@ -558,8 +579,8 @@ namespace Magpie {
         }
         transparent_walls.clear();
 
-        uint32_t level_width = game.get_level()->get_width();
-        uint32_t level_length = game.get_level()->get_length();
+//        uint32_t level_width = game.get_level()->get_width();
+//        uint32_t level_length = game.get_level()->get_length();
 
         float player_pos_x = x;
         float player_pos_y = y;

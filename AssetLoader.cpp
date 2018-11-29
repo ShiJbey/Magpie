@@ -318,6 +318,48 @@ namespace Magpie {
             {"guardIdle", *guard_dog_idle_vao},
             {"guardEat", *guard_dog_eat_vao}
         };
+
+        // LEVEL DATA
+        Load< Magpie::LevelData > sample_map(LoadTagDefault, []() { 
+            return new LevelData(data_path("levels/floorplans/sample.lvl"));
+        });
+
+        Load< Magpie::LevelData > demo_map(LoadTagDefault, []() { 
+            return new LevelData(data_path("levels/floorplans/demo-map.lvl"));
+        });
+
+        Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() { 
+            return new LevelData(data_path("levels/floorplans/demo-map-simple.lvl"));
+        });
+
+        Load< Magpie::LevelData > final_map(LoadTagDefault, []() { 
+            return new LevelData(data_path("levels/floorplans/demo-map.lvl"));
+        });
+
+        // Program Information
+        Load< Scene::Object::ProgramInfo > vertex_color_program_info(LoadTagDefault, []() {
+            Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+            info->mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+            info->mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+            info->itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+            return info;
+        });
+
+        Load< Scene::Object::ProgramInfo > highlight_program_info(LoadTagDefault, []() {
+            Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+            info->mvp_mat4 = highlight_program->object_to_clip_mat4;
+            info->mv_mat4x3 = highlight_program->object_to_light_mat4x3;
+            info->itmv_mat3 = highlight_program->normal_to_light_mat3;
+            return info;    
+        });
+
+        Load< Scene::Object::ProgramInfo > transparent_program_info(LoadTagDefault, []() {
+            Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+            info->mvp_mat4 = transparent_program->object_to_clip_mat4;
+            info->mv_mat4x3 = transparent_program->object_to_light_mat4x3;
+            info->itmv_mat3 = transparent_program->normal_to_light_mat3;
+            return info;
+        });
     });
     
 }

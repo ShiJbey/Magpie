@@ -1,6 +1,7 @@
 #include "Clickable.hpp"
 
 #include <algorithm>
+#include <cstdio>
 
 bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm::vec3 &ray_dir) {
     float e;
