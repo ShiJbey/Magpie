@@ -4,7 +4,8 @@
 #include "GL.hpp"
 #include "MeshBuffer.hpp"
 #include "TransformAnimation.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
+#include "load_level.hpp"
 
 #include <string>
 #include <map>
@@ -167,5 +168,15 @@ namespace Magpie {
     // MAP OF VAO NAMES TO VAO POINTERS
     extern Load< std::map< std::string, GLuint > > vertex_color_vaos;
 
+    // LEVEL DATA
+    extern Load< Magpie::LevelData > sample_map;
+    extern Load< Magpie::LevelData > demo_map;
+    extern Load< Magpie::LevelData > demo_map_simple;
+    extern Load< Magpie::LevelData > final_map;
+
+    // Program Information
+    extern Load< Scene::Object::ProgramInfo > vertex_color_program_info;
+    extern Load< Scene::Object::ProgramInfo > highlight_program_info;
+    extern Load< Scene::Object::ProgramInfo > transparent_program_info;
     
 }

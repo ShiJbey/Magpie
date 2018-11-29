@@ -16,3 +16,4 @@ dist/main.ilk
 dist/main.pdb
 *.exe
 *.obj
+freetype-2/

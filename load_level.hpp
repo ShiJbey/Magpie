@@ -3,10 +3,11 @@
 #include "MagpieGame.hpp"
 #include "Scene.hpp"
 #include "MeshBuffer.hpp"
-#include "MagpieLevel.hpp"
+
 
 #include <map>
 #include <string>
+#include <vector>
 
 
 namespace Magpie {
@@ -43,6 +44,18 @@ namespace Magpie {
         // Does the interaction function need to set or check a global flag
         uint8_t get_interaction_flag();
 
+        // Returns true if this is a wall, corner, or door
+        bool Magpie::PixelData::is_wall_corner_door();
+        
+        // Checks if there are objects that are considered walls
+        // to the left and right of the given pixel position
+        // Walls, doors, and corners all count was "walls"
+        static bool walls_to_left_and_right(std::vector< PixelData >* level_pixels, uint32_t level_width, uint32_t x, uint32_t y);
+        // Checks if there are objects that are considered walls
+        // to the top and bottom of the given pixel position
+        // Walls, doors, and corners all count was "walls"
+        static bool walls_to_top_and_bottom(std::vector< PixelData >* level_pixels, uint32_t level_width, uint32_t x, uint32_t y);
+
         // MASK VALUES
         static uint8_t MESH_MASK;
         static uint8_t MESH_CUSTOMIZATION_MASK;
@@ -63,27 +76,28 @@ namespace Magpie {
 
     };
 
+    // This is for statically loading level pixel data
+    struct LevelData {
+        uint32_t level_width;
+        uint32_t level_length;
+        std::vector< Magpie::PixelData > pixel_data;
+
+        // Loads level information from a file
+        LevelData(const std::string &filename);
+    };
+
     class LevelLoader {
     public:
 
         LevelLoader();
 
-        // just making each map static for now
-        static std::map<uint8_t, std::string> purple_meshes;
-
         // Loads level blob files and builds the scene
-        Magpie::MagpieLevel* load(std::string const &level_filename, Scene* scene, const MeshBuffer* mesh_buffer, 
+        Magpie::MagpieLevel* load(const Magpie::LevelData* level_data, Scene* scene, const MeshBuffer* mesh_buffer, 
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
 
     private:
 
-        // Dimensions of the level
-        uint32_t level_width;
-        uint32_t level_length;
-
-        // maps customization numbers to maps of mesh IDs
-        // mapped to the name of the mesh
-        std::map <uint8_t, std::map<uint8_t, std::string>> mesh_names;
+        
 
     };
 }

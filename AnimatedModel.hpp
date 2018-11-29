@@ -43,14 +43,15 @@ namespace Magpie {
     };
 
     /**
-     * Inherited by all characters in the game that have a model
-     * associated with them (e.g. the player and the guard)
+     * This class is used by all objects in the scene that
+     * need to be animated. This includes doors, keys, paintings,
+     * or anything else that moves.
      */
-    class GameCharacter {
+    class AnimatedModel {
     public:
 
-        GameCharacter();
-        ~GameCharacter();
+        AnimatedModel();
+        ~AnimatedModel();
 
         // Imports a character model from a file
         virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
@@ -62,7 +63,7 @@ namespace Magpie {
         // SETTERS
         void set_position(glm::vec3 position);
         void set_transform(Scene::Transform** transform);
-        void set_velocity(glm::vec3 velocity);
+        void set_animation_manager(AnimationManager* animation_manager);
         virtual void set_model_orientation(uint32_t dir);
 
         // GETTERS
@@ -79,9 +80,6 @@ namespace Magpie {
         // Manages the current model of the player
         // as well as all associated animations
         AnimationManager* animation_manager;
-
-        // Velocity is used when updating the movement of the character
-        glm::vec3 velocity;
 
         // Stores the original rotation of the magpie model.
         // This is used when rotating the player transform
