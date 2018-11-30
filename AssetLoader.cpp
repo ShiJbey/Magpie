@@ -38,7 +38,7 @@ namespace Magpie {
     });
 
     Load< GLuint > door_pink_mesh_vao(LoadTagDefault, [](){
-        return new GLuint(door_mesh->make_vao_for_program(vertex_color_program->program));
+        return new GLuint(door_pink_mesh->make_vao_for_program(vertex_color_program->program));
     });
 
     Load< TransformAnimation > door_pink_tanim(LoadTagDefault, []() {
@@ -55,7 +55,7 @@ namespace Magpie {
     });
 
     Load< GLuint > door_green_mesh_vao(LoadTagDefault, [](){
-        return new GLuint(door_mesh->make_vao_for_program(vertex_color_program->program));
+        return new GLuint(door_green_mesh->make_vao_for_program(vertex_color_program->program));
     });
 
     Load< TransformAnimation > door_green_tanim(LoadTagDefault, []() {

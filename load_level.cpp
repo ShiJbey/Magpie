@@ -245,9 +245,12 @@ Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, Animate
 
     Scene::Transform* model_group_transform = nullptr;
 
-    model_group_transform = model.load_model(scene, model_data, model_name, [&](Scene &s, Scene::Transform *t, std::string const &m){
+    model_group_transform = model.load_model(scene, model_data, model_name, [=](Scene &s, Scene::Transform *t, std::string const &m){
         Scene::Object *obj = s.new_object(t);
-        Scene::Object::ProgramInfo default_program_info = program_info;
+        Scene::Object::ProgramInfo default_program_info;
+        default_program_info.itmv_mat3 = program_info.itmv_mat3;
+        default_program_info.mv_mat4x3 = program_info.mv_mat4x3;
+        default_program_info.mvp_mat4 = program_info.mvp_mat4;
         default_program_info.vao = vertex_color_vaos->find(vao_key)->second;
         obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
         MeshBuffer::Mesh const &mesh = mesh_buffer->lookup(m);
@@ -276,7 +279,7 @@ Magpie::Door& Magpie::LevelLoader::create_animated_door(Magpie::Door& door, Scen
             break;
         case 2:
             model_name = "GreenDoor";
-            door_trans = load_animated_model(scene, door, door_pink_model.value, model_name, "door_green", *vertex_color_program_info.value, door_green_mesh.value);
+            door_trans = load_animated_model(scene, door, door_green_model.value, model_name, "door_green", *vertex_color_program_info.value, door_green_mesh.value);
             break;
     }
      
@@ -364,7 +367,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
     Magpie::MagpieLevel* level = new MagpieLevel(level_data->level_width, level_data->level_length);
 
     // Lambda Function for Loading static geometry
-    auto get_mesh = [&](uint32_t x, uint32_t y, uint8_t mesh_id, uint8_t customization_id) {
+    auto get_mesh = [&scene, &on_object](uint32_t x, uint32_t y, uint8_t mesh_id, uint8_t customization_id) {
         Scene::Transform *temp_transform = scene.new_transform();
         temp_transform->position.x = (float)x;
         temp_transform->position.y = (float)y;
