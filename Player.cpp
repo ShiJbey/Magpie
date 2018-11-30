@@ -88,7 +88,13 @@ void Magpie::Player::walk(float elapsed) {
 
 	if (next_destination_index > this->path.get_path().size())
 	{
-		Player::set_state((uint32_t)Player::STATE::IDLE);
+        if (current_state == (uint32_t)Player::STATE::WALKING) {
+            Player::set_state((uint32_t)Player::STATE::IDLE);
+        }
+        else if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+            Player::set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+        }
+		
 		next_destination_index = 0;
 		return;
 	}
@@ -146,7 +152,7 @@ void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
     
     
-    if (current_state == (uint32_t)Player::STATE::WALKING) {
+    if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);
     }
 

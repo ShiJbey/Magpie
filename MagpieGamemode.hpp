@@ -80,6 +80,10 @@ namespace Magpie {
         // NOTE:: This should only happen when the player has clicked on the door
         Door* create_animated_door(Door* door);
 
+        // Places a "treat" at the players current position
+        // treats distract the guards while they are walking
+        Item* drop_treat(glm::vec3 position);
+
         // Highlights the tile meshes along the player's path
         // NOTE:: This function will most likely be deleted since
         //        we are moving to dota style movement.
