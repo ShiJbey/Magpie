@@ -99,7 +99,7 @@ CLIENT_NAMES =
 	Map
 	Inventory
 	AssetLoader
-	GameCharacter
+	AnimatedModel
 	UI
 	Door
 	ui_shader_program

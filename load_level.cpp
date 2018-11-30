@@ -1,6 +1,8 @@
 #include "load_level.hpp"
 #include "load.hpp"
 #include "MagpieLevel.hpp"
+#include "AssetLoader.hpp"
+#include "AnimatedModel.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -72,16 +74,26 @@ bool Magpie::PixelData::is_wall_corner_door() {
     return mesh_id == 4 || (mesh_id >= 16 && mesh_id <= 19);
 };
 
-bool Magpie::PixelData::walls_to_left_and_right(std::vector< Magpie::PixelData >* level_pixels, uint32_t level_width, uint32_t x, uint32_t y) {
-    PixelData pixel_to_left = (*level_pixels)[(y * level_width) + (x - 1)];
-    PixelData pixel_to_right = (*level_pixels)[(y * level_width) + (x + 1)];
+bool Magpie::PixelData::walls_to_left_and_right(std::vector< Magpie::PixelData > level_pixels, uint32_t level_width, uint32_t x, uint32_t y) {
+    PixelData pixel_to_left = level_pixels[(y * level_width) + (x - 1)];
+    PixelData pixel_to_right = level_pixels[(y * level_width) + (x + 1)];
     return pixel_to_left.is_wall_corner_door() && pixel_to_right.is_wall_corner_door();
 };
 
-bool Magpie::PixelData::walls_to_top_and_bottom(std::vector< Magpie::PixelData >* level_pixels, uint32_t level_width, uint32_t x, uint32_t y) {
-    PixelData pixel_below = (*level_pixels)[((y - 1) * level_width) + x];
-    PixelData pixel_above = (*level_pixels)[((y + 1) * level_width) + x];
+bool Magpie::PixelData::walls_to_top_and_bottom(std::vector< Magpie::PixelData > level_pixels, uint32_t level_width, uint32_t x, uint32_t y) {
+    PixelData pixel_below = level_pixels[((y - 1) * level_width) + x];
+    PixelData pixel_above = level_pixels[((y + 1) * level_width) + x];
     return pixel_above.is_wall_corner_door() && pixel_below.is_wall_corner_door();
+};
+
+bool Magpie::PixelData::is_player_start_position() {
+        uint8_t mesh_id = get_mesh_id();
+        return mesh_id == 1;
+};
+
+bool Magpie::PixelData::is_guard_start_position() {
+    uint8_t mesh_id = get_mesh_id();
+    return mesh_id == 2;
 };
 
 Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTagDefault, [](){
@@ -190,10 +202,6 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     return ret;
 });
 
-Magpie::LevelLoader::LevelLoader() {
-    // Do Nothing
-};
-
 Magpie::LevelData::LevelData(const std::string &filename) {
     ///////////////////////////////////////////////////////
     //            READING FROM LEVEL FILE                //
@@ -205,7 +213,7 @@ Magpie::LevelData::LevelData(const std::string &filename) {
     char level_file_header[5] = {'\0', '\0', '\0', '\0', '\0'};
 
     if(!file.read(reinterpret_cast< char* >(&level_file_header), sizeof(char) * 4)) {
-        std::cout << "ERROR:: Can't read level file header" << std::endl;
+        std::cout << "ERROR::load_level:: Can't read level file header." << std::endl;
     }
 
     int width;
@@ -219,12 +227,12 @@ Magpie::LevelData::LevelData(const std::string &filename) {
         this->level_width = width;
     }
 
-    std::vector< Magpie::PixelData > pixel_data;
-    pixel_data.resize(length * width);
-    if (!file.read(reinterpret_cast< char * >(&pixel_data[0]), pixel_data.size() * sizeof(Magpie::PixelData))) {
+    std::vector< Magpie::PixelData > imported_pixel_data;
+    imported_pixel_data.resize(length * width);
+    if (!file.read(reinterpret_cast< char * >(&imported_pixel_data[0]), imported_pixel_data.size() * sizeof(Magpie::PixelData))) {
 		throw std::runtime_error("Failed to read pixel data.");
 	}
-    this->pixel_data = pixel_data;
+    this->pixel_data = imported_pixel_data;
 
     if (file.peek() != EOF) {
 		std::cerr << "WARNING: trailing data in level file '" << filename << "'" << std::endl;
@@ -232,7 +240,124 @@ Magpie::LevelData::LevelData(const std::string &filename) {
 };
 
 
-Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_data, Scene *scene, const MeshBuffer* mesh_buffer, 
+Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, AnimatedModel& model, const ModelData* model_data, std::string model_name, std::string vao_key,
+        Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
+
+    Scene::Transform* model_group_transform = nullptr;
+
+    model_group_transform = model.load_model(scene, model_data, model_name, [=](Scene &s, Scene::Transform *t, std::string const &m){
+        Scene::Object *obj = s.new_object(t);
+        Scene::Object::ProgramInfo default_program_info;
+        default_program_info.itmv_mat3 = program_info.itmv_mat3;
+        default_program_info.mv_mat4x3 = program_info.mv_mat4x3;
+        default_program_info.mvp_mat4 = program_info.mvp_mat4;
+        default_program_info.vao = vertex_color_vaos->find(vao_key)->second;
+        obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+        MeshBuffer::Mesh const &mesh = mesh_buffer->lookup(m);
+        obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+        obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+    });
+
+    assert(model_group_transform != nullptr);
+
+    return model_group_transform;
+};
+
+Magpie::Door& Magpie::LevelLoader::create_animated_door(Magpie::Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position) {    
+
+    // Load the model data for the door
+    Scene::Transform *door_trans = nullptr;
+    std::string model_name;
+    switch(customization_id) {
+        case 0:
+            model_name = "PurpleDoor";
+            door_trans = load_animated_model(scene, door, door_model.value, model_name, "door", *vertex_color_program_info.value, door_mesh.value);
+            break;
+        case 1:
+            model_name = "PinkDoor";
+            door_trans = load_animated_model(scene, door, door_pink_model.value, model_name, "door_pink", *vertex_color_program_info.value, door_pink_mesh.value);
+            break;
+        case 2:
+            model_name = "GreenDoor";
+            door_trans = load_animated_model(scene, door, door_green_model.value, model_name, "door_green", *vertex_color_program_info.value, door_green_mesh.value);
+            break;
+    }
+     
+
+    //look up various transforms for animations
+    std::unordered_map< std::string, Scene::Transform * > name_to_transform;
+    for (Scene::Transform *t = scene.first_transform; t != nullptr; t = t->alloc_next) {
+        if (t->name.find(model_name) != std::string::npos) {
+            auto ret = name_to_transform.insert(std::make_pair(t->name, t));
+            if (!ret.second) {
+                std::cerr << "WARNING: multiple transforms with the name '" << t->name << "' in scene." << std::endl;
+            }
+        }
+    }
+
+    std::vector< Scene::Transform* > door_transforms;
+    switch(customization_id) {
+        case 0:
+            door_transforms = get_animation_transforms(name_to_transform, door.convert_animation_names(door_tanim.value, model_name));
+            break;
+        case 1:
+            door_transforms = get_animation_transforms(name_to_transform, door.convert_animation_names(door_pink_tanim.value, model_name));
+            break;
+        case 2:
+            door_transforms = get_animation_transforms(name_to_transform, door.convert_animation_names(door_green_tanim.value, model_name));
+            break;
+    }
+
+
+    TransformAnimationPlayer* door_animation = nullptr;
+    switch(customization_id) {
+        case 0:
+            door_animation = new TransformAnimationPlayer(*door_tanim, door_transforms, 1.0f, false);
+            break;
+        case 1:
+            door_animation = new TransformAnimationPlayer(*door_pink_tanim, door_transforms, 1.0f, false);
+            break;
+        case 2:
+            door_animation = new TransformAnimationPlayer(*door_green_tanim, door_transforms, 1.0f, false);
+            break;
+    }
+
+    assert(door_trans != nullptr);
+    assert(door_animation != nullptr);
+    door.get_animation_manager()->add_state(new AnimationState(door_trans, door_animation));
+
+    // Finally, set the transform for this guard
+    door.set_transform(door.get_animation_manager()->init(position, 0));
+    if (door.get_transform() == nullptr) {
+        std::cerr << "ERROR:: Door Transform not found" << std::endl;
+    }
+
+    // Set the guard at the proper place
+    door.set_position(position);
+    
+    return door;
+};
+
+
+std::vector< Scene::Transform* > Magpie::LevelLoader::get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform, std::vector< std::string > names) {
+
+    std::vector< Scene::Transform* > animation_transforms;
+
+    for (auto const &name : names) {
+        auto f = name_to_transform.find(name);
+        if (f == name_to_transform.end()) {
+            std::cerr << "WARNING: transform '" << name << "' appears in animation but not in scene." << std::endl;
+            animation_transforms.emplace_back(nullptr);
+        } else {
+            animation_transforms.emplace_back(f->second);
+        }
+    }
+
+    return animation_transforms;
+};
+
+
+Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_data, Scene &scene, const MeshBuffer* mesh_buffer, 
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     ///////////////////////////////////////////////////////
@@ -241,12 +366,23 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
     Magpie::MagpieLevel* level = new MagpieLevel(level_data->level_width, level_data->level_length);
 
-    std::vector <Scene::Transform *> potential_wall_locations;
-    std::vector <Scene::Transform *> potential_pedestal_locations;
-    
-    // Temporary pointers for tracking objects
-    Scene::Transform *temp_transform;
-    Scene::Object *temp_object = nullptr;
+    // Lambda Function for Loading static geometry
+    auto get_mesh = [&scene, &on_object](uint32_t x, uint32_t y, uint8_t mesh_id, uint8_t customization_id) {
+        Scene::Transform *temp_transform = scene.new_transform();
+        temp_transform->position.x = (float)x;
+        temp_transform->position.y = (float)y;
+
+        auto custom_mesh_grp = mesh_names->find(mesh_id);
+        if (custom_mesh_grp != mesh_names->end()) {
+            auto custom_mesh_name = custom_mesh_grp->second.find(customization_id);
+            if (custom_mesh_name != custom_mesh_grp->second.end()) {
+                return on_object(scene, temp_transform, custom_mesh_name->second);
+            }
+        }
+
+        std::cout << "ERROR::GetMeshLambda:: Mesh name not found." << std::endl;
+        return (Scene::Object *)nullptr;
+    };
 
     // Iterate along x-axis
     for (uint32_t y = 0; y < level_data->level_length; y++) {
@@ -258,113 +394,142 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             
             // Get the current pixel and associated attributes
             PixelData current_pixel = level_data->pixel_data[i];
-            
             uint32_t room_number = current_pixel.get_room_number();
             uint32_t guard_number = current_pixel.guard_path_number();
             uint8_t mesh_id = current_pixel.get_mesh_id();
             uint8_t customization_id = current_pixel.get_mesh_customization();
+            bool potential_item_location = current_pixel.is_item_location();
 
+            PixelData pixel_above;
+            if (y < level_data->level_length - 1)
+                pixel_above = level_data->pixel_data[((y + 1) * level_data->level_width) + x];
+            
+            PixelData pixel_below;
+            if (y > 0)
+                pixel_below = level_data->pixel_data[((y - 1) * level_data->level_width) + x];
+            
+            PixelData pixel_to_left;
+            if (x > 0)
+                pixel_to_left = level_data->pixel_data[(y * level_data->level_width) + (x - 1)];
+            
+            PixelData pixel_to_right;
+            if (x < level_data->level_width - 1)
+                pixel_to_right = level_data->pixel_data[(y * level_data->level_width) + (x + 1)];
+
+            // Check if this is a start position for the player
+            if (current_pixel.is_player_start_position()) {
+                level->set_player_start_position(glm::vec3((float)x, (float)y, 0.0f));
+            }
+
+            // Check if this is a start position for a guard
+            if (current_pixel.is_guard_start_position()) {
+                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f));
+            }
+            
             // Check if it is part of a guards path
             if (guard_number != 0) {
                 level->add_guard_path_position(room_number, guard_number, x, y);
             }
-
-            // Create a new transform, give it a position, and attatch a mesh
-            if (mesh_id != 0) {
-                temp_transform = scene->new_transform();
-                temp_transform->position.x = (float)x;
-                temp_transform->position.y = (float)y;
-
-
-                auto custom_mesh_grp = mesh_names->find(customization_id);
-                if (custom_mesh_grp != mesh_names->end()) {
-                    auto custom_mesh_name = custom_mesh_grp->second.find(mesh_id);
-                    if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                        temp_object = on_object(*scene, temp_transform, custom_mesh_name->second);
-                    }
-                }
-            }
             
             // Floor Tile                           
             if (mesh_id == 3) {
-                temp_transform->name = "floor_" + std::to_string(i);
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->name = "floor_" + std::to_string(i);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 level->set_movement_matrix_position(x, y, true);
                 FloorTile*** floor = level->get_floor_matrix();
-                floor[x][y] = new FloorTile(temp_object, room_number);
-                continue;
+                floor[x][y] = new FloorTile(obj, room_number);
+
+                // Adds this transform to the vector
+                // of locations where things can be placed
+                // on the floor
+                if (potential_item_location) {
+                    level->add_potential_location(level->get_potential_floor_locations(), room_number, obj->transform);
+                }
             }
 
             // Doors
             if (mesh_id == 4) {
                 std::string name = "Door_" + std::to_string(i);
-                temp_transform->name = name;
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 level->set_movement_matrix_position(x, y, true);
-                Door* door;
+                Door* door = new Door();
                 
-                // Get the meshes that surround this wall
+                // Spawn an animated door model
+                create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
+                (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+                // Add door the the levels vector of doors
+                level->get_doors()->push_back(door);  
+
+                // Sets the access level for the door based on the customization ID
+                door->access_level = (Door::ACCESS_LEVEL)customization_id;
+                
+                // Get the meshes that surround this wall and rotate the wall
                 if (x == 0) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
-                    door = new Door(glm::ivec2(int(x) + 1, (int)y), glm::ivec2(int(x) - 1, (int)y), temp_object);
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door->room_a = glm::ivec2(int(x) + 1, (int)y);
+                    door->room_b = glm::ivec2(int(x) - 1, (int)y);
                 }
-                else if (x == level_width - 1) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                    door = new Door(glm::ivec2(int(x) - 1, (int)y), glm::ivec2(int(x) + 1, (int)y), temp_object);
+                else if (x == level_data->level_width - 1) {
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door->room_a = glm::ivec2(int(x) - 1, (int)y);
+                    door->room_b = glm::ivec2(int(x) + 1, (int)y);
                 }
-                else if (y == 0 || y == level_length - 1) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-                    door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
+                else if (y == 0 || y == level_data->level_length - 1) {
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    door->room_a = glm::ivec2(int(x), (int)y - 1);
+                    door->room_b = glm::ivec2(int(x), (int)y + 1);
                 }
                 else {
-                    if (PixelData::walls_to_left_and_right(&pixel_data, level_width, x, y)) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-                        door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
+                    if (PixelData::walls_to_left_and_right(level_data->pixel_data, level_data->level_width, x, y)) {
+                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                        door->room_a = glm::ivec2(int(x), (int)y - 1);
+                        door->room_b = glm::ivec2(int(x), (int)y + 1);
                     }
-                    else if (PixelData::walls_to_top_and_bottom(&pixel_data, level_width, x, y)) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                        door = new Door(glm::ivec2(int(x) - 1, (int)y), glm::ivec2(int(x) + 1, (int)y), temp_object);
+                    else if (PixelData::walls_to_top_and_bottom(level_data->pixel_data, level_data->level_width, x, y)) {
+                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        door->room_a = glm::ivec2(int(x) - 1, (int)y);
+                        door->room_b = glm::ivec2(int(x) + 1, (int)y);
                     }
                     else {
-                        door = new Door(glm::ivec2(int(x), (int)y - 1), glm::ivec2(int(x), (int)y + 1), temp_object);
+                        door->room_a = glm::ivec2(int(x), (int)y - 1);
+                        door->room_b = glm::ivec2(int(x), (int)y + 1);
                     }
-                }
-
-
-                level->get_doors()->push_back(door);                         
+                }                   
             }
 
              // Walls
             if (mesh_id == 16) {
-                temp_transform->name = "wall_" + std::to_string(i);
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->name = "wall_" + std::to_string(i);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                level->set_wall(new Wall(temp_object), x, y);
+                level->set_wall(new Wall(obj), x, y);
                 
                 if (current_pixel.is_item_location()) {
-                    potential_wall_locations.push_back(temp_transform);
+                    level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
                 }
 
 
                 if (x == 0) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
-                else if (x == level_width - 1) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                else if (x == level_data->level_width - 1) {
+                    obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
                 else if (y == 0) {
                     // Do Nothing
                 }
-                else if (y == level_length - 1) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                else if (y == level_data->level_length - 1) {
+                    obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
                 else {
                     // Get the meshes that surround this wall
-                    if(PixelData::walls_to_left_and_right(&pixel_data, level_width, x, y)) {
-                        //temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    if(PixelData::walls_to_left_and_right(level_data->pixel_data, level_data->level_width, x, y)) {
+                        //obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
-                    else if (PixelData::walls_to_top_and_bottom(&pixel_data, level_width, x, y)) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    else if (PixelData::walls_to_top_and_bottom(level_data->pixel_data, level_data->level_width, x, y)) {
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                 }
                 
@@ -372,43 +537,39 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // 2-Corner
             if (mesh_id == 19) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "2-corner_" + std::to_string(i);
-                temp_transform->name = std::string(name);
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                
-                
-                PixelData* pixel_above = pixel_data[((y + 1) * level_width) + x];
-                PixelData pixel_below = pixel_data[((y - 1) * level_width) + x];
-                PixelData pixel_to_left = pixel_data[(y * level_width) + (x - 1)];
-                PixelData pixel_to_right = pixel_data[(y * level_width) + (x + 1)];
+                obj->transform->name = std::string(name);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                           
 
                 // rotate corners
                 if (x == 0) {
                     if (y == 0) {
                         // Do nothing, this is proper orientation
                     }
-                    else if (y == level_length - 1) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    else if (y == level_data->level_length - 1) {
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                     else {
                         if (pixel_below.is_wall_corner_door()) {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                     }
                 }
-                else if (x == level_width - 1) {
+                else if (x == level_data->level_width - 1) {
                     if (y == 0) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
-                    else if (y == level_length - 1) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    else if (y == level_data->level_length - 1) {
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                     else {
                         if (pixel_below.is_wall_corner_door()) {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                         else {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                     }
                 }
@@ -416,28 +577,28 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     if (y == 0) {
                         
                         if (pixel_to_left.is_wall_corner_door()) {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                         }     
                     }
-                    else if (y == level_length - 1) {
+                    else if (y == level_data->level_length - 1) {
                         if (pixel_to_left.is_wall_corner_door()) {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                         } else {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                     }
                     else {
-                        if (PixelData::walls_to_left_and_right(&pixel_data, level_width, x, y)) {
+                        if (PixelData::walls_to_left_and_right(level_data->pixel_data, level_data->level_width, x, y)) {
                             // Check to the top and bottom
                             if (pixel_above.is_wall_corner_door()) {
-                               temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                               obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                             } else {
-                              temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                              obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                             }
                         }
                         else if (pixel_to_right.is_wall_corner_door()) {
                             if (pixel_below.is_wall_corner_door()) {
-                               temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                               obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                             }
                         }
                     }
@@ -446,40 +607,36 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // 3-Corner
             if (mesh_id == 18) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "3-corner_" + std::to_string(i);
-                temp_transform->name = std::string(name);
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                
-                PixelData pixel_above = pixel_data[((y + 1) * level_width) + x];
-                PixelData pixel_below = pixel_data[((y - 1) * level_width) + x];
-                PixelData pixel_to_left = pixel_data[(y * level_width) + (x - 1)];
-                PixelData pixel_to_right = pixel_data[(y * level_width) + (x + 1)];
+                obj->transform->name = std::string(name);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
                 // rotate corners
                 if (x == 0) {
                     // Do Nothing
                 }
-                else if (x == level_width - 1) {
-                    temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                else if (x == level_data->level_width - 1) {
+                    obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
                 else {
                     if (y == 0) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
-                    else if (y == level_length - 1) {
-                        temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    else if (y == level_data->level_length - 1) {
+                        obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                     }
                     else {
                         if (pixel_to_left.is_wall_corner_door() && pixel_to_right.is_wall_corner_door()) {
                             if (pixel_below.is_wall_corner_door()) {
-                                 temp_transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                                 obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                             }
                             else {
-                                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                             }
                         }
                         else if (pixel_to_left.is_wall_corner_door()) {
-                            temp_transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                         else {
                             // Do nothing
@@ -490,30 +647,36 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // 4-Corner
             if (mesh_id == 17) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "4-corner_" + std::to_string(i);
-                temp_transform->name = std::string(name);
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                obj->transform->name = std::string(name);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
 
             // Pedestal
             if (mesh_id == 20) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "pedestal_" + std::to_string(i);
-                temp_transform->name = name;
-                temp_transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                obj->transform->name = name;
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                if (current_pixel.is_item_location()) {
-                    potential_pedestal_locations.push_back(temp_transform);
+                // Adds this transform to the vector
+                // of locations where things can be placed
+                // on the floor
+                if (potential_item_location) {
+                    level->add_potential_location(level->get_potential_pedestal_locations(), room_number, obj->transform);
                 }
             }
         }
     }
 
-    for (uint32_t i = 0; i < potential_pedestal_locations.size(); i++) {
-        temp_transform = scene->new_transform();
+    /*
+    for (uint32_t i = 0; i < level->get_potential_pedestal_locations().size(); i++) {
+        temp_transform = scene.new_transform();
         temp_transform->name = "gem_" + std::to_string(i);
-        temp_transform->position.x = potential_pedestal_locations[i]->position.x;
-        temp_transform->position.y = potential_pedestal_locations[i]->position.y;
-        temp_transform->rotation = potential_pedestal_locations[i]->rotation;
+        temp_transform->position.x = level->get_potential_pedestal_locations()[i]->position.x;
+        temp_transform->position.y = level->get_potential_pedestal_locations()[i]->position.y;
+        temp_transform->rotation = level->get_potential_pedestal_locations()[i]->rotation;
 
         auto custom_mesh_grp = mesh_names->find(0);
         if (custom_mesh_grp != mesh_names->end()) {
@@ -540,12 +703,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             auto custom_mesh_name = custom_mesh_grp->second.find(5);
             if (custom_mesh_name != custom_mesh_grp->second.end()) {
                 
-                Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
+                Scene::Object* obj = on_object(scene, temp_transform, custom_mesh_name->second);
                 // TODO:: Get the actual room
                 level->add_painting(1, Painting(obj));
             }
         }
     }
+    */
 
     return level;
 }

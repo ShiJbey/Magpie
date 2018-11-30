@@ -1,5 +1,6 @@
 #include "AnimatedModel.hpp"
 #include "read_chunk.hpp"
+#include "AssetLoader.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -63,6 +64,7 @@ uint32_t Magpie::AnimatedModel::get_instance_id() {
 void Magpie::AnimatedModel::set_position(glm::vec3 position) {
     if (transform != nullptr) {
         (*transform)->position = position;
+        return;
     }
     std::cout << "WARNING::AnimatedModel:: " << "Setting position of transformless model." << std::endl;
 };

@@ -37,7 +37,7 @@ blender --background --python export-meshes.py -- building-tiles.blend:1 %DIST%/
 rem Export door model animation and mesh data
 blender --background --python export-meshes.py -- door_openAnim.blend:1 %DIST%/levels/door.pnc
 blender --background --python export-scene.py -- door_openAnim.blend:1 %DIST%/levels/door.model
-blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend doorOpen_GRP 0 15 %DIST%/levels/door.tanim
+blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend door_purple_open_GRP 0 15 %DIST%/levels/door.tanim
 
 rem Export green door model animation and mesh data
 blender --background --python export-meshes.py -- doorGreen_openAnim.blend:1 %DIST%/levels/door_green.pnc

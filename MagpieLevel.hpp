@@ -60,20 +60,44 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Painting > >* get_paintings();
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
         FloorTile*** get_floor_matrix();
-        std::vector< FloorTile* >* get_highlighted_tiles();
         std::vector< Door* >* get_doors();
         
 
         void add_painting(uint32_t room_number, Painting painting);
         void add_gem(uint32_t room_number, Gem gem);
 
+        
+        void set_player_start_position(glm::vec3 start_position);
+        void add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position);
+
         // Adds a position to a guards path
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);
+        
+        // Retreives a guards path, given the room number of the guard and the guards number
+        std::vector< glm::vec2 > get_guard_path(uint32_t room_number, uint32_t guard_number);
+
+        // Adds a transform to the maps of potential item positons
+        void add_potential_location(std::map< uint32_t, std::vector< Scene::Transform* > >* location_map, uint32_t room_number, Scene::Transform* parent_trans);
+        std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_floor_locations();
+        std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_wall_locations();
+        std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_pedestal_locations();
+        std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_table_locations();
+
     protected:
  
         // Size of the entire level
         uint32_t length;    // Dimension of the level in the y-direction
         uint32_t width;     // Dimension of the level in the x-direction
+
+        // Starting position of the player
+        // NOTE:: If any of the xyz values are negative, then no
+        //        starting position was specified in the level data 
+        glm::vec3 player_start_position = glm::vec3(-9999.0f, -9999.0f, -9999.0f);
+
+        // Maps room_numbers to maps of guard numbers to starting positions
+        std::map< uint32_t, std::map< uint32_t, glm::vec3 > > guard_start_positions;
+
+
 
         // Matrix off all the tiles that the user can move to
         std::vector< std::vector< bool > > movement_matrix;
@@ -109,22 +133,35 @@ namespace Magpie {
         // Maps room numbers to clickable objects in  the room
         std::map< uint32_t, std::vector< Clickable > >interactables;
 
+        // Maps room numbers to transforms of floor tiles
+        // where items could be dropped
+        // TODO:: Create functions that give us the ability
+        //        to place items at specific locations
+        //        or all of the locations
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_floor_locations;
+
         // Maps room numbers to transforms of pedestals
         // where gems could be placed
         // TODO:: Create functions that give us the ability
         //        to place gems at specific locations
         //        or all of the locations
-        std::map< uint32_t, std::vector< Scene::Transform* > > potential_gem_locations;
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_pedestal_locations;
         
         // Maps room numbers to transforms of walls
         // where paintings could be placed
         // TODO:: Create functions that give us the ability
         //        to place paintings at specific locations
         //        or all of the locations
-        std::map< uint32_t, std::vector< Scene::Transform* > > potential_painting_locations;
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_wall_locations;
+
+        // Maps room numbers to transforms of tables/crates
+        // where items could be placed
+        // TODO:: Create functions that give us the ability
+        //        to place items at specific locations
+        //        or all of the locations
+        std::map< uint32_t, std::vector< Scene::Transform* > > potential_table_locations;
         
         // Maps room numbers to maps of guard numbers to vectors of movement positions
-        // TODO:: Create functions to cleanly retrieve guard paths from the level
         std::map< uint32_t, std::map< uint32_t, std::vector< glm::vec2 > > > guard_paths_by_room;
     };
 }

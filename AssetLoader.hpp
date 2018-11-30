@@ -3,9 +3,11 @@
 #include "Load.hpp"
 #include "GL.hpp"
 #include "MeshBuffer.hpp"
+#include "load_level.hpp"
+
 #include "TransformAnimation.hpp"
 #include "AnimatedModel.hpp"
-#include "load_level.hpp"
+
 
 #include <string>
 #include <map>
@@ -16,7 +18,7 @@ namespace Magpie {
 
     extern Load< GLuint > donut_mesh_vao;
 
-    // ANIMATED DOORS
+    // PLAIN DOOR
     extern Load< MeshBuffer > door_mesh;
 
     extern Load< GLuint > door_mesh_vao;
@@ -24,6 +26,24 @@ namespace Magpie {
     extern Load< TransformAnimation > door_tanim;
 
     extern Load< Magpie::ModelData > door_model;
+
+    // PINK DOOR
+    extern Load< MeshBuffer > door_pink_mesh;
+
+    extern Load< GLuint > door_pink_mesh_vao;
+
+    extern Load< TransformAnimation > door_pink_tanim;
+
+    extern Load< Magpie::ModelData > door_pink_model;
+
+    // GREEN_DOOR
+    extern Load< MeshBuffer > door_green_mesh;
+
+    extern Load< GLuint > door_green_mesh_vao;
+
+    extern Load< TransformAnimation > door_green_tanim;
+
+    extern Load< Magpie::ModelData > door_green_model;
 
     // VISIBLE BOUNDING BOXES
     extern Load< MeshBuffer > bounding_box_mesh;
