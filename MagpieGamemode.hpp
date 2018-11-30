@@ -72,6 +72,10 @@ namespace Magpie {
         // and animations. Then it sets attributes for what programs to use
         Player* create_player(glm::vec3 position);
 
+        // Places a "treat" at the players current position
+        // treats distract the guards while they are walking
+        Item* drop_treat(glm::vec3 position);
+      
         // Highlights the tile meshes along the player's path
         // NOTE:: This function will most likely be deleted since
         //        we are moving to dota style movement.

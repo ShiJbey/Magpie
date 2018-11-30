@@ -54,7 +54,7 @@ namespace Magpie {
         create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
         create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
-        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
         game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
         game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
@@ -115,6 +115,28 @@ namespace Magpie {
                 ui.stateChanger('i');
                 return true;
             }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+                printf("Dropping the load!\n");
+                drop_treat(game.get_player()->get_position());
+            }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+                printf("Swapping disguise\n");
+                switch(game.get_player()->get_state()) {
+                    case (uint32_t)Player::STATE::IDLE:
+                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+                        break;
+                    case (uint32_t)Player::STATE::WALKING:
+                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                        break;
+                    case (uint32_t)Player::STATE::DISGUISE_IDLE:
+                        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
+                        break;
+                    case (uint32_t)Player::STATE::DISGUISE_WALK:
+                        game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                        break;
+                }
+            }
+
         }
 
         #ifdef FREE_FLIGHT
@@ -159,7 +181,7 @@ namespace Magpie {
             glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
             glUniform3fv(vertex_color_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.0f,-1.0f))));
             //use hemisphere light for sky light:
-            glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.95f)));
+            glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
             glUniform3fv(vertex_color_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
@@ -307,6 +329,25 @@ namespace Magpie {
         return guard;
     };
 
+    Item* MagpieGameMode::drop_treat(glm::vec3 position) {
+        Scene::Transform* temp_transform = scene.new_transform();
+        temp_transform->position = position;
+
+        Scene::Object *obj = scene.new_object(temp_transform);
+        Scene::Object::ProgramInfo default_program_info;
+        default_program_info = vertex_color_program_info;
+
+        default_program_info.vao = vertex_color_vaos->find("donut")->second;
+        obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+        MeshBuffer::Mesh const &mesh = donut_mesh->lookup("Donut");
+        obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+        obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+
+        Item* item = new Item(obj);
+
+        return item;
+    };
+  
     /**
      * Initializes the current level and positions the guards
      * and the player
@@ -561,6 +602,9 @@ namespace Magpie {
                         if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                             game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
                         }
+                        else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                        }
 
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
                         
@@ -577,6 +621,9 @@ namespace Magpie {
                         
                         if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                             game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                        }
+                        else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         }
 
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
@@ -612,6 +659,10 @@ namespace Magpie {
             if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                 game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
             }
+            else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+            }
+
             return true;
         } else {
             std::cout << "DEBUG:: Player can't move to that position" << std::endl;
