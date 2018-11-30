@@ -154,6 +154,8 @@ namespace Magpie {
                 case SDL_SCANCODE_DOWN:
                     camera_trans->position.x -= 1.0f;
                     break;
+                default:
+                    break;
             }
         }
         #endif

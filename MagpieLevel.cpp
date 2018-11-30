@@ -2,6 +2,8 @@
 #include "FloorTile.hpp"
 #include "Door.hpp"
 
+#include <algorithm>
+
 Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     this->width = width;
     this->length = length;
