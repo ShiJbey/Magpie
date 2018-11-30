@@ -43,7 +43,7 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         // build a level from the given level data
-        load_level(demo_map.value);
+        load_level(final_map.value);
         // Obtain camera positioning from blender scene
         setup_camera();
 
@@ -335,8 +335,7 @@ namespace Magpie {
 
         Scene::Object *obj = scene.new_object(temp_transform);
         Scene::Object::ProgramInfo default_program_info;
-        default_program_info = vertex_color_program_info;
-
+        default_program_info = *vertex_color_program_info.value;
         default_program_info.vao = vertex_color_vaos->find("donut")->second;
         obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
         MeshBuffer::Mesh const &mesh = donut_mesh->lookup("Donut");
@@ -371,9 +370,9 @@ namespace Magpie {
 
     void MagpieGameMode::setup_camera() {
         // We are just using this for the camera positioning
-        scene.load(data_path("levels/camera_transform.scene"), [&](Scene &s, Scene::Transform *t, std::string const &m){
+        scene.load(data_path("levels/camera_transform.scene"), [](Scene &s, Scene::Transform *t, std::string const &m){
             // Save resources
-            scene.delete_transform(t);
+            s.delete_transform(t);
         });
 
         //look up the camera:
