@@ -15,7 +15,7 @@ namespace Magpie {
         return new GLuint(donut_mesh->make_vao_for_program(vertex_color_program->program));
     });
 
-    // ANIMATED DOORS
+    // PLAIN DOORS
     Load< MeshBuffer > door_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("levels/door.pnc"));
     });
@@ -30,6 +30,40 @@ namespace Magpie {
 
     Load< Magpie::ModelData > door_model(LoadTagDefault, []() {
         return new Magpie::ModelData(data_path("levels/door.model"));
+    });
+
+    // PINK DOOR
+    Load< MeshBuffer > door_pink_mesh(LoadTagDefault, [](){
+        return new MeshBuffer(data_path("levels/door_pink.pnc"));
+    });
+
+    Load< GLuint > door_pink_mesh_vao(LoadTagDefault, [](){
+        return new GLuint(door_pink_mesh->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< TransformAnimation > door_pink_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("levels/door_pink.tanim"));
+    });
+
+    Load< Magpie::ModelData > door_pink_model(LoadTagDefault, []() {
+        return new Magpie::ModelData(data_path("levels/door_pink.model"));
+    });
+
+    // GREEN_DOOR
+    Load< MeshBuffer > door_green_mesh(LoadTagDefault, [](){
+        return new MeshBuffer(data_path("levels/door_green.pnc"));
+    });
+
+    Load< GLuint > door_green_mesh_vao(LoadTagDefault, [](){
+        return new GLuint(door_green_mesh->make_vao_for_program(vertex_color_program->program));
+    });
+
+    Load< TransformAnimation > door_green_tanim(LoadTagDefault, []() {
+        return new TransformAnimation(data_path("levels/door_green.tanim"));
+    });
+
+    Load< Magpie::ModelData > door_green_model(LoadTagDefault, []() {
+        return new Magpie::ModelData(data_path("levels/door_green.model"));
     });
 
     // VISIBLE BOUNDING BOXES
@@ -303,6 +337,8 @@ namespace Magpie {
             {"bounding_box", *bounding_box_mesh_vao},
             {"buildingTiles", *building_meshes_vao},
             {"door", *door_mesh_vao},
+            {"door_pink", *door_pink_mesh_vao},
+            {"door_green", *door_green_mesh_vao},
             {"magpieWalk", *magpie_walk_mesh_vao},
             {"magpieIdle", *magpie_idle_mesh_vao},
             {"magpieSteal", *magpie_steal_mesh_vao},
@@ -319,4 +355,50 @@ namespace Magpie {
             {"guardEat", *guard_dog_eat_vao}
         };
     });
+
+    // LEVEL DATA
+    Load< Magpie::LevelData > sample_map(LoadTagDefault, []() { 
+        return new LevelData(data_path("levels/floorplans/sample-map.lvl"));
+    });
+
+    Load< Magpie::LevelData > demo_map(LoadTagDefault, []() { 
+        return new LevelData(data_path("levels/floorplans/demo-map.lvl"));
+    });
+
+    Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() { 
+        return new LevelData(data_path("levels/floorplans/demo-map-simple.lvl"));
+    });
+
+    Load< Magpie::LevelData > final_map(LoadTagDefault, []() { 
+        return new LevelData(data_path("levels/floorplans/final-map.lvl"));
+    });
+
+    // Program Information
+    Load< Scene::Object::ProgramInfo > vertex_color_program_info(LoadTagDefault, []() {
+        Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+        info->program = vertex_color_program->program;
+        info->mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+        info->mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+        info->itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+        return info;
+    });
+
+    Load< Scene::Object::ProgramInfo > highlight_program_info(LoadTagDefault, []() {
+        Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+        info->program = highlight_program->program;
+        info->mvp_mat4 = highlight_program->object_to_clip_mat4;
+        info->mv_mat4x3 = highlight_program->object_to_light_mat4x3;
+        info->itmv_mat3 = highlight_program->normal_to_light_mat3;
+        return info;    
+    });
+
+    Load< Scene::Object::ProgramInfo > transparent_program_info(LoadTagDefault, []() {
+        Scene::Object::ProgramInfo* info = new Scene::Object::ProgramInfo();
+        info->program = transparent_program->program;
+        info->mvp_mat4 = transparent_program->object_to_clip_mat4;
+        info->mv_mat4x3 = transparent_program->object_to_light_mat4x3;
+        info->itmv_mat3 = transparent_program->normal_to_light_mat3;
+        return info;
+    });
+    
 }

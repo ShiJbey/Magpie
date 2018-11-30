@@ -5,6 +5,10 @@ namespace Magpie {
 
     uint32_t Door::instance_count = 0U;
 
+    Door::Door() : Door( glm::ivec2(0, 0), glm::ivec2(0, 0), nullptr) {
+        
+    }
+
     Door::Door(glm::ivec2 room_a, glm::ivec2 room_b, Scene::Object* obj) {
         this->room_a = room_a;
         this->room_b = room_b;
@@ -17,7 +21,6 @@ namespace Magpie {
         this->animation_manager = new AnimationManager();
 
         assert(animation_manager != nullptr);
-        printf("Created new door with instance ID: (%d)\n", this->instance_count);
     };
 
     BoundingBox* Door::get_boundingbox() {
@@ -61,7 +64,7 @@ namespace Magpie {
     Scene::Transform* Magpie::Door::load_model(Scene& scene, const ModelData* model_data, std::string model_name,
         std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
         
-        std::vector< std::string > model_parts = { "GRP", "door_", "frame_" };
+        std::vector< std::string > model_parts = { "_GRP", "door_", "frame_" };
 
         Scene::Transform* model_group_transform = nullptr;
 
@@ -89,14 +92,15 @@ namespace Magpie {
                     if (exported_name.find(part) != std::string::npos) {
                         // We have a name match, now set a new name with the instance ID
                         // (e.g. Magpie_body_0)
-                        std::string name = "Door_" + part + "_" + std::to_string(instance_id);
-                        t->name = name;
-
-                        std::cout << "DEBUG:: created door part with name: " << name << std::endl;
-
-                        if (part.compare("GRP") == 0) {
+                        if (part.compare("_GRP") == 0) {
+                            t->name = model_name + "_GRP_" + std::to_string(instance_id);
                             model_group_transform = t;
+                            //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
+                        } else {
+                            t->name = model_name + "_" + part + "_" + std::to_string(instance_id);
+                            //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
                         }
+                        break;                      
                     }
                 }
 
@@ -137,7 +141,12 @@ namespace Magpie {
         for (const auto& name : tanim->names) {
             for (const auto& part : model_parts) {
                 if (name.find(part) != std::string::npos) {
-                    modified_names.push_back("Door_" + part + "_" + std::to_string(instance_id));
+                    if (part.compare("GRP") == 0) {
+                        modified_names.push_back(model_name + "_GRP_" + std::to_string(instance_id));
+                    }
+                    else {
+                        modified_names.push_back(model_name + "_" + part + "_" + std::to_string(instance_id));
+                    }
                     break;
                 }
             }

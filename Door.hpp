@@ -2,13 +2,19 @@
 
 #include "Clickable.hpp"
 #include "AnimationManager.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
 
 #include "Scene.hpp"
 #include <glm/glm.hpp>
 
 namespace Magpie {
-    struct Door : public Clickable, public GameCharacter {
+    struct Door : public Clickable, public AnimatedModel {
+
+        enum class ACCESS_LEVEL {
+            NORMAL = 0,
+            PINK,
+            GREEN,
+        };
 
         // This is incremented each time we create a new player
         static uint32_t instance_count;
@@ -22,6 +28,9 @@ namespace Magpie {
         bool locked;
         bool opened;
 
+        ACCESS_LEVEL access_level;
+
+        Door();
         Door(glm::ivec2 room_a, glm::ivec2 room_b, Scene::Object* obj);
 
         // Bouding box should have dimensions 1 x 1 x 2

@@ -75,10 +75,6 @@ glm::ivec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
     return glm::ivec2(x, y);
 };
 
-std::vector< Magpie::FloorTile* >* Magpie::MagpieLevel::get_highlighted_tiles() {
-    return &highlighted_tiles;
-};
-
 bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, float x, float y) {
     if ((x >= 0 && x < (float)width) && (y >= 0 && y < (float)length)) {
         FloorTile* floor_tile = floor_matrix[(uint32_t)x][(uint32_t)y];
@@ -246,3 +242,74 @@ uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
 std::vector< Magpie::Door* >* Magpie::MagpieLevel::get_doors() {
     return &doors;
 };
+
+void Magpie::MagpieLevel::set_player_start_position(glm::vec3 start_position) {
+    this->player_start_position = start_position;
+};
+
+void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position) {
+    auto room_number_iter = guard_start_positions.find(room_number);
+    if (room_number_iter != guard_start_positions.end()) {
+        auto guard_number_iter = room_number_iter->second.find(guard_number);
+        if (guard_number_iter != room_number_iter->second.end()) {
+            std::cout << "WARNING::MagpieLevel:: Attempting to add a duplicate start position" << std::endl; 
+        }
+        else {
+            guard_start_positions[room_number].insert(std::make_pair(guard_number, start_position));
+        }
+    }
+    else {
+        guard_start_positions.insert({room_number, std::map<uint32_t, glm::vec3>()});
+        guard_start_positions[room_number].insert(std::make_pair(guard_number, start_position));
+    }
+};
+
+std::vector< glm::vec2 > Magpie::MagpieLevel::get_guard_path(uint32_t room_number, uint32_t guard_number) {
+    // Check if the level has the given room and guard number;
+    auto room_iter = guard_paths_by_room.find(room_number);
+    if (room_iter != guard_paths_by_room.end()) {
+        auto guard_iter = room_iter->second.find(guard_number);
+        if (guard_iter != room_iter->second.end()) {
+            // Return the path for this guard
+            return guard_iter->second;
+        }
+    }
+    // Return an empty vector
+    return std::vector< glm::vec2 >();
+};
+
+void Magpie::MagpieLevel::add_potential_location(std::map< uint32_t, std::vector< Scene::Transform* > >* location_map, uint32_t room_number, Scene::Transform* parent_trans) {
+    auto room_iter = location_map->find(room_number);
+    if (room_iter != location_map->end()) {
+        std::vector< Scene::Transform* > transforms = room_iter->second;
+        // Add this transform to the vector of potential positions for this room
+        if (std::find(transforms.begin(), transforms.end(), parent_trans) == transforms.end()) {
+            (*location_map)[room_number].push_back(parent_trans);
+        }
+        else {
+            std::cout << "WARNING::MagpieLevel:: Attempting to add a duplicate item location." << std::endl;
+        }
+    }
+    else {
+        location_map->insert({room_number, std::vector< Scene::Transform* >()});
+        (*location_map)[room_number].push_back(parent_trans);
+    }
+};
+
+std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_floor_locations() {
+    return &potential_floor_locations;
+};
+
+std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_wall_locations() {
+    return &potential_wall_locations;
+};
+
+std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_pedestal_locations() {
+    return &potential_pedestal_locations;
+};
+
+std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_table_locations() {
+    return &potential_table_locations;
+};
+
+

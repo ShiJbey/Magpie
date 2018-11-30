@@ -3,6 +3,7 @@
 #include "MagpieGame.hpp"
 #include "MagpieLevel.hpp"
 #include "Navigation.h"
+#include "load_level.hpp"
 
 #include "UI.h"
 
@@ -54,19 +55,14 @@ namespace Magpie {
         //        Magpie Specific Functions           //
         ////////////////////////////////////////////////
 
+        // Makes the walls to the left and below the given position
+        // transparent
         void make_close_walls_transparent(float x, float y);
 
         // Loads a level from a file, instantiates all the
         // meshes and positions the camera
-        void load_level(std::string level_file);
-
-        // Initialize the global program info structs
-        void init_program_info();
-
-        Scene::Transform* load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key,
-            Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
-
-        std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform,  std::vector< std::string > names);
+        void load_level(const LevelData *level_data);
+        void setup_camera();
 
         // Adds a new guard to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
@@ -76,14 +72,10 @@ namespace Magpie {
         // and animations. Then it sets attributes for what programs to use
         Player* create_player(glm::vec3 position);
 
-        // Swaps out a regular door with an animated door
-        // NOTE:: This should only happen when the player has clicked on the door
-        Door* create_animated_door(Door* door);
-
         // Places a "treat" at the players current position
         // treats distract the guards while they are walking
         Item* drop_treat(glm::vec3 position);
-
+      
         // Highlights the tile meshes along the player's path
         // NOTE:: This function will most likely be deleted since
         //        we are moving to dota style movement.
@@ -115,10 +107,17 @@ namespace Magpie {
 
         MagpieGame game;
         Scene scene;
+
         Scene::Camera* camera = nullptr;
         Scene::Transform* camera_trans = nullptr;
-        std::vector< GameCharacter* > animated_scene_objects;
+
+        // Used for updating animations in the scene
+        std::vector< AnimatedModel* > animated_scene_objects;
+
+        // Tracks what walls or floor tiles need to be changed
+        // back to using the vertex_color_program
         std::vector< Wall* > transparent_walls;
+        std::vector< FloorTile* > highlighted_tiles;
 
         //UI testing
         UI ui = UI(1, 1);

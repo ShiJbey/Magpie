@@ -34,10 +34,20 @@ blender --background --python export-meshes.py -- donut.blend:1 %DIST%/levels/do
 rem Export the level scenery mesh data
 blender --background --python export-meshes.py -- building-tiles.blend:1 %DIST%/levels/building_tiles.pnc
 
-rem Export door model animation and mesh_data
+rem Export door model animation and mesh data
 blender --background --python export-meshes.py -- door_openAnim.blend:1 %DIST%/levels/door.pnc
 blender --background --python export-scene.py -- door_openAnim.blend:1 %DIST%/levels/door.model
-blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend doorOpen_GRP 0 15 %DIST%/levels/door.tanim
+blender --background --python export-transform-animation-hierarchy.py -- door_openAnim.blend door_purple_open_GRP 0 15 %DIST%/levels/door.tanim
+
+rem Export green door model animation and mesh data
+blender --background --python export-meshes.py -- doorGreen_openAnim.blend:1 %DIST%/levels/door_green.pnc
+blender --background --python export-scene.py -- doorGreen_openAnim.blend:1 %DIST%/levels/door_green.model
+blender --background --python export-transform-animation-hierarchy.py -- doorGreen_openAnim.blend door_keycardGreen_open_GRP 0 15 %DIST%/levels/door_green.tanim
+
+rem Export pink door model animation and mesh data
+blender --background --python export-meshes.py -- doorPink_openAnim.blend:1 %DIST%/levels/door_pink.pnc
+blender --background --python export-scene.py -- doorPink_openAnim.blend:1 %DIST%/levels/door_pink.model
+blender --background --python export-transform-animation-hierarchy.py -- doorPink_openAnim.blend door_keycardPink_open_GRP 0 15 %DIST%/levels/door_pink.tanim
 
 rem Export the Magpie model as a scene to preserve the transform hierarchy of character models
 blender --background --python export-scene.py -- magpie_idle.blend:1 %DIST%/magpie/magpie_idle.model

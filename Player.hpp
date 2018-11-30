@@ -3,7 +3,7 @@
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
 #include "AnimationManager.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
 
 #include <glm/glm.hpp>
 
@@ -27,7 +27,7 @@ namespace Magpie {
         };
     };
 
-    class Player: public GameCharacter, public GameAgent, public Signalable {
+    class Player: public AnimatedModel, public GameAgent, public Signalable {
     public:
         // This is incremented each time we create a new player
         static uint32_t instance_count;
@@ -100,7 +100,5 @@ namespace Magpie {
 
         // Used to force the player to walk through doors
         uint32_t current_room = 0;
-
-
     };
 }

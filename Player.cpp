@@ -158,7 +158,6 @@ void Magpie::Player::update(float elapsed) {
 
     if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
         set_state((uint32_t)Player::STATE::IDLE);
-        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 };
 
@@ -171,7 +170,7 @@ void Magpie::Player::interact() {
 };
 
 void Magpie::Player::set_position(glm::vec3 position) {
-    Magpie::GameCharacter::set_position(position);
+    Magpie::AnimatedModel::set_position(position);
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 };
 

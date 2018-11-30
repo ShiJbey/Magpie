@@ -3,8 +3,11 @@
 #include "Load.hpp"
 #include "GL.hpp"
 #include "MeshBuffer.hpp"
+#include "load_level.hpp"
+
 #include "TransformAnimation.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
+
 
 #include <string>
 #include <map>
@@ -15,7 +18,7 @@ namespace Magpie {
 
     extern Load< GLuint > donut_mesh_vao;
 
-    // ANIMATED DOORS
+    // PLAIN DOOR
     extern Load< MeshBuffer > door_mesh;
 
     extern Load< GLuint > door_mesh_vao;
@@ -23,6 +26,24 @@ namespace Magpie {
     extern Load< TransformAnimation > door_tanim;
 
     extern Load< Magpie::ModelData > door_model;
+
+    // PINK DOOR
+    extern Load< MeshBuffer > door_pink_mesh;
+
+    extern Load< GLuint > door_pink_mesh_vao;
+
+    extern Load< TransformAnimation > door_pink_tanim;
+
+    extern Load< Magpie::ModelData > door_pink_model;
+
+    // GREEN_DOOR
+    extern Load< MeshBuffer > door_green_mesh;
+
+    extern Load< GLuint > door_green_mesh_vao;
+
+    extern Load< TransformAnimation > door_green_tanim;
+
+    extern Load< Magpie::ModelData > door_green_model;
 
     // VISIBLE BOUNDING BOXES
     extern Load< MeshBuffer > bounding_box_mesh;
@@ -167,5 +188,14 @@ namespace Magpie {
     // MAP OF VAO NAMES TO VAO POINTERS
     extern Load< std::map< std::string, GLuint > > vertex_color_vaos;
 
-    
+    // LEVEL DATA
+    extern Load< Magpie::LevelData > sample_map;
+    extern Load< Magpie::LevelData > demo_map;
+    extern Load< Magpie::LevelData > demo_map_simple;
+    extern Load< Magpie::LevelData > final_map;
+
+    // Program Information
+    extern Load< Scene::Object::ProgramInfo > vertex_color_program_info;
+    extern Load< Scene::Object::ProgramInfo > highlight_program_info;
+    extern Load< Scene::Object::ProgramInfo > transparent_program_info;
 }
