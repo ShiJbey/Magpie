@@ -347,25 +347,6 @@ namespace Magpie {
         return item;
     };
 
-    Item* MagpieGameMode::drop_treat(glm::vec3 position) {
-        Scene::Transform* temp_transform = scene.new_transform();
-        temp_transform->position = position;
-
-        Scene::Object *obj = scene.new_object(temp_transform);
-        Scene::Object::ProgramInfo default_program_info;
-        default_program_info = *vertex_color_program_info.value;
-
-        default_program_info.vao = vertex_color_vaos->find("donut")->second;
-        obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
-        MeshBuffer::Mesh const &mesh = donut_mesh->lookup("Donut");
-        obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
-        obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-
-        Item* item = new Item(obj);
-
-        return item;
-    };
-
     /**
      * Initializes the current level and positions the guards
      * and the player
