@@ -6,7 +6,8 @@
 #include "TransformAnimation.hpp"
 #include "load_level.hpp"
 #include "MagpieGame.hpp"
-#include "GameCharacter.hpp"
+#include "draw_freetype_text.hpp"
+#include "AnimatedModel.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -34,14 +35,18 @@
 #include <cstdlib>
 #include <deque>
 #include <tuple>
+#include <algorithm>
+
+#define FREE_FLIGHT
 
 namespace Magpie {
 
-    // Off screen position to place the guard and player meshes that are not being used
-    glm::vec3 OFF_SCREEN_POS(-10000.0f, -10000.0f, -10000.0f);
-
     // Basic Vertex Color Program
     Scene::Object::ProgramInfo vertex_color_program_info;
+    vertex_color_program_info.program = vertex_color_program->program;
+    vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
+    vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
+    vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
 
     // Program for highlighting the path
     Scene::Object::ProgramInfo highlight_program_info;
@@ -51,7 +56,8 @@ namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
         init_program_info();
-        load_level("demo_map_flipped.lvl");
+        load_level("final-map.lvl");
+
 
         create_player(glm::vec3(7.0f, 6.0f, 0.0f));
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
@@ -89,9 +95,10 @@ namespace Magpie {
         }
 
         
-
+#ifndef FREE_FLIGHT
         camera_trans->position.x = game.get_player()->get_position().x;
         camera_trans->position.y = game.get_player()->get_position().y;
+#endif
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -142,6 +149,25 @@ namespace Magpie {
 
         }
 
+#ifdef FREE_FLIGHT
+        if (evt.type == SDL_KEYDOWN) {
+            switch(evt.key.keysym.scancode) {
+                case SDL_SCANCODE_LEFT:
+                    camera_trans->position.y += 1.0f;
+                    break;
+                case SDL_SCANCODE_RIGHT:
+                    camera_trans->position.y -= 1.0f;
+                    break;
+                case SDL_SCANCODE_UP:
+                    camera_trans->position.x += 1.0f;
+                    break;
+                case SDL_SCANCODE_DOWN:
+                    camera_trans->position.x -= 1.0f;
+                    break;
+            }
+        }
+#endif
+
         return false;
     };
 
@@ -171,6 +197,66 @@ namespace Magpie {
             //Draw scene:
             scene.draw(camera);
         }
+        /*
+        {
+            // Experimenting with drawing text boxes with character textures
+            // Might add some typewriter text functionality later
+            glm::vec2 box_dim = glm::vec2(200.0f, 100.0f);
+            glm::vec2 box_top_left = glm::vec2(100.0f, 100.0f);
+
+            glm::vec2 box_dim_normalized = glm::vec2((box_dim.x - (float)drawable_size.x) / (float)drawable_size.x, (box_dim.y - (float)drawable_size.y) / (float)drawable_size.y);
+            glm::vec2 box_top_left_normalized = glm::vec2((box_top_left.x - (float)drawable_size.x) / (float)drawable_size.x, (box_top_left.y - (float)drawable_size.y) / (float)drawable_size.y);
+
+            float vertices[] = {
+                // first triangle
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y, 0.0f, // top right
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f, // bottom right
+                box_top_left_normalized.x, box_top_left_normalized.y, 0.0f, // top left 
+                // second triangle
+                box_top_left_normalized.x + box_dim_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f, // bottom right
+                box_top_left_normalized.x, box_top_left_normalized.y - box_dim_normalized.y, 0.0f,  // bottom left
+                box_top_left_normalized.x, box_top_left_normalized.y, 0.0f   // top left
+            };
+
+            GLuint vbo;
+            unsigned int VAO;
+            glGenVertexArrays(1, &VAO);
+            glBindVertexArray(VAO);
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            GL_ERRORS();
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            GL_ERRORS();
+            glEnableVertexAttribArray(0);  
+            GL_ERRORS();
+            glUseProgram(ui_program->program);
+            GL_ERRORS();
+            
+            float height = (float)drawable_size.y;
+            float aspect = (float)drawable_size.x / (float)drawable_size.y;
+            glm::vec2 anchor = glm::vec2(0.0f, 0.0f);
+            glm::mat4 projection = glm::mat4(
+			    height / aspect, 0.0f, 0.0f, 0.0f,
+			    0.0f, height, 0.0f, 0.0f,
+			    0.0f, 0.0f, 1.0f, 0.0f,
+			    anchor.x / aspect, anchor.y, 0.0f, 1.0f
+		    );
+            glUniformMatrix4fv(ui_program->projection_mat4, 1, GL_FALSE, glm::value_ptr(projection));
+            GL_ERRORS();
+            glBindVertexArray(VAO);
+            GL_ERRORS();
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            GL_ERRORS();
+            
+        }
+        */
+
+        {
+            //draw_text("PIZZA", glm::vec2(0.0f, 0.0f), 0.2f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            GL_ERRORS();
+        }
 
         GL_ERRORS();
     };
@@ -180,7 +266,7 @@ namespace Magpie {
      * Once the model is loaded it is moved off screen and apointer to the
      * head transform is retured
      */
-    Scene::Transform* MagpieGameMode::load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key,
+    Scene::Transform* MagpieGameMode::load_character_model(AnimatedModel* character, const ModelData* model_data, std::string model_name, std::string vao_key,
             Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
 
         Scene::Transform* model_group_transform = nullptr;
@@ -207,10 +293,7 @@ namespace Magpie {
      * except for the vao which is set when we instantiate models
      */
     void MagpieGameMode::init_program_info() {
-        vertex_color_program_info.program = vertex_color_program->program;
-        vertex_color_program_info.mvp_mat4 = vertex_color_program->object_to_clip_mat4;
-        vertex_color_program_info.mv_mat4x3 = vertex_color_program->object_to_light_mat4x3;
-        vertex_color_program_info.itmv_mat3 = vertex_color_program->normal_to_light_mat3;
+        
 
         highlight_program_info.program = highlight_program->program;
         highlight_program_info.mvp_mat4 = highlight_program->object_to_clip_mat4;
@@ -537,8 +620,8 @@ namespace Magpie {
         }
         transparent_walls.clear();
 
-        uint32_t level_width = game.get_level()->get_width();
-        uint32_t level_length = game.get_level()->get_length();
+//        uint32_t level_width = game.get_level()->get_width();
+//        uint32_t level_length = game.get_level()->get_length();
 
         float player_pos_x = x;
         float player_pos_y = y;

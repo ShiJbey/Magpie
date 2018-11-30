@@ -2,13 +2,13 @@
 
 #include "Clickable.hpp"
 #include "AnimationManager.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
 
 #include "Scene.hpp"
 #include <glm/glm.hpp>
 
 namespace Magpie {
-    struct Door : public Clickable, public GameCharacter {
+    struct Door : public Clickable, public AnimatedModel {
 
         // This is incremented each time we create a new player
         static uint32_t instance_count;

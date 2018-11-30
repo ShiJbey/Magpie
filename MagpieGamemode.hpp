@@ -63,7 +63,7 @@ namespace Magpie {
         // Initialize the global program info structs
         void init_program_info();
 
-        Scene::Transform* load_character_model(GameCharacter* character, const ModelData* model_data, std::string model_name, std::string vao_key,
+        Scene::Transform* load_character_model(AnimatedModel* character, const ModelData* model_data, std::string model_name, std::string vao_key,
             Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
 
         std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform,  std::vector< std::string > names);
@@ -117,8 +117,9 @@ namespace Magpie {
         Scene scene;
         Scene::Camera* camera = nullptr;
         Scene::Transform* camera_trans = nullptr;
-        std::vector< GameCharacter* > animated_scene_objects;
+        std::vector< AnimatedModel* > animated_scene_objects;
         std::vector< Wall* > transparent_walls;
+        std::vector< FloorTile* > highlighted_tiles;
 
         //UI testing
         UI ui = UI(1, 1);
