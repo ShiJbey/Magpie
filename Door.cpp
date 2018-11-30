@@ -95,10 +95,10 @@ namespace Magpie {
                         if (part.compare("_GRP") == 0) {
                             t->name = model_name + "_GRP_" + std::to_string(instance_id);
                             model_group_transform = t;
-                            std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
+                            //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
                         } else {
                             t->name = model_name + "_" + part + "_" + std::to_string(instance_id);
-                            std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
+                            //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
                         }
                         break;                      
                     }

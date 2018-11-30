@@ -60,6 +60,8 @@ namespace Magpie {
 
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
 
+        assert(game.get_level() != nullptr);
+
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
     };
 
@@ -428,6 +430,7 @@ namespace Magpie {
                         // Swap out the program information
                         if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
+                            assert(wall != nullptr);
                             Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = *transparent_program_info.value;
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
