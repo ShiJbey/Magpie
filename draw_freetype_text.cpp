@@ -106,7 +106,7 @@ std::map< GLchar, Character >* load_font(uint32_t font_height, const std::string
             texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
+            (int)face->glyph->advance.x
         };
         Characters->insert(std::pair<GLchar, Character>(c, character));
     }
