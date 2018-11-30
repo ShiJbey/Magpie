@@ -248,9 +248,7 @@ Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, Animate
     model_group_transform = model.load_model(scene, model_data, model_name, [=](Scene &s, Scene::Transform *t, std::string const &m){
         Scene::Object *obj = s.new_object(t);
         Scene::Object::ProgramInfo default_program_info;
-        default_program_info.itmv_mat3 = program_info.itmv_mat3;
-        default_program_info.mv_mat4x3 = program_info.mv_mat4x3;
-        default_program_info.mvp_mat4 = program_info.mvp_mat4;
+        default_program_info = program_info;
         default_program_info.vao = vertex_color_vaos->find(vao_key)->second;
         obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
         MeshBuffer::Mesh const &mesh = mesh_buffer->lookup(m);
@@ -456,7 +454,6 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 
                 // Spawn an animated door model
                 create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
-                (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
                 // Add door the the levels vector of doors
                 level->get_doors()->push_back(door);  
@@ -466,12 +463,12 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 
                 // Get the meshes that surround this wall and rotate the wall
                 if (x == 0) {
-                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                     door->room_a = glm::ivec2(int(x) + 1, (int)y);
                     door->room_b = glm::ivec2(int(x) - 1, (int)y);
                 }
                 else if (x == level_data->level_width - 1) {
-                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                     door->room_a = glm::ivec2(int(x) - 1, (int)y);
                     door->room_b = glm::ivec2(int(x) + 1, (int)y);
                 }
@@ -482,12 +479,12 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 }
                 else {
                     if (PixelData::walls_to_left_and_right(level_data->pixel_data, level_data->level_width, x, y)) {
-                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                        //(*door->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                         door->room_a = glm::ivec2(int(x), (int)y - 1);
                         door->room_b = glm::ivec2(int(x), (int)y + 1);
                     }
                     else if (PixelData::walls_to_top_and_bottom(level_data->pixel_data, level_data->level_width, x, y)) {
-                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                         door->room_a = glm::ivec2(int(x) - 1, (int)y);
                         door->room_b = glm::ivec2(int(x) + 1, (int)y);
                     }
@@ -546,7 +543,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 // rotate corners
                 if (x == 0) {
                     if (y == 0) {
-                        // Do nothing, this is proper orientation
+                        // Do nothing, this is proper orientation (L)
                     }
                     else if (y == level_data->level_length - 1) {
                         obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -574,8 +571,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     }
                 }
                 else {
-                    if (y == 0) {
-                        
+                    if (y == 0) {          
                         if (pixel_to_left.is_wall_corner_door()) {
                             obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                         }     
@@ -588,18 +584,14 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         }
                     }
                     else {
-                        if (PixelData::walls_to_left_and_right(level_data->pixel_data, level_data->level_width, x, y)) {
-                            // Check to the top and bottom
-                            if (pixel_above.is_wall_corner_door()) {
-                               obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-                            } else {
-                              obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-                            }
+                        if (pixel_to_left.is_wall_corner_door() && pixel_above.is_wall_corner_door()) {
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
-                        else if (pixel_to_right.is_wall_corner_door()) {
-                            if (pixel_below.is_wall_corner_door()) {
-                               obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
-                            }
+                        else if (pixel_to_left.is_wall_corner_door() && pixel_below.is_wall_corner_door()) {
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                        else if (pixel_to_right.is_wall_corner_door() && pixel_below.is_wall_corner_door()) {
+                            obj->transform->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
                         }
                     }
                 }
