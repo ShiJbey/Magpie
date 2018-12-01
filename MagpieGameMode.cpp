@@ -191,7 +191,7 @@ namespace Magpie {
         }
 
         {
-            RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         }
 
         GL_ERRORS();
