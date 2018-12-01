@@ -452,8 +452,16 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 level->set_movement_matrix_position(x, y, true);
                 Door* door = new Door();
                 
-                // Spawn an animated door model
-                create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
+                if (customization_id >= 0 && customization_id <= 2) {
+                    // Spawn an animated door model
+                    create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
+                } else {
+                    // Spawn a static door
+                    Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                    door->scene_object = obj;
+                    door->set_transform(&obj->transform);
+                }
+                
 
                 // Add door the the levels vector of doors
                 level->get_doors()->push_back(door);  
