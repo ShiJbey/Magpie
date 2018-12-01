@@ -1,8 +1,12 @@
 #include "DisplayCase.hpp"
 #include <iostream>
 
-Magpie::DisplayCase::DisplayCase() {
+float Magpie::DisplayCase::required_lock_pick_time = 1.0f;
+uint32_t Magpie::DisplayCase::instance_count = 0;
 
+Magpie::DisplayCase::DisplayCase() {
+    this->instance_id = instance_count;
+    instance_count++;
 };
 
 Magpie::BoundingBox* Magpie::DisplayCase::get_boundingbox() {
@@ -50,31 +54,32 @@ Scene::Transform* Magpie::DisplayCase::load_model(Scene& scene, const Magpie::Mo
             // Get the name from the char vector
             std::string exported_name = std::string(model_data->names.begin() + h.name_begin, model_data->names.begin() + h.name_end);
 
-            // Check if the name contains any of the model part string
-            for (auto part: model_parts) {
-                if (exported_name.find(part) != std::string::npos) {
-                    // We have a name match, now set a new name with the instance ID
-                    // (e.g. Magpie_body_0)
-                    if (part.compare("_GRP") == 0) {
-                        t->name = model_name + "_GRP_" + std::to_string(instance_id);
+            if (exported_name.find(model_name) != std::string::npos) {
+                // Check if the name contains any of the model part string
+                for (auto part: model_parts) {
+                    if (exported_name.find(part) != std::string::npos) {
+                        // We have a name match, now set a new name with the instance ID
+                        // (e.g. Magpie_body_0)
+                        if (part.compare("_GRP") == 0) {
+                            t->name = model_name + "_GRP_" + std::to_string(instance_id);
 
-                        if (exported_name.find(model_name) != std::string::npos && !model_group_found) {
-                            model_group_found = true;
-                            model_group_transform = t;
-                            std::cout << "Found Model Group" << std::endl;
+                            if (exported_name.find(model_name) != std::string::npos && !model_group_found) {
+                                model_group_found = true;
+                                model_group_transform = t;
+                            }
+                            else if (!model_group_found) {
+                                model_group_transform = t;
+                            }
+                            
+                        } else {
+                            t->name = model_name + "_" + part + "_" + std::to_string(instance_id);
                         }
-                        else if (!model_group_found) {
-                            model_group_transform = t;
-                        }
-                        
-                        //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
-                    } else {
-                        t->name = model_name + "_" + part + "_" + std::to_string(instance_id);
-                        //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
+                        break;                      
                     }
-                    break;                      
                 }
             }
+
+            
 
         } else {
                 throw std::runtime_error("Model data contains hierarchy entry with invalid name indices");

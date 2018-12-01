@@ -80,7 +80,6 @@ namespace Magpie {
                             if (exported_name.find(model_name) != std::string::npos && !model_group_found) {
                                 model_group_found = true;
                                 model_group_transform = t;
-                                std::cout << "Found Model Group" << std::endl;
                             }
                             else if (!model_group_found) {
                                 model_group_transform = t;

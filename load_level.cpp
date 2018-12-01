@@ -361,7 +361,7 @@ Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& 
         // Delete the transform if it doesnt belong to any of the doors
         scene.delete_transform(t);
     });
-    std::cout << "Created " << model_group_transform->name << std::endl;
+    
 
     assert(model_group_transform != nullptr);
     door.scene_object = scene.new_object(model_group_transform);
@@ -793,24 +793,20 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     level->add_potential_location(level->get_potential_pedestal_locations(), room_number, obj->transform);
                 }
             }
+    
             else if (mesh_id == 21) {
                 DisplayCase* displaycase = new DisplayCase();
                 Scene::Transform* display_group = nullptr;
                 switch(customization_id) {
                     case 0:
                         display_group = displaycase->load_model(scene, front_door_model.value, "displayCaseWhole", [&](Scene &s, Scene::Transform *t, std::string const &m){
+                            
                             if( t->name.find("displayCaseWhole") != std::string::npos) {
                                 Scene::Object *obj = s.new_object(t);
+
                                 Scene::Object::ProgramInfo default_program_info;
-                                
-                                if ( m.find("glass_") != std::string::npos) {
-                                    default_program_info = *transparent_program_info.value;
-                                    default_program_info.vao = *transparent_building_meshes_vao;
-                                }
-                                else if ( m.find("frame_") != std::string::npos) {
-                                    default_program_info = *vertex_color_program_info.value;
-                                    default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
-                                }
+                                default_program_info = *vertex_color_program_info.value;
+                                default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
 
                                 obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
                                 MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
@@ -826,16 +822,10 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         display_group = displaycase->load_model(scene, front_door_model.value, "displayCaseBroken", [&](Scene &s, Scene::Transform *t, std::string const &m){
                             if( t->name.find("displayCaseBroken") != std::string::npos) {
                                 Scene::Object *obj = s.new_object(t);
+
                                 Scene::Object::ProgramInfo default_program_info;
-                                
-                                if ( m.find("glass_") != std::string::npos) {
-                                    default_program_info = *transparent_program_info.value;
-                                    default_program_info.vao = *transparent_building_meshes_vao;
-                                }
-                                else if ( m.find("frame_") != std::string::npos) {
-                                    default_program_info = *vertex_color_program_info.value;
-                                    default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
-                                }
+                                default_program_info = *vertex_color_program_info.value;
+                                default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
 
                                 obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
                                 MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
@@ -848,36 +838,41 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         });
                         break;
                     default:
-                        std::cout << "ERROR::load_level::  Invalid DisplayCase customization Id" << std::endl;
+                        std::cout << "ERROR::load_level::  Invalid DisplayCase customization ID" << std::endl;
                         break;
                 }
 
                 displaycase->scene_object = scene.new_object(display_group);
                 displaycase->set_transform(&displaycase->scene_object->transform);
-                (*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-               
-
+                displaycase->set_position(glm::vec3((float)x, (float)y, 0.0f));
             }
+            
+
             else if (mesh_id == 22) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
+
             else if (mesh_id == 23) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
+
             else if (mesh_id == 24) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
+
             else if (mesh_id == 25) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
+
             else if (mesh_id == 26) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
+
         }
     }
 
