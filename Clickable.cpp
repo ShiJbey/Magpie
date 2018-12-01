@@ -1,6 +1,7 @@
 #include "Clickable.hpp"
 
 #include <algorithm>
+#include <cstdio>
 
 bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm::vec3 &ray_dir) {
     float e;
@@ -13,7 +14,7 @@ bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm
 
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
     glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
-    //glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
+    glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
 
     glm::vec3 delta = position - ray_origin;
 
@@ -46,8 +47,8 @@ bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm
     if (t1 > t_min.y) t_min.y = t1;
 
     // test the z-axis
-    e = glm::dot(y_axis, delta);
-    f = glm::dot(ray_dir, y_axis);
+    e = glm::dot(z_axis, delta);
+    f = glm::dot(ray_dir, z_axis);
 
     t1 = (e + bb_min.z) / f;
     t2 = (e + bb_max.z) / f;
@@ -65,6 +66,12 @@ bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm
     if ( t_max_all < t_min_all ) {
         return false;
     } else {
+        printf("Box Position: (x: %f, y: %f, z: %f)\n", position.x, position.y, position.z);
+        printf("Ray origin: (x: %f, y: %f, z: %f)\n", ray_origin.x, ray_origin.y, ray_origin.z);
+        printf("Ray Dir: (x: %f, y: %f, z: %f)\n", ray_dir.x, ray_dir.y, ray_dir.z);
+        printf("Delta: (x: %f, y: %f, z: %f)\n", delta.x, delta.y, delta.z);
+        printf("Max Values: (x: %f, y: %f, z: %f)\n", ray_origin.x + t_max.x * ray_dir.x, ray_origin.y + t_max.y * ray_dir.y, ray_origin.z + t_max.z * ray_dir.z);
+        printf("Min Values: (x: %f, y: %f, z: %f)\n", ray_origin.x + t_min.x * ray_dir.x, ray_origin.y + t_min.y * ray_dir.y, ray_origin.z + t_min.z * ray_dir.z);
         return true;
     }
 };

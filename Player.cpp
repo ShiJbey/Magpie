@@ -45,73 +45,103 @@ void Magpie::Player::print_tasks() {
 
 void Magpie::Player::setDestination(glm::vec3 destination) {
     current_destination = destination;
-    //set_velocity(glm::normalize(destination - get_position()));
     Player::turnTo(current_destination);
-    set_model_orientation(orientation);
+    set_model_orientation((uint32_t)orientation);
 };
 
 void Magpie::Player::walk(float elapsed) {
 
-    printf("Positions in path: %zd\n", path.get_path().size());
-    printf("Destination Index: %d\n", next_destination_index);
+    if (is_new_path) {
+        
+        is_new_path = false;
+        path = new_path;
+
+        next_destination_index = 0;
+
+        printf("=====Starting on a new path=====\n");
+        printf("\tBeginning Destination Index: %d\n", next_destination_index);
+
+		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index], 0.0f);
+        next_destination_index++;
+        current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
+
+        printf("\t#### Destination Set ####\n");
+        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+        printf("\tNext Destination Index is now: %d\n", next_destination_index);
+
+        accumulate_time = 0;
+		turnTo(current_destination);
+		set_model_orientation((uint32_t)orientation);
+		return;
+    }
+
+//    printf("Positions in path: %zd\n", path.get_path().size());
+   
+//    for (int i = 0; i < path.get_path().size(); i++) {
+//        printf("(%f, %f),", path.get_path()[i].x, path.get_path()[i].y);
+//    }
+//    printf("\n");
 
     //float distance = elapsed * movespeed;
 
     //glm::vec2 displacement = getDirectionVec2() * distance;
 
-
-
-    //glm::vec3 vector_to =  current_destination - glm::vec3(get_position().x, get_position().y, 0.0f);
-
-    printf("Current Destination: (%f, %f, %f\n", current_destination.x, current_destination.y, current_destination.z);
-
-    //if (glm::length(vector_to) < distance || glm::dot(vector_to, glm::vec3(getDirectionVec2().x, getDirectionVec2().y, 0.0f)) < 0) {
-
-        if (next_destination_index == path.get_path().size()) {
-
+	if (next_destination_index > this->path.get_path().size())
+	{
+        if (current_state == (uint32_t)Player::STATE::WALKING) {
             Player::set_state((uint32_t)Player::STATE::IDLE);
-            next_destination_index = 0;
-            return;
+        }
+        else if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+            Player::set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+        }
+		
+		next_destination_index = 0;
+		return;
+	}
 
+	if (accumulate_time == 0)
+	{
+		starting_point = get_position();
+	}
+
+	accumulate_time += elapsed;
+
+    glm::vec3 vector_to = current_destination - glm::vec3(starting_point.x, starting_point.y, 0.0f);
+
+    // (0.1, 0) -> (1.0, 0)
+    if (vector_to.x != 0) vector_to.x = vector_to.x / abs(vector_to.x);
+    if (vector_to.y != 0) vector_to.y = vector_to.y / abs(vector_to.y);
+
+
+
+	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
+//    printf("Moving Distance: (%f, %f, %f, %f, %f)\n", accumulate_time, vector_to.x, vector_to.y, moving_distance.x, moving_distance.y);
+
+	glm::vec3 current_position = starting_point + glm::vec3(moving_distance, 0.0f);
+
+	if (glm::length(moving_distance) >= glm::length(vector_to))
+	{
+		accumulate_time = 0;
+		current_position = current_destination;
+        if (next_destination_index < this->path.get_path().size()) {
+            glm::vec2 next_destination = path.get_path()[next_destination_index++];
+		    current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f); 
         } else {
-            
-            //Player::set_position(current_destination);
-           
-            printf("Player Position: (%f, %f, %f\n", get_position().x, get_position().y, get_position().z);
-            //printf("DESTINATION REACHED\n");
-            
-            glm::vec2 next_destination = path.get_path()[next_destination_index];
             next_destination_index++;
-            
-            current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
-            Player::set_position(current_destination);
-            printf("NEXT DESTINATION: ( %f, %f)\n", current_destination.x, current_destination.y);
-
-            //turnTo(current_destination);
-
-            //set_model_orientation(orientation);
-
-            
-
-            
-
         }
 
-    //} else {
+        printf("\t#### Destination Set ####\n");
+            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+            printf("\tNext Destination Index is now: %d\n", next_destination_index);
+            turnTo(current_destination);
+            set_model_orientation((uint32_t)orientation);
+		
+        
+	}
 
-        //Player::set_position((*transform)->position + glm::vec3(displacement, 0.0f));
-
-    //}
-
-    /*
-    set_position(get_position() + elapsed * velocity * movespeed);
-
-    if (glm::length(current_destination - get_position()) <= 0.01) {
-        set_position(current_destination);
-        set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
-        set_state((uint32_t)Player::STATE::IDLE);
-    }
-    */
+	//printf("Current Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+    //printf("Current Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
+    Player::set_position(current_position);
 };
 
 void Magpie::Player::consume_signal() {
@@ -122,14 +152,13 @@ void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
     
     
-    if (current_state == (uint32_t)Player::STATE::WALKING) {
+    if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);
     }
 
-    //if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
-    //    set_state((uint32_t)Player::STATE::IDLE);
-    //    set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
-    //}
+    if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
+        set_state((uint32_t)Player::STATE::IDLE);
+    }
 };
 
 void Magpie::Player::update_state(float elapsed) {
@@ -141,7 +170,7 @@ void Magpie::Player::interact() {
 };
 
 void Magpie::Player::set_position(glm::vec3 position) {
-    Magpie::GameCharacter::set_position(position);
+    Magpie::AnimatedModel::set_position(position);
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 };
 
@@ -283,5 +312,29 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
             std::cout << "DEBUG:: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
+    }
+};
+
+void Magpie::Player::set_model_orientation(uint32_t dir) {
+    switch(dir) {
+        case (uint32_t)GameAgent::DIRECTION::RIGHT :
+            std::cout << "DEBUG:: Orienting right" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::LEFT :
+            std::cout << "DEBUG:: Orienting left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::UP :
+            std::cout << "DEBUG:: Orienting up" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::DOWN:
+            std::cout << "DEBUG:: Orienting down" << std::endl;
+            (*transform)->rotation = original_rotation;
+            break;
+        default:
+            std::cout << "ERROR:: Invalid orientation" << std::endl;
+            break;
     }
 };

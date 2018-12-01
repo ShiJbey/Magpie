@@ -169,11 +169,11 @@ void UI::stateChanger(char keyPressed) {
     if (keyPressed == 'i') {
         //no matter what inv is map should not be out
         map.state = Map::OFF;
-        if (inventory.state==Inventory::IN || 
+        if (inventory.state==Inventory::IN ||
             inventory.state == Inventory::IDLEIN) {
             inventory.state = Inventory::OUT; //inv scrolling reverses direction
         }
-        else if (inventory.state==Inventory::OUT || 
+        else if (inventory.state==Inventory::OUT ||
                 inventory.state==Inventory::IDLEOUT) {
             inventory.state = Inventory::IN; //inv scrolling reverses direction
         }
@@ -193,7 +193,6 @@ void UI::stateChanger(char keyPressed) {
         }
         //std::cout<<"state of map is now: "<<map.state<<std::endl;
         std::cout<<"state of inv is now: "<<inventory.state<<std::endl;
-    }
 }
 
 void UI::drawUI(Scene::Camera const *cam) {

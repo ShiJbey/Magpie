@@ -2,10 +2,10 @@
 
 #include "GameAgent.hpp"
 #include "Signalable.hpp"
-#include "GameCharacter.hpp"
+#include "AnimatedModel.hpp"
 
 namespace Magpie {
-    class Guard: public GameCharacter, public GameAgent, public Signalable {
+    class Guard: public AnimatedModel, public GameAgent, public Signalable {
     public:
 
         // This is incremented each time we create a new player
@@ -17,7 +17,8 @@ namespace Magpie {
             CHASING,
             ALERT,
             CONFUSED,
-            CAUTIOUS
+            CAUTIOUS,
+            EATING
         }; 
 
         Guard();

@@ -170,4 +170,3 @@ void Inventory::drawInv(Scene::Camera const *cam){
     glClear(GL_DEPTH_BUFFER_BIT);
     inv->draw(cam);
 }
-

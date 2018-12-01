@@ -1,4 +1,4 @@
-objs/
+./objs/
 *.blend[0-9]
 dist/main
 dist/main.exe
@@ -16,3 +16,8 @@ dist/main.ilk
 dist/main.pdb
 *.exe
 *.obj
+freetype-2/build
+freetype-2/builds
+freetype-2/docs
+freetype-2/devel
+cmake-build-debug/

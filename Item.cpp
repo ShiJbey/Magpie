@@ -1,6 +1,5 @@
 #include "Item.hpp"
 
-
 //////////////////////////////////////////////
 //                STEALABLE                 //
 //////////////////////////////////////////////
@@ -21,6 +20,14 @@ void Magpie::Stealable::steal(Player* player) {
 //                  ITEM                    //
 //////////////////////////////////////////////
 
+uint32_t Magpie::Item::instance_count = 0;
+
+Magpie::Item::Item(Scene::Object* obj) {
+    this->scene_object = obj;
+    this->instance_id = instance_count;
+    instance_count++;
+}
+
 void Magpie::Item::set_scene_object(Scene::Object* obj) {
     this->scene_object = obj;
 };
@@ -37,9 +44,8 @@ Magpie::Gem::Gem() : Magpie::Gem(nullptr) {
     // Do Nothing
 };
 
-Magpie::Gem::Gem(Scene::Object* obj) {
+Magpie::Gem::Gem(Scene::Object* obj) : Item(obj) {
     this->selling_price = Gem::SELLING_PRICE;
-    this->scene_object = obj;
 };
 
 Magpie::BoundingBox* Magpie::Gem::get_boundingbox() {
@@ -66,8 +72,7 @@ Magpie::Painting::Painting(): Magpie::Painting(nullptr) {
     // Do nothing
  };
 
-Magpie::Painting::Painting (Scene::Object* obj_ptr) {
-    this->scene_object = obj_ptr;
+Magpie::Painting::Painting (Scene::Object* obj_ptr) : Item(obj_ptr) {
     this->selling_price = Painting::SELLING_PRICE;
 };
 

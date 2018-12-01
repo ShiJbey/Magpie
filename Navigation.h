@@ -19,6 +19,10 @@ namespace Magpie {
         glm::vec2 top();
         bool isEmpty();
         std::vector<glm::vec2> get_path() { return this->path; };
+        void set_path(std::vector<glm::vec2> p) {
+            this->path = p;
+            it = this->path.begin();
+        };
 
     private:
         std::vector<glm::vec2> path;

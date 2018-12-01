@@ -3,10 +3,12 @@
 #include "MagpieGame.hpp"
 #include "Scene.hpp"
 #include "MeshBuffer.hpp"
-#include "MagpieLevel.hpp"
+
 
 #include <map>
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 
 namespace Magpie {
@@ -43,6 +45,24 @@ namespace Magpie {
         // Does the interaction function need to set or check a global flag
         uint8_t get_interaction_flag();
 
+        // Returns true if this is a wall, corner, or door
+        bool Magpie::PixelData::is_wall_corner_door();
+
+        bool is_player_start_position();
+        bool is_guard_start_position();
+        
+        // Checks if there are objects that are considered walls
+        // to the left and right of the given pixel position
+        // Walls, doors, and corners all count was "walls"
+        static bool walls_to_left_and_right(std::vector< PixelData > level_pixels, uint32_t level_width, uint32_t x, uint32_t y);
+
+        // Checks if there are objects that are considered walls
+        // to the top and bottom of the given pixel position
+        // Walls, doors, and corners all count was "walls"
+        static bool walls_to_top_and_bottom(std::vector< PixelData > level_pixels, uint32_t level_width, uint32_t x, uint32_t y);
+
+        
+
         // MASK VALUES
         static uint8_t MESH_MASK;
         static uint8_t MESH_CUSTOMIZATION_MASK;
@@ -63,27 +83,34 @@ namespace Magpie {
 
     };
 
-    class LevelLoader {
-    public:
-
-        LevelLoader();
-
-        // just making each map static for now
-        static std::map<uint8_t, std::string> purple_meshes;
-
-        // Loads level blob files and builds the scene
-        Magpie::MagpieLevel* load(std::string const &level_filename, Scene* scene, const MeshBuffer* mesh_buffer, 
-            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
-
-    private:
-
-        // Dimensions of the level
+    // This is for statically loading level pixel data
+    struct LevelData {
         uint32_t level_width;
         uint32_t level_length;
+        std::vector< Magpie::PixelData > pixel_data;
 
-        // maps customization numbers to maps of mesh IDs
-        // mapped to the name of the mesh
-        std::map <uint8_t, std::map<uint8_t, std::string>> mesh_names;
+        // Loads level information from a file
+        LevelData(const std::string &filename);
+    };
 
+    struct LevelLoader {
+
+        /**
+         * Given amap of all the transforms in the game and a vector of transforms,
+         * returns a fector of Transform pointers to transforms with the given names
+         */
+        static std::vector< Scene::Transform* > Magpie::LevelLoader::get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform, std::vector< std::string > names);
+  
+        // Places an animated door into the scene
+        static Door& create_animated_door(Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position);
+
+        //Loads an animated model identically to how we load scene data.
+        static Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene &scene, AnimatedModel& model, const ModelData* model_data,
+            std::string model_name, std::string vao_key, Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
+
+        // Loads level blob files and builds the scene
+        static Magpie::MagpieLevel* load(const Magpie::LevelData* level_data, Scene& scene, const MeshBuffer* mesh_buffer, 
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+    
     };
 }

@@ -154,9 +154,18 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
     
     // Unexplored grid positions
     std::deque< glm::vec2 > frontier;
-    frontier.push_back(glm::uvec2(start));
 
-    visited_matrix[(uint32_t)start.x][(uint32_t)start.y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
+    uint64_t start_x = trunc(start.x);
+//    double decimal_x = start.x - trunc(start.x);
+    uint64_t start_y = trunc(start.y);
+//    double decimal_y = start.y - trunc(start.y);
+
+
+
+
+    frontier.emplace_back(glm::uvec2(start_x, start_y));
+
+    visited_matrix[start_x][start_y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
 
     // Perform BFS
     while( !frontier.empty() ) {
