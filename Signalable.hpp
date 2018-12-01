@@ -29,10 +29,10 @@ namespace Magpie {
         // Broadcasts an identical message to all members of this objects signal group
         void broadcast_to_group(uint32_t sig_num);
 
-        // Sends messsage to a specific signalable object
+        // Sends message to a specific signalable object
         void send_signal(Signalable* receiver, uint32_t sig_num);
 
-        // Defins how the play should react given a certain signal
+        // Defines how the play should react given a certain signal
         virtual void consume_signal() = 0;
 
         // Getters

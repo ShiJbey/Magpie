@@ -70,17 +70,18 @@ namespace Magpie {
     };
 
     void MagpieGameMode::update(float elapsed) {
+        //if the map is out don't update anything
+        if (ui.map.state == Map::OFF) {
+            // Update the player
+            game.get_player()->update(elapsed);
 
-        // Update the player
-        game.get_player()->update(elapsed);
-
-        // Update the position of the guards
-        for (uint32_t i = 0; i < game.get_guards().size(); i++) {
-            game.get_guards()[i]->update(elapsed);
+            // Update the position of the guards
+            for (uint32_t i = 0; i < game.get_guards().size(); i++) {
+                game.get_guards()[i]->update(elapsed);
+            }
+            //update inventory too since map is off
+            ui.inventory.updateInv(elapsed);
         }
-
-        //camera_trans->position.x = game.get_player()->get_position().x;
-        //camera_trans->position.y = game.get_player()->get_position().y;
     };
 
     bool MagpieGameMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -137,6 +138,9 @@ namespace Magpie {
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
+
+            //draw UI
+            ui.drawUI(camera);
         }
 
         GL_ERRORS();
@@ -461,7 +465,8 @@ namespace Magpie {
             for (auto paint_iter = it->second.begin(); paint_iter != it->second.end(); paint_iter++) {
                 if (paint_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                     && paint_iter->get_scene_object()->active) {
-                    paint_iter->steal(game.get_player());
+                    paint_iter->steal(game.get_player()); //changing player score
+                    //TODO: SEND SCORE TO UI HERE TOO
                     paint_iter->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     return true;
