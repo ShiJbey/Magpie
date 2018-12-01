@@ -105,13 +105,13 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     };
 
     std::map<uint8_t, std::string > doors = {
-        { 0, "floor_purple_MSH" },
-        { 1, "floor_keycardPink_MSH" },
-        { 2, "floor_keycardGreen_MSH" },
-        { 3, "floor_backExit_MSH" },
-        { 4, "floor_frontExit1_MSH" },
-        { 5, "floor_frontExit2_MSH" },
-        { 6, "floor_frontExit3_MSH" }
+        { 0, "door_purple_MSH" },
+        { 1, "door_keycardPink_MSH" },
+        { 2, "door_keycardGreen_MSH" },
+        { 3, "door_backExit_MSH" },
+        { 4, "door_frontExit1_MSH" },
+        { 5, "door_frontExit2_MSH" },
+        { 6, "door_frontExit3_MSH" }
     };
 
     std::map<uint8_t, std::string > paintings = {
@@ -168,7 +168,7 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > offices = {
         {0, "office_desk1_MSH"},
-        {1, "office_desk2_MSH"}
+        {1, "officeDesk2_MSH"}
     };
 
 
@@ -196,7 +196,7 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     ret->insert({23, security_rooms});
     ret->insert({24, offices});
     ret->insert({25, storage});
-    ret->insert({22, chairs});
+    ret->insert({26, chairs});
     
 
     return ret;
@@ -260,6 +260,126 @@ Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, Animate
 
     return model_group_transform;
 };
+
+
+Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position) {
+
+    Scene::Transform* model_group_transform = nullptr;
+
+    std::string model_name = "";
+    switch(customization_id) {
+        case 4:
+            model_name = "frontExit1";
+            break;
+        case 5:
+            model_name = "frontExit2";
+            break;
+        case 6:
+            model_name = "frontExit3";
+            break;
+        default:
+            std::cout << "ERROR::create_front_door:: Front door customization id not found" << std::endl;
+            break;
+    }
+
+    model_group_transform = door.load_model(scene, front_door_model.value, model_name, [&](Scene &s, Scene::Transform *t, std::string const &m){
+        switch(customization_id) {
+            case 4:
+                if (m.find("Exit1") != std::string::npos) {
+                    Scene::Object *obj = s.new_object(t);
+                    Scene::Object::ProgramInfo default_program_info;
+
+                    if (m.find("glass") != std::string::npos) {
+                        // Use transparent program for glass
+                        default_program_info = *transparent_program_info.value;
+                        default_program_info.vao = *transparent_building_meshes_vao;
+                    }
+                    else {
+                        // Use vertex color program for frame
+                        default_program_info = *vertex_color_program_info.value;
+                        default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+                    }
+
+                    obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+                    MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
+                    obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+                    obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+
+                    return;
+                }
+                break;
+            case 5:
+                if (m.find("Exit2") != std::string::npos) {
+                    Scene::Object *obj = s.new_object(t);
+                    Scene::Object::ProgramInfo default_program_info;
+
+                    if (m.find("glass") != std::string::npos) {
+                        // Use transparent program for glass
+                        default_program_info = *transparent_program_info.value;
+                        default_program_info.vao = *transparent_building_meshes_vao;
+                    }
+                    else {
+                        // Use vertex color program for frame
+                        default_program_info = *vertex_color_program_info.value;
+                        default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+                    }
+
+                    obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+                    MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
+                    obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+                    obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+                    return;
+                }
+                break;
+            case 6:
+                if (m.find("Exit3") != std::string::npos) {
+                    Scene::Object *obj = s.new_object(t);
+                    Scene::Object::ProgramInfo default_program_info;
+
+                    if (m.find("glass") != std::string::npos) {
+                        // Use transparent program for glass
+                        default_program_info = *transparent_program_info.value;
+                        default_program_info.vao = *transparent_building_meshes_vao;
+                    }
+                    else {
+                        // Use vertex color program for frame
+                        default_program_info = *vertex_color_program_info.value;
+                        default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+                    }
+
+                    obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+                    MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
+                    obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+                    obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+                    return;
+                }
+                break;
+            default:
+                std::cout << "ERROR::create_front_door:: Front door customization id not found" << std::endl;
+                break;
+        }
+        // Delete the transform if it doesnt belong to any of the doors
+        scene.delete_transform(t);
+    });
+    std::cout << "Created " << model_group_transform->name << std::endl;
+
+    assert(model_group_transform != nullptr);
+    door.scene_object = scene.new_object(model_group_transform);
+    door.set_transform(&door.scene_object->transform);
+    if (model_group_transform->name.find("frontExit1") != std::string::npos) {
+        door.set_position(glm::vec3(position.x + 1, position.y, position.z));
+    }
+    else if (model_group_transform->name.find("frontExit2") != std::string::npos) {
+        door.set_position(position);
+    }
+    else if (model_group_transform->name.find("frontExit3") != std::string::npos) {
+        door.set_position(glm::vec3(position.x - 1, position.y, position.z));
+    }
+    
+
+    return door;
+};
+
 
 Magpie::Door& Magpie::LevelLoader::create_animated_door(Magpie::Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position) {    
 
@@ -430,7 +550,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
             
             // Floor Tile                           
-            if (mesh_id == 3) {
+            else if (mesh_id == 3) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->name = "floor_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
@@ -447,7 +567,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
             // Doors
-            if (mesh_id == 4) {
+            else if (mesh_id == 4) {
                 std::string name = "Door_" + std::to_string(i);
                 level->set_movement_matrix_position(x, y, true);
                 Door* door = new Door();
@@ -455,16 +575,22 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 if (customization_id >= 0 && customization_id <= 2) {
                     // Spawn an animated door model
                     create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
-                } else {
+                    // Add door the the levels vector of doors
+                    level->get_doors()->push_back(door); 
+                } else if (customization_id == 3) {
                     // Spawn a static door
                     Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                     door->scene_object = obj;
                     door->set_transform(&obj->transform);
+                    (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                }
+                else{
+                    create_front_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
+                    assert(*door->get_transform() != nullptr);
                 }
                 
 
-                // Add door the the levels vector of doors
-                level->get_doors()->push_back(door);  
+                 
 
                 // Sets the access level for the door based on the customization ID
                 door->access_level = (Door::ACCESS_LEVEL)customization_id;
@@ -492,7 +618,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         door->room_b = glm::ivec2(int(x), (int)y + 1);
                     }
                     else if (PixelData::walls_to_top_and_bottom(level_data->pixel_data, level_data->level_width, x, y)) {
-                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0, 1.0, 0.0));
+                        (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
                         door->room_a = glm::ivec2(int(x) - 1, (int)y);
                         door->room_b = glm::ivec2(int(x) + 1, (int)y);
                     }
@@ -504,7 +630,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
              // Walls
-            if (mesh_id == 16) {
+            else if (mesh_id == 16) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->name = "wall_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
@@ -541,7 +667,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
             // 2-Corner
-            if (mesh_id == 19) {
+            else if (mesh_id == 19) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "2-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
@@ -606,7 +732,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
             // 3-Corner
-            if (mesh_id == 18) {
+            else if (mesh_id == 18) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "3-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
@@ -646,7 +772,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
             // 4-Corner
-            if (mesh_id == 17) {
+            else if (mesh_id == 17) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "4-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
@@ -654,7 +780,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
 
             // Pedestal
-            if (mesh_id == 20) {
+            else if (mesh_id == 20) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 std::string name = "pedestal_" + std::to_string(i);
                 obj->transform->name = name;
@@ -666,6 +792,91 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 if (potential_item_location) {
                     level->add_potential_location(level->get_potential_pedestal_locations(), room_number, obj->transform);
                 }
+            }
+            else if (mesh_id == 21) {
+                DisplayCase* displaycase = new DisplayCase();
+                Scene::Transform* display_group = nullptr;
+                switch(customization_id) {
+                    case 0:
+                        display_group = displaycase->load_model(scene, front_door_model.value, "displayCaseWhole", [&](Scene &s, Scene::Transform *t, std::string const &m){
+                            if( t->name.find("displayCaseWhole") != std::string::npos) {
+                                Scene::Object *obj = s.new_object(t);
+                                Scene::Object::ProgramInfo default_program_info;
+                                
+                                if ( m.find("glass_") != std::string::npos) {
+                                    default_program_info = *transparent_program_info.value;
+                                    default_program_info.vao = *transparent_building_meshes_vao;
+                                }
+                                else if ( m.find("frame_") != std::string::npos) {
+                                    default_program_info = *vertex_color_program_info.value;
+                                    default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+                                }
+
+                                obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+                                MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
+                                obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+                                obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+                                
+                            } else {
+                                scene.delete_transform(t);
+                            }
+                        });
+                        break;
+                    case 1:
+                        display_group = displaycase->load_model(scene, front_door_model.value, "displayCaseBroken", [&](Scene &s, Scene::Transform *t, std::string const &m){
+                            if( t->name.find("displayCaseBroken") != std::string::npos) {
+                                Scene::Object *obj = s.new_object(t);
+                                Scene::Object::ProgramInfo default_program_info;
+                                
+                                if ( m.find("glass_") != std::string::npos) {
+                                    default_program_info = *transparent_program_info.value;
+                                    default_program_info.vao = *transparent_building_meshes_vao;
+                                }
+                                else if ( m.find("frame_") != std::string::npos) {
+                                    default_program_info = *vertex_color_program_info.value;
+                                    default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
+                                }
+
+                                obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
+                                MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
+                                obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
+                                obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+                                
+                            } else {
+                                scene.delete_transform(t);
+                            }
+                        });
+                        break;
+                    default:
+                        std::cout << "ERROR::load_level::  Invalid DisplayCase customization Id" << std::endl;
+                        break;
+                }
+
+                displaycase->scene_object = scene.new_object(display_group);
+                displaycase->set_transform(&displaycase->scene_object->transform);
+                (*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+               
+
+            }
+            else if (mesh_id == 22) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            }
+            else if (mesh_id == 23) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            }
+            else if (mesh_id == 24) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            }
+            else if (mesh_id == 25) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            }
+            else if (mesh_id == 26) {
+                Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
         }
     }

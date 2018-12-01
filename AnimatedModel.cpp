@@ -101,3 +101,15 @@ void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
             break;
     }
 };
+
+// Imports a character model from a file
+Scene::Transform* Magpie::AnimatedModel::load_model(Scene& scene, const Magpie::ModelData* model_data, std::string model_name, 
+            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+    return nullptr;
+};
+
+// Converts the names imported from the animation t-anim
+std::vector< std::string > Magpie::AnimatedModel::convert_animation_names(const TransformAnimation* tanim, std::string model_name) {
+    std::vector<std::string> empty_vec;
+    return empty_vec;
+};

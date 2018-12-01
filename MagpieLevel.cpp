@@ -314,4 +314,8 @@ std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get
     return &potential_table_locations;
 };
 
+std::vector< Magpie::DisplayCase* >& Magpie::MagpieLevel::get_displaycases() {
+    return displaycases;
+};
+
 

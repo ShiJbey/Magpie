@@ -33,19 +33,12 @@ namespace Magpie {
         Door();
         Door(glm::ivec2 room_a, glm::ivec2 room_b, Scene::Object* obj);
 
-        // Bouding box should have dimensions 1 x 1 x 2
+        // Clickable functions
         BoundingBox* get_boundingbox();
-
-        // This should:
-        // 1) Play the animation of the door opening
         void on_click();
 
-        glm::vec3 get_position();
-        Scene::Transform** get_transform();
-        AnimationManager* get_animation_manager();
-        uint32_t get_instance_id();
 
-        // Loads Magpie model data specifically
+        // Animated model functions
         virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
             std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);

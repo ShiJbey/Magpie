@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 #include "Clickable.hpp"
 #include "Player.hpp"
+#include "DisplayCase.hpp"
 #include "FloorTile.hpp"
 #include "Item.hpp"
 
@@ -61,6 +62,7 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
         FloorTile*** get_floor_matrix();
         std::vector< Door* >* get_doors();
+        std::vector< DisplayCase* >& get_displaycases();
         
 
         void add_painting(uint32_t room_number, Painting painting);
@@ -97,10 +99,11 @@ namespace Magpie {
         // Maps room_numbers to maps of guard numbers to starting positions
         std::map< uint32_t, std::map< uint32_t, glm::vec3 > > guard_start_positions;
 
-
-
         // Matrix off all the tiles that the user can move to
         std::vector< std::vector< bool > > movement_matrix;
+
+        // All the display cases placed in the game
+        std::vector< DisplayCase* > displaycases;
 
         // How many of each item should be placed
         uint32_t gems_to_place;

@@ -41,32 +41,14 @@ namespace Magpie {
         this->opened = true;
     };
 
-
-    glm::vec3 Door::get_position() {
-        if (transform != nullptr) {
-            return (*transform)->position;
-        }
-        return glm::vec3(-9999.0f, -9999.0f, -9999.0f);
-    };
-
-    Scene::Transform** Door::get_transform() {
-        return transform;
-    };
-
-    AnimationManager* Door::get_animation_manager() {
-        return animation_manager;
-    };
-
-    uint32_t Door::get_instance_id() {
-        return this->instance_id;
-    };
-
     Scene::Transform* Magpie::Door::load_model(Scene& scene, const ModelData* model_data, std::string model_name,
         std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
         
         std::vector< std::string > model_parts = { "_GRP", "door_", "frame_" };
 
         Scene::Transform* model_group_transform = nullptr;
+
+        bool model_group_found = false;
 
         std::vector< Scene::Transform * > hierarchy_transforms;
 	    hierarchy_transforms.reserve(model_data->hierarchy.size());
@@ -94,7 +76,16 @@ namespace Magpie {
                         // (e.g. Magpie_body_0)
                         if (part.compare("_GRP") == 0) {
                             t->name = model_name + "_GRP_" + std::to_string(instance_id);
-                            model_group_transform = t;
+
+                            if (exported_name.find(model_name) != std::string::npos && !model_group_found) {
+                                model_group_found = true;
+                                model_group_transform = t;
+                                std::cout << "Found Model Group" << std::endl;
+                            }
+                            else if (!model_group_found) {
+                                model_group_transform = t;
+                            }
+                            
                             //std::cout << "DEBUG::Door:: created door part with name: " << t->name << std::endl;
                         } else {
                             t->name = model_name + "_" + part + "_" + std::to_string(instance_id);
