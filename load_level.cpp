@@ -168,7 +168,7 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > offices = {
         {0, "office_desk1_MSH"},
-        {1, "officeDesk2_MSH"}
+        {1, "office_desk2_MSH"}
     };
 
 
