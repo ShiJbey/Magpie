@@ -193,6 +193,7 @@ void UI::stateChanger(char keyPressed) {
         }
         //std::cout<<"state of map is now: "<<map.state<<std::endl;
         std::cout<<"state of inv is now: "<<inventory.state<<std::endl;
+    }
 }
 
 void UI::drawUI(Scene::Camera const *cam) {

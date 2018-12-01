@@ -46,7 +46,7 @@ namespace Magpie {
         uint8_t get_interaction_flag();
 
         // Returns true if this is a wall, corner, or door
-        bool Magpie::PixelData::is_wall_corner_door();
+        bool is_wall_corner_door();
 
         bool is_player_start_position();
         bool is_guard_start_position();
@@ -99,13 +99,13 @@ namespace Magpie {
          * Given amap of all the transforms in the game and a vector of transforms,
          * returns a fector of Transform pointers to transforms with the given names
          */
-        static std::vector< Scene::Transform* > Magpie::LevelLoader::get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform, std::vector< std::string > names);
+        static std::vector< Scene::Transform* > get_animation_transforms( std::unordered_map< std::string, Scene::Transform * >& name_to_transform, std::vector< std::string > names);
   
         // Places an animated door into the scene
         static Door& create_animated_door(Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position);
 
         //Loads an animated model identically to how we load scene data.
-        static Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene &scene, AnimatedModel& model, const ModelData* model_data,
+        static Scene::Transform* load_animated_model(Scene &scene, AnimatedModel& model, const ModelData* model_data,
             std::string model_name, std::string vao_key, Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer);
 
         // Loads level blob files and builds the scene

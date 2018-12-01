@@ -37,6 +37,3 @@ struct Inventory {
 
     uint32_t printouthelp = 1;
 };
-
-
-#endif

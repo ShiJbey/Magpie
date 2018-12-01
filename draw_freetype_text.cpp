@@ -1,6 +1,6 @@
 #include "draw_freetype_text.hpp"
 #include "data_path.hpp"
-#include "load.hpp"
+#include "Load.hpp"
 #include "compile_program.hpp"
 
 #include <glm/glm.hpp>
