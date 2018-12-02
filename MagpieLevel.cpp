@@ -2,6 +2,8 @@
 #include "FloorTile.hpp"
 #include "Door.hpp"
 
+#include <algorithm>
+
 Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     this->width = width;
     this->length = length;
@@ -310,6 +312,10 @@ std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get
 
 std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_table_locations() {
     return &potential_table_locations;
+};
+
+std::vector< Magpie::DisplayCase* >& Magpie::MagpieLevel::get_displaycases() {
+    return displaycases;
 };
 
 

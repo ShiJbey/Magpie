@@ -49,6 +49,9 @@ blender --background --python export-meshes.py -- doorPink_openAnim.blend:1 %DIS
 blender --background --python export-scene.py -- doorPink_openAnim.blend:1 %DIST%/levels/door_pink.model
 blender --background --python export-transform-animation-hierarchy.py -- doorPink_openAnim.blend door_keycardPink_open_GRP 0 15 %DIST%/levels/door_pink.tanim
 
+rem Export FrontDoorModels
+blender --background --python export-scene.py -- building-tiles.blend:1 %DIST%/levels/building_tiles.model
+
 rem Export the Magpie model as a scene to preserve the transform hierarchy of character models
 blender --background --python export-scene.py -- magpie_idle.blend:1 %DIST%/magpie/magpie_idle.model
 blender --background --python export-scene.py -- magpie_walk.blend:1 %DIST%/magpie/magpie_walk.model

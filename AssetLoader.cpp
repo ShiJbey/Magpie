@@ -66,6 +66,11 @@ namespace Magpie {
         return new Magpie::ModelData(data_path("levels/door_green.model"));
     });
 
+    // FRONT DOOR
+    Load< Magpie::ModelData > front_door_model(LoadTagDefault, []() {
+        return new Magpie::ModelData(data_path("levels/building_tiles.model"));
+    });
+
     // VISIBLE BOUNDING BOXES
     Load< MeshBuffer > bounding_box_mesh(LoadTagDefault, [](){
         return new MeshBuffer(data_path("levels/bounding_box.pnc"));
