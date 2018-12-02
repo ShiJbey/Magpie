@@ -249,6 +249,10 @@ void Magpie::MagpieLevel::set_player_start_position(glm::vec3 start_position) {
     this->player_start_position = start_position;
 };
 
+glm::vec3 Magpie::MagpieLevel::get_player_start_position() {
+    return this->player_start_position;
+}
+
 void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position) {
     auto room_number_iter = guard_start_positions.find(room_number);
     if (room_number_iter != guard_start_positions.end()) {

@@ -242,7 +242,7 @@ void Magpie::Guard::walk(float elapsed) {
 
         accumulate_time = 0;
 		turnTo(current_destination);
-		set_model_orientation(orientation);
+		set_model_orientation((uint32_t)orientation);
 		return;
     }
 
@@ -285,14 +285,14 @@ void Magpie::Guard::walk(float elapsed) {
             printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
             printf("\tNext Destination Index is now: %d\n", next_destination_index);
             turnTo(current_destination);
-            set_model_orientation(orientation);
+            set_model_orientation((uint32_t)orientation);
 	}
 
     set_position(current_position);
 };
 
 void Magpie::Guard::set_position(glm::vec3 position) {
-    Magpie::GameCharacter::set_position(position);
+    Magpie::AnimatedModel::set_position(position);
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 }
 

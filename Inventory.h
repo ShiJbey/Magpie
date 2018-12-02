@@ -21,8 +21,8 @@ struct Inventory {
     //four states, OUT for rolling out, IN for rolling in,
     //IDLEIN for staying in, IDLEOUT for staying out
     enum STATE{
-        IN,
-        OUT,
+        S_IN,
+        S_OUT,
         IDLEIN,
         IDLEOUT
     };

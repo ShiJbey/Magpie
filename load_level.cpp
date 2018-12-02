@@ -541,12 +541,12 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // Check if this is a start position for a guard
             if (current_pixel.is_guard_start_position()) {
-                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f));
+//                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f));
             }
             
             // Check if it is part of a guards path
             if (guard_number != 0) {
-                level->add_guard_path_position(room_number, guard_number, x, y);
+//                level->add_guard_path_position(room_number, guard_number, x, y);
             }
             
             // Floor Tile                           

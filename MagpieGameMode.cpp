@@ -47,10 +47,15 @@ namespace Magpie {
         // Obtain camera positioning from blender scene
         setup_camera();
 
-        create_player(glm::vec3(2.0f, 4.0f, 0.0f));
-        game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
+        glm::vec3 player_position = game.get_level()->get_player_start_position();
 
-        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
+        std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
+
+        create_player(player_position);
+
+        game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
+
+//        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
 //        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
@@ -63,9 +68,9 @@ namespace Magpie {
                 glm::vec3(9.0f, 4.0f, 0.0f)
         };
 
-        game.get_guards()[0]->set_patrol_points(
-                points
-        );
+//        game.get_guards()[0]->set_patrol_points(
+//                points
+//        );
 //        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
 //        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
@@ -73,7 +78,7 @@ namespace Magpie {
 
         assert(game.get_level() != nullptr);
 
-        make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+//        make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -167,8 +172,6 @@ namespace Magpie {
                     break;
                 case SDL_SCANCODE_DOWN:
                     camera_trans->position.y -= 1.0f;
-                    break;
-                default:
                     break;
                 default:
                     break;
