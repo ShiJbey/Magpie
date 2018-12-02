@@ -29,9 +29,9 @@ Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
     // Make Door Matrix;
     door_matrix = new Door**[width];
     for (uint32_t x = 0; x < width; x++) {
-        floor_matrix[x] = new FloorTile*[length];
+        door_matrix[x] = new Door*[length];
         for (uint32_t y = 0; y < length; y++) {
-            floor_matrix[x][y] = nullptr;
+            door_matrix[x][y] = nullptr;
         }
     }
 
@@ -235,7 +235,8 @@ uint32_t Magpie::MagpieLevel::get_tile_room_number(uint32_t x, uint32_t y) {
 };
 
 uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
-    if ((x >= 0.0f && x < (float)width) && (y >= 0.0f && y < (float)length)) {
+    if ((x >= 0.0f && x < width) && (y >= 0.0f && y < length)) {
+        std::cout << "x:" << x << " y:" << y << " " << width << " " << length << std::endl;
         return floor_matrix[(uint32_t)x][(uint32_t)y]->room_number;
     }
     return -1U;
@@ -269,6 +270,10 @@ void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_
         guard_start_positions[room_number].insert(std::make_pair(guard_number, start_position));
     }
 };
+
+std::map< uint32_t, std::map< uint32_t, glm::vec3 > >& Magpie::MagpieLevel::get_guard_start_positions() {
+    return guard_start_positions;
+}
 
 std::vector< glm::vec2 > Magpie::MagpieLevel::get_guard_path(uint32_t room_number, uint32_t guard_number) {
     // Check if the level has the given room and guard number;

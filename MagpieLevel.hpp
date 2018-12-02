@@ -75,7 +75,9 @@ namespace Magpie {
 
         // Adds a position to a guards path
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);
-        
+
+        std::map< uint32_t, std::map< uint32_t, glm::vec3 > >& get_guard_start_positions();
+
         // Retreives a guards path, given the room number of the guard and the guards number
         std::vector< glm::vec2 > get_guard_path(uint32_t room_number, uint32_t guard_number);
 

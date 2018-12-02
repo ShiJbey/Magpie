@@ -50,24 +50,29 @@ namespace Magpie {
         glm::vec3 player_position = game.get_level()->get_player_start_position();
 
         std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
-
         create_player(player_position);
 
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
+
+        auto guard_start = game.get_level()->get_guard_start_positions();
+
+        for (auto i : guard_start) {
+            for (auto i2 : i.second) {
+               Guard* guard = create_guard(i2.second);
+               auto path = game.get_level()->get_guard_path(i.first, i2.first);
+               for (auto p : path) {
+                   std::cout << p.x << "," << p.y << std::endl;
+               }
+               guard->set_patrol_points(path);
+            }
+            std::cout << std::endl;
+        }
 
 //        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
 //        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
         game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-
-        std::vector<glm::vec3> points = {
-                glm::vec3(9.0f, 8.0f, 0.0f),
-                glm::vec3(4.0f, 8.0f, 0.0f),
-                glm::vec3(4.0f, 4.0f, 0.0f),
-                glm::vec3(9.0f, 4.0f, 0.0f)
-        };
-
 //        game.get_guards()[0]->set_patrol_points(
 //                points
 //        );
@@ -78,7 +83,7 @@ namespace Magpie {
 
         assert(game.get_level() != nullptr);
 
-//        make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+        make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -347,6 +352,7 @@ namespace Magpie {
 
         // Set the guard at the proper place
         guard->set_position(position);
+        guard->set_starting_point(position);
 
         // Add the guard to the game
         game.add_guard(guard);

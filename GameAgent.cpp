@@ -87,6 +87,12 @@ Magpie::Path* Magpie::GameAgent::get_path() {
 };
 
 void Magpie::GameAgent::set_path(Magpie::Path path) {
+
+    if (path.get_path().size() == 0) {
+        std::cout << "EMPTY PATH" << std::endl;
+        return;
+    }
+
     // The magpie has finished the previous path and this one
     // should replace the old one
     if (this->next_destination_index > this->path.get_path().size() + 1 ||

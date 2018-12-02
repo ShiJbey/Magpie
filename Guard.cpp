@@ -80,6 +80,8 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
     }
 
     if (state_duration > 1.5f) {
+        if (patrol_points.size() <= 1) return;
+        std::cout << "size" << patrol_points.size() << std::endl;
         patrol_index = (patrol_index + 1) % patrol_points.size();
         std::cout << "NEXT PATROL POINT " << patrol_index << " (" << patrol_points[patrol_index].x << "," << patrol_points[patrol_index].y << ")" << std::endl;
         setDestination(patrol_points[patrol_index]);
@@ -155,6 +157,8 @@ void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
 }
 
 uint32_t Magpie::Guard::check_view() {
+    return (uint32_t)SIGHT::NOTHING;
+
     glm::vec3 v = glm::vec3(board_position.x, board_position.y, 0) - player->get_position();
 
     glm::vec3 o_v3;
@@ -205,9 +209,70 @@ uint32_t Magpie::Guard::check_view() {
     return (uint32_t)SIGHT::NOTHING;
 }
 
-void Magpie::Guard::set_patrol_points(std::vector<glm::vec3> points) {
-    this->patrol_points = points;
+bool find(const std::vector<glm::vec2>& points, glm::vec2 p) {
+    for (auto i : points) {
+        if (i == p) {
+            return true;
+        }
+    }
+    return false;
 }
+
+void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
+
+    glm::vec2 p = glm::vec2(starting_point.x, starting_point.y);
+    std::vector<glm::vec2> result;
+
+    glm::vec2 dir[4] = {
+            glm::vec2(0, 1),
+            glm::vec2(1, 0),
+            glm::vec2(0, -1),
+            glm::vec2(-1, 0)
+    };
+
+    int count = 0;
+    result.push_back(p);
+    glm::vec2 old_dir = glm::vec2(-1, -1);
+    while (count < points.size()) {
+        std::cout << "x:" << p.x << " y:" << p.y << std::endl;
+        count += 1;
+        for (int i = 0; i < 4; i++) {
+            // Won't turn back
+            if (old_dir + dir[i] == glm::vec2(0,0)) continue;
+
+            if (find(points, p + dir[i])) {
+
+                if (old_dir == glm::vec2(-1, -1)) {
+                    old_dir = dir[i];
+                    p = p + dir[i];
+                    break;
+                }
+
+                if (dir[i] != old_dir) {
+                    std::cout << "turn x:" << p.x << " y:" << p.y << std::endl;
+                    old_dir = dir[i];
+                    if (result[0] != p) result.push_back(p);
+                    p = p + dir[i];
+                    break;
+                }
+
+                p = p + dir[i];
+            }
+        }
+    }
+
+    if (result.size() == 1 && result[0] != p) result.push_back(p);
+
+    std::cout << "RESULT" << std::endl;
+    for (auto i : result) {
+        std::cout << "x:" << i.x << " y:" << i.y << std::endl;
+    }
+
+    std::cout << std::endl;
+
+    this->patrol_points = result;
+}
+
 
 void Magpie::Guard::interact() {
 
@@ -296,18 +361,29 @@ void Magpie::Guard::set_position(glm::vec3 position) {
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 }
 
-void Magpie::Guard::setDestination(glm::vec3 destination) {
+void Magpie::Guard::set_starting_point(glm::vec3 position) {
+    starting_point = position;
+}
+
+void Magpie::Guard::setDestination(glm::vec2 destination) {
     std::cout << "Set Destination to" << destination.x << ", " << destination.y << std::endl;
-    set_path(Magpie::Navigation::getInstance().findPath(
+    Path path =
+    Magpie::Navigation::getInstance().findPath(
             glm::vec2(get_position().x, get_position().y),
             glm::vec2(destination.x, destination.y)
-    ));
+    );
+
+    set_path(path);
 
     std::cout << "Set Path" << destination.x << ", " << destination.y << std::endl;
 
-    is_new_path = true;
-    //TODO:
-    set_state((uint32_t)STATE::PATROLING);
+    if (path.get_path().size() > 0) {
+        is_new_path = true;
+        //TODO:
+        set_state((uint32_t) STATE::PATROLING);
+    } else {
+        set_state((uint32_t) STATE::IDLE);
+    }
 }
 
 void Magpie::Guard::turnTo(glm::vec3 destination) {
@@ -318,19 +394,19 @@ void Magpie::Guard::turnTo(glm::vec3 destination) {
     // WARNING::Only handles movement in cardinal directions
     if (x_difference > 0) {
         std::cout << "DEBUG:: Facing right" << std::endl;
-        orientation = DIRECTION::RIGHT;
+        orientation = DIRECTION::LEFT;
     }
     else if (x_difference < 0) {
         std::cout << "DEBUG:: Facing left" << std::endl;
-        orientation = DIRECTION::LEFT;
+        orientation = DIRECTION::RIGHT;
     }
     else {
         if (y_difference > 0) {
             std::cout << "DEBUG:: Facing up" << std::endl;
-            orientation = DIRECTION::UP;
+            orientation = DIRECTION::DOWN;
         } else {
             std::cout << "DEBUG:: Facing down" << std::endl;
-            orientation = DIRECTION::DOWN;
+            orientation = DIRECTION::UP;
         }
     }
 }

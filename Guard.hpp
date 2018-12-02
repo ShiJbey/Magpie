@@ -53,11 +53,13 @@ namespace Magpie {
         void handle_state_confused(enum SIGHT);
         uint32_t check_view();
 
-        void set_patrol_points(std::vector<glm::vec3>);
+        void set_patrol_points(std::vector<glm::vec2>);
 
         void set_position(glm::vec3 position);
 
-        void setDestination(glm::vec3 destination);
+        void set_starting_point(glm::vec3 position);
+
+        void setDestination(glm::vec2 destination);
 
         void turnTo(glm::vec3 destination);
 
@@ -71,7 +73,7 @@ namespace Magpie {
         float state_duration = 0.0f;
         enum STATE last_state = STATE::IDLE;
 
-        std::vector<glm::vec3> patrol_points;
+        std::vector<glm::vec2> patrol_points;
         glm::vec3 interest_point;
         int patrol_index = 0;
         bool cautious = false;
