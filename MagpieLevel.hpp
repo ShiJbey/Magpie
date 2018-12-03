@@ -15,9 +15,14 @@
 namespace Magpie {
 
     struct Wall {
-        Wall(Scene::Object* obj) {
+
+        uint32_t room_number;
+
+        Wall(Scene::Object* obj, uint32_t room_number) {
             this->scene_object = obj;
+            this->room_number = room_number;
         }
+
         Scene::Object* scene_object;
     };
 
@@ -63,6 +68,7 @@ namespace Magpie {
         FloorTile*** get_floor_matrix();
         std::vector< Door* >* get_doors();
         std::vector< DisplayCase* >& get_displaycases();
+        void add_displaycase(DisplayCase* displaycase);
         
 
         void add_painting(uint32_t room_number, Painting painting);

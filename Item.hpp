@@ -61,4 +61,15 @@ namespace Magpie {
     protected:
     };
 
+    class Geode: public Item, public Stealable {
+    public:
+
+        const uint32_t SELLING_PRICE = 30;
+        
+        Geode ();
+        Geode (Scene::Object* obj_ptr);
+
+        
+    };
+
 }

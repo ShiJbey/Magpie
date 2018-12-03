@@ -170,7 +170,7 @@ namespace Magpie {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //set up basic OpenGL state:
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendEquation(GL_FUNC_ADD);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -470,7 +470,7 @@ namespace Magpie {
                     // check if the position has been visited
                     if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
                         // Swap out the program information
-                        if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
+                        if (game.get_level()->get_wall(pos.x, pos.y)->room_number != game.get_player()->get_current_room()) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
                             assert(wall != nullptr);
                             Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
@@ -480,6 +480,10 @@ namespace Magpie {
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
                             visited.push_back(pos);
                             transparent_walls.push_back(wall);
+                        }
+                        /*
+                        if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
+                            
                         }
                         else if(pos.x < player_pos_x && (game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
@@ -491,6 +495,7 @@ namespace Magpie {
                             visited.push_back(pos);
                             transparent_walls.push_back(wall);
                         }
+                        */
                     }
                 }
                 else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y)) {
@@ -586,6 +591,22 @@ namespace Magpie {
             }
         }
 
+        for (auto const &displaycase : game.get_level()->get_displaycases()) {
+            if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+                if (!displaycase->opened) {
+                    displaycase->on_click();
+                    return true;
+                }
+                else if (displaycase->opened && displaycase->geode != nullptr) {
+                    displaycase->geode->steal(game.get_player());
+                    displaycase->geode->get_scene_object()->active = false;
+                    scene.delete_object(displaycase->geode->get_scene_object());
+                    displaycase->geode = nullptr;
+                    return true;
+                }
+            }
+        }
+
         for (uint32_t i = 0; i < game.get_level()->get_doors()->size(); i++) {
             if ((*game.get_level()->get_doors())[i]->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
                 
@@ -608,7 +629,7 @@ namespace Magpie {
                         }
 
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
-                        
+                        return true;
                     }
 
                      if (door->room_b.x == (int)game.get_player()->get_position().x &&
@@ -628,9 +649,9 @@ namespace Magpie {
                         }
 
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
-                        
+                        return true;
                     }
-                    return true;
+                    
                 } else {
                     (*game.get_level()->get_doors())[i]->on_click();
                     animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);

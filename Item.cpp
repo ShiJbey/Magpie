@@ -90,3 +90,15 @@ Magpie::BoundingBox* Magpie::Painting::get_boundingbox() {
     this->bounding_box = new BoundingBox(this->scene_object->transform->position, glm::vec3(0.5f, 0.5f, 2.0f), glm::vec3(-0.5f, -0.5f, 0.0f));
     return bounding_box;
 };
+
+//////////////////////////////////////////////
+//                   GEODE                  //
+//////////////////////////////////////////////
+
+Magpie::Geode::Geode() : Geode(nullptr) {
+
+};
+
+Magpie::Geode::Geode(Scene::Object* obj_ptr) : Item(obj_ptr) {
+    this->selling_price = SELLING_PRICE;
+};
