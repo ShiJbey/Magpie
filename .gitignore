@@ -8,6 +8,7 @@ dist/server
 dist/server.exe
 dist/SDL2.dll
 kit-libs-win
+kit-libs-win/**
 kit-libs-osx
 kit-libs-linux
 .vscode

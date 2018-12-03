@@ -275,6 +275,7 @@ Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, Animate
         MeshBuffer::Mesh const &mesh = mesh_buffer->lookup(m);
         obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
         obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
+        return obj;
     });
 
     assert(model_group_transform != nullptr);
@@ -325,8 +326,8 @@ Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& 
                     MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
                     obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
                     obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-
-                    return;
+            
+                    return obj;
                 }
                 break;
             case 5:
@@ -349,7 +350,7 @@ Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& 
                     MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
                     obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
                     obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-                    return;
+                    return obj;
                 }
                 break;
             case 6:
@@ -372,7 +373,7 @@ Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& 
                     MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
                     obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
                     obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-                    return;
+                    return obj;
                 }
                 break;
             default:
@@ -381,6 +382,7 @@ Magpie::Door& Magpie::LevelLoader::create_front_door(Magpie::Door& door, Scene& 
         }
         // Delete the transform if it doesnt belong to any of the doors
         scene.delete_transform(t);
+        return (Scene::Object *)nullptr;
     });
     
 

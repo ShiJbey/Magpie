@@ -61,7 +61,7 @@ GLuint load_tex(std::string const &filename) {
     //GL_ERRORS();
 
     return tex;
-}
+};
 
 Load< GLuint > wood_tex(LoadTagDefault, [](){
     return new GLuint(load_tex(data_path("textures/wood.png")));
@@ -126,7 +126,7 @@ UI::UI(int object_id, int group_id) {
 
     //initialize inventory
     inventory = Inventory();
-}
+};
 
 void UI::consume_signal() {
     //get right signals
@@ -163,7 +163,7 @@ void UI::consume_signal() {
             displayScore += 10;
         }
     }
-}
+};
 
 void UI::stateChanger(char keyPressed) {
     if (keyPressed == 'i') {
@@ -194,7 +194,7 @@ void UI::stateChanger(char keyPressed) {
         //std::cout<<"state of map is now: "<<map.state<<std::endl;
         std::cout<<"state of inv is now: "<<inventory.state<<std::endl;
     }
-}
+};
 
 void UI::drawUI(Scene::Camera const *cam) {
     { //drawing setup
@@ -227,6 +227,7 @@ void UI::drawUI(Scene::Camera const *cam) {
         }
     //inventory.drawInv(camera);
     //map.drawMap(camera);
-}
+    }
+};
 
 

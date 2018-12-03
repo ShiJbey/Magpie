@@ -55,7 +55,7 @@ namespace Magpie {
 
         // Imports a character model from a file
         virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name, 
-            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+            std::function< Scene::Object* (Scene &, Scene::Transform *, std::string const &) > const &on_object);
 
         // Converts the names imported from the animation t-anim
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);

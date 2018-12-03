@@ -104,7 +104,7 @@ void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
 
 // Imports a character model from a file
 Scene::Transform* Magpie::AnimatedModel::load_model(Scene& scene, const Magpie::ModelData* model_data, std::string model_name, 
-            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
     return nullptr;
 };
 

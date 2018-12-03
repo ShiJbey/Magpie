@@ -42,7 +42,7 @@ namespace Magpie {
     };
 
     Scene::Transform* Magpie::Door::load_model(Scene& scene, const ModelData* model_data, std::string model_name,
-        std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+        std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
         
         std::vector< std::string > model_parts = { "_GRP", "door_", "frame_" };
 
