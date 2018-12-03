@@ -37,7 +37,7 @@
 #include <tuple>
 #include <algorithm>
 
-#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
 
 namespace Magpie {
 
@@ -54,19 +54,19 @@ namespace Magpie {
 
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
 
-        auto guard_start = game.get_level()->get_guard_start_positions();
-
-        for (auto i : guard_start) {
-            for (auto i2 : i.second) {
-               Guard* guard = create_guard(i2.second);
-               auto path = game.get_level()->get_guard_path(i.first, i2.first);
-               for (auto p : path) {
-                   std::cout << p.x << "," << p.y << std::endl;
-               }
-               guard->set_patrol_points(path);
-            }
-            std::cout << std::endl;
-        }
+//        auto guard_start = game.get_level()->get_guard_start_positions();
+//
+//        for (auto i : guard_start) {
+//            for (auto i2 : i.second) {
+//               Guard* guard = create_guard(i2.second);
+//               auto path = game.get_level()->get_guard_path(i.first, i2.first);
+//               for (auto p : path) {
+//                   std::cout << p.x << "," << p.y << std::endl;
+//               }
+//               guard->set_patrol_points(path);
+//            }
+//            std::cout << std::endl;
+//        }
 
 //        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));

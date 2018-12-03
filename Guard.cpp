@@ -84,7 +84,7 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
         std::cout << "size" << patrol_points.size() << std::endl;
         patrol_index = (patrol_index + 1) % patrol_points.size();
         std::cout << "NEXT PATROL POINT " << patrol_index << " (" << patrol_points[patrol_index].x << "," << patrol_points[patrol_index].y << ")" << std::endl;
-        setDestination(patrol_points[patrol_index]);
+        set_destination(patrol_points[patrol_index]);
         std::cout << "IDLE1" << std::endl;
         set_state((uint32_t) STATE::PATROLING);
         std::cout << "IDLE" << std::endl;
@@ -115,14 +115,14 @@ void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
     }
 
     if (state_duration > 1.5f) {
-        setDestination(interest_point);
+        set_destination(interest_point);
         set_state((uint32_t) STATE::PATROLING);
     }
 }
 
 void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
     if (state_duration > 1.5f) {
-        setDestination(interest_point);
+        set_destination(interest_point);
         set_state((uint32_t) STATE::CHASING);
     }
 }
@@ -150,7 +150,7 @@ void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
 
     if (state_duration > 4.0f) {
         patrol_index = 0;
-        setDestination(patrol_points[patrol_index]);
+        set_destination(patrol_points[patrol_index]);
         set_state((uint32_t) STATE::PATROLING);
         cautious = false;
     }
@@ -365,7 +365,7 @@ void Magpie::Guard::set_starting_point(glm::vec3 position) {
     starting_point = position;
 }
 
-void Magpie::Guard::setDestination(glm::vec2 destination) {
+void Magpie::Guard::set_destination(glm::vec2 destination) {
     std::cout << "Set Destination to" << destination.x << ", " << destination.y << std::endl;
     Path path =
     Magpie::Navigation::getInstance().findPath(

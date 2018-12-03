@@ -59,7 +59,7 @@ namespace Magpie {
 
         void set_starting_point(glm::vec3 position);
 
-        void setDestination(glm::vec2 destination);
+        void set_destination(glm::vec2 destination);
 
         void turnTo(glm::vec3 destination);
 
