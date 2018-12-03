@@ -1,4 +1,8 @@
+
 #pragma once
+
+#include "Scene.hpp"
+
 
 struct Map {
 
@@ -6,12 +10,9 @@ struct Map {
     Map();
     //destructor
     ~Map();
-    
-    //unlocks another area in the full floor plan map
-    void unlockArea();
 
     //draw the map
-    void drawMap();
+    void drawMap(Scene::Camera const *camera);
 
     //two different states, either ON for on screen or OFF for offscreen
     enum STATE {
@@ -21,6 +22,6 @@ struct Map {
     //initialize first state
     enum STATE state = OFF;
 
-    //all the parts of the map
-
+    //available areas on map, by default there is one area open
+    uint32_t unlockedAreas = 1;
 };

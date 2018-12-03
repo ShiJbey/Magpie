@@ -34,7 +34,7 @@ if $(OS) = NT { #Windows
 	LINKLIBS =
 		-L$(KIT_LIBS)/libpng/lib -lpng                      #libpng
 		-L$(KIT_LIBS)/zlib/lib -lz                          #zlib
-		-L$(FREETYPE)/ojbs -lfreetype                       #freetype
+		-L$(FREETYPE)/objs -lfreetype                       #freetype
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --static-libs` -framework OpenGL #SDL2
 		;
 } else if $(OS) = LINUX { #Linux
