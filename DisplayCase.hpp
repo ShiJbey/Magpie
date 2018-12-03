@@ -3,6 +3,7 @@
 #include "Clickable.hpp"
 #include "AnimatedModel.hpp"
 #include "Scene.hpp"
+#include "Item.hpp"
 
 namespace Magpie {
 
@@ -15,6 +16,10 @@ namespace Magpie {
         // NOTE::This is only used to manage the pointer to the
         //        group transform
         Scene::Object *scene_object;
+        Scene::Object *frame;
+        Scene::Object *glass;
+        Geode *geode;
+        bool opened;
 
         DisplayCase();
 
@@ -24,7 +29,7 @@ namespace Magpie {
 
         // AnimatedModel functions
         virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
-            std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
 
     };
 

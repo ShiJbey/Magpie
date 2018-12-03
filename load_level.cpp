@@ -128,7 +128,10 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > walls = {
         { 0, "wall_purple_MSH" },
-        { 1, "wall_skeleton_MSH" }
+        { 1, "wall_skeleton_MSH" },
+        { 2, "wall_clock_MSH" },
+        { 3, "wall_bulletin1_MSH" },
+        { 4, "wall_bulletin2_MSH" }
     };
 
     std::map<uint8_t, std::string > four_sided_corners = {
@@ -156,24 +159,34 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     };
 
     std::map<uint8_t, std::string > decorations = {
-        {0, "decoration_plant_MSH"}
+        {0, "decoration_plant_MSH"},
+        {1, "decoration_coatRack_MSH"},
+        {2, "decoration_redRope1_MSH"},
+        {3, "decoration_redRope2_MSH"},
+        {4, "decoration_redRope3_MSH"}
     };
 
     std::map<uint8_t, std::string > security_rooms = {
         {0, "security_table_MSH"},
         {1, "security_computer_MSH"},
         {2, "security_monitor1_MSH"},
-        {3, "security_monitor2_MSH"}
+        {3, "security_monitor2_MSH"},
+        {4, "security_locker_MSH"},
+        {5, "security_table2_MSH"}
     };
 
     std::map<uint8_t, std::string > offices = {
         {0, "office_desk1_MSH"},
-        {1, "office_desk2_MSH"}
+        {1, "office_desk2_MSH"},
+        {2, "office_bookshelf_MSH"}
     };
 
 
     std::map<uint8_t, std::string > storage = {
         {0, "storage_crate_MSH"},
+        {1, "storage_boxes1_MSH"},
+        {2, "storage_boxes2_MSH"},
+        {3, "storage_boxes3_MSH"}
     };
 
     std::map<uint8_t, std::string > chairs = {
@@ -181,6 +194,13 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
         {1, "chair_plasticRotated_MSH"},
         {2, "chair_office_MSH"},
     };
+
+    std::map<uint8_t, std::string > other = {
+        {0, "geode_normal_MSH"},
+        {1, "geode_bougie_MSH"}
+    };
+
+
 
     ret->insert({3, floors});
     ret->insert({4, doors});
@@ -197,6 +217,7 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     ret->insert({24, offices});
     ret->insert({25, storage});
     ret->insert({26, chairs});
+    ret->insert({69, other});
     
 
     return ret;
@@ -637,7 +658,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 obj->transform->name = "wall_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                level->set_wall(new Wall(obj), x, y);
+                level->set_wall(new Wall(obj, room_number), x, y);
                 
                 if (current_pixel.is_item_location()) {
                     level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
@@ -674,7 +695,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 std::string name = "2-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                           
+                level->set_wall(new Wall(obj, room_number), x, y);        
 
                 // rotate corners
                 if (x == 0) {
@@ -739,6 +760,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 std::string name = "3-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                level->set_wall(new Wall(obj, room_number), x, y);
 
                 // rotate corners
                 if (x == 0) {
@@ -779,6 +801,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 std::string name = "4-corner_" + std::to_string(i);
                 obj->transform->name = std::string(name);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                level->set_wall(new Wall(obj, room_number), x, y);
             }
 
             // Pedestal
@@ -814,10 +837,11 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                                 MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
                                 obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
                                 obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-                                
+                                return obj;
                             } else {
                                 scene.delete_transform(t);
                             }
+                            return (Scene::Object*)nullptr;
                         });
                         break;
                     case 1:
@@ -833,10 +857,11 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                                 MeshBuffer::Mesh const &mesh = building_meshes->lookup(m);
                                 obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
                                 obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
-                                
+                                return obj;
                             } else {
                                 scene.delete_transform(t);
                             }
+                            return (Scene::Object*)nullptr;
                         });
                         break;
                     default:
@@ -846,7 +871,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
                 displaycase->scene_object = scene.new_object(display_group);
                 displaycase->set_transform(&displaycase->scene_object->transform);
+                (*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 displaycase->set_position(glm::vec3((float)x, (float)y, 0.0f));
+                level->add_displaycase(displaycase);
+                // Place geode
+                Scene::Object* obj = get_mesh(x, y, 69, 0);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                displaycase->geode = new Geode(obj);
             }
             
 

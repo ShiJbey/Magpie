@@ -327,4 +327,7 @@ std::vector< Magpie::DisplayCase* >& Magpie::MagpieLevel::get_displaycases() {
     return displaycases;
 };
 
+void Magpie::MagpieLevel::add_displaycase(DisplayCase* displaycase) {
+    displaycases.push_back(displaycase);
+};
 

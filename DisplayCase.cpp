@@ -7,6 +7,7 @@ uint32_t Magpie::DisplayCase::instance_count = 0;
 Magpie::DisplayCase::DisplayCase() {
     this->instance_id = instance_count;
     instance_count++;
+    this->opened = false;
 };
 
 Magpie::BoundingBox* Magpie::DisplayCase::get_boundingbox() {
@@ -24,10 +25,14 @@ Magpie::BoundingBox* Magpie::DisplayCase::get_boundingbox() {
 
 void Magpie::DisplayCase::on_click() {
     std::cout << "Display Case Clicked" << std::endl;
+    glass->active = false;
+    frame->active = false;
+    opened = true;
+    (*transform)->rotation*= glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0, 0.0, 0.0));
 };
 
 Scene::Transform* Magpie::DisplayCase::load_model(Scene& scene, const Magpie::ModelData* model_data, std::string model_name,
-    std::function< void(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
+    std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
 
     std::vector< std::string > model_parts = { "_GRP", "glass_", "frame_" };
 
@@ -104,7 +109,15 @@ Scene::Transform* Magpie::DisplayCase::load_model(Scene& scene, const Magpie::Mo
         std::string name = std::string(model_data->names.begin() + m.name_begin, model_data->names.begin() + m.name_end);
 
         if (on_object) {
-            on_object(scene, hierarchy_transforms[m.transform], name);
+            Scene::Object *obj = on_object(scene, hierarchy_transforms[m.transform], name);
+                if (obj != nullptr) {
+                    if (obj->transform->name.find("frame") == std::string::npos) {
+                    this->frame = obj;
+                }
+                else if (obj->transform->name.find("glass") == std::string::npos) {
+                    this->glass = obj;
+                }
+            }
         }
     }
     

@@ -225,7 +225,6 @@ void UI::drawUI(Scene::Camera const *cam) {
         if (endGame == true) { //endgame countdown
             ;
         }
-    }
     //inventory.drawInv(camera);
     //map.drawMap(camera);
 }
