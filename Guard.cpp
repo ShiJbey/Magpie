@@ -230,7 +230,7 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
             glm::vec2(-1, 0)
     };
 
-    int count = 0;
+    uint32_t count = 0;
     result.push_back(p);
     glm::vec2 old_dir = glm::vec2(-1, -1);
     while (count < points.size()) {
