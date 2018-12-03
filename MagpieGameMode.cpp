@@ -37,7 +37,7 @@
 #include <tuple>
 #include <algorithm>
 
-#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
 
 namespace Magpie {
 
@@ -47,16 +47,37 @@ namespace Magpie {
         // Obtain camera positioning from blender scene
         setup_camera();
 
-        create_player(glm::vec3(7.0f, 6.0f, 0.0f));
-        game.get_player()->set_current_room(game.get_level()->get_tile_room_number(7.0f, 6.0f));
+        glm::vec3 player_position = game.get_level()->get_player_start_position();
 
-        create_guard(glm::vec3(7.0f, 8.0f, 0.0f));
-        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
-        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
+        std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
+        create_player(player_position);
+
+        game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
+
+//        auto guard_start = game.get_level()->get_guard_start_positions();
+//
+//        for (auto i : guard_start) {
+//            for (auto i2 : i.second) {
+//               Guard* guard = create_guard(i2.second);
+//               auto path = game.get_level()->get_guard_path(i.first, i2.first);
+//               for (auto p : path) {
+//                   std::cout << p.x << "," << p.y << std::endl;
+//               }
+//               guard->set_patrol_points(path);
+//            }
+//            std::cout << std::endl;
+//        }
+
+//        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
+//        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
+//        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
         game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
-        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
+//        game.get_guards()[0]->set_patrol_points(
+//                points
+//        );
+//        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
+//        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
 
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
 
@@ -275,6 +296,7 @@ namespace Magpie {
     Guard* MagpieGameMode::create_guard(glm::vec3 position) {
 
         Magpie::Guard* guard = new Guard();
+        guard->player = game.get_player();
 
         // Use one main transform and swap it to point between
         // one of the three other specific transforms
@@ -332,6 +354,7 @@ namespace Magpie {
 
         // Set the guard at the proper place
         guard->set_position(position);
+        guard->set_starting_point(position);
 
         // Add the guard to the game
         game.add_guard(guard);
