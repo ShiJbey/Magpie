@@ -110,6 +110,7 @@ CLIENT_NAMES =
 	Door
 	ui_shader_program
 	draw_freetype_text
+	DisplayCase
 	;
 
 if $(OS) = NT {

@@ -45,6 +45,9 @@ namespace Magpie {
 
     extern Load< Magpie::ModelData > door_green_model;
 
+    // FRONT DOOR
+    extern Load< Magpie::ModelData > front_door_model;
+
     // VISIBLE BOUNDING BOXES
     extern Load< MeshBuffer > bounding_box_mesh;
 

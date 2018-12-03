@@ -95,6 +95,10 @@ namespace Magpie {
 
     struct LevelLoader {
 
+        
+
+        static Door& create_front_door(Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position);
+        
         /**
          * Given amap of all the transforms in the game and a vector of transforms,
          * returns a fector of Transform pointers to transforms with the given names

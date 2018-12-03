@@ -10,10 +10,10 @@ namespace Magpie {
     public:
 
         enum class DIRECTION {
-            DOWN = 0,
-            LEFT,
-            UP,
+            UP = 0,
             RIGHT,
+            DOWN,
+            LEFT,
             //UP_RIGHT,
             //UP_LEFT,
             //DOWN_RIGHT,
@@ -52,7 +52,7 @@ namespace Magpie {
         bool at_destination;
         Path path;
         Path new_path;
-        bool is_new_path;
+        bool is_new_path = false;
         uint32_t next_destination_index = 0;
     };
 }

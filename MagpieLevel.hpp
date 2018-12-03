@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 #include "Clickable.hpp"
 #include "Player.hpp"
+#include "DisplayCase.hpp"
 #include "FloorTile.hpp"
 #include "Item.hpp"
 
@@ -61,6 +62,7 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
         FloorTile*** get_floor_matrix();
         std::vector< Door* >* get_doors();
+        std::vector< DisplayCase* >& get_displaycases();
         
 
         void add_painting(uint32_t room_number, Painting painting);
@@ -68,11 +70,14 @@ namespace Magpie {
 
         
         void set_player_start_position(glm::vec3 start_position);
+        glm::vec3 get_player_start_position();
         void add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position);
 
         // Adds a position to a guards path
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);
-        
+
+        std::map< uint32_t, std::map< uint32_t, glm::vec3 > >& get_guard_start_positions();
+
         // Retreives a guards path, given the room number of the guard and the guards number
         std::vector< glm::vec2 > get_guard_path(uint32_t room_number, uint32_t guard_number);
 
@@ -97,10 +102,11 @@ namespace Magpie {
         // Maps room_numbers to maps of guard numbers to starting positions
         std::map< uint32_t, std::map< uint32_t, glm::vec3 > > guard_start_positions;
 
-
-
         // Matrix off all the tiles that the user can move to
         std::vector< std::vector< bool > > movement_matrix;
+
+        // All the display cases placed in the game
+        std::vector< DisplayCase* > displaycases;
 
         // How many of each item should be placed
         uint32_t gems_to_place;

@@ -146,7 +146,7 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
 Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
     reset_visited_matrix();
     
-    std::cout << "Current Magpie Position: (x: " <<  start.x << " , y: " << start.y << " )" << std::endl;
+    std::cout << "Current Position: (x: " <<  start.x << " , y: " << start.y << " )" << std::endl;
     std::vector<glm::vec2> path_vector;
 
     // Implement BFS for path finding
@@ -160,14 +160,15 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
     uint64_t start_y = trunc(start.y);
 //    double decimal_y = start.y - trunc(start.y);
 
-
-
-
     frontier.emplace_back(glm::uvec2(start_x, start_y));
 
     visited_matrix[start_x][start_y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
 
+    bool reach = false;
     // Perform BFS
+
+    std::cout << can_move_to(start_x + 1, start_y) << std::endl;
+
     while( !frontier.empty() ) {
 
         glm::vec2 current = frontier.front();
@@ -177,7 +178,7 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
         std::vector<glm::vec2> adjacent_tiles = get_adjacent(current);
 
         for (auto it = adjacent_tiles.begin(); it != adjacent_tiles.end(); it++) {
-            
+
             bool position_visited = std::get<0>(visited_matrix[(uint32_t)it->x][(uint32_t)it->y]);
             float distance_from_start =  std::get<2>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]) + glm::length(*it - current);
 
@@ -190,18 +191,23 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
             }
 
             if (*it == destination) {
+                std::cout << "GET TARGET" << std::endl;
+                reach = true;
                 break;
             }
         }
     }
 
+    std::cout << "FINISH WHILE" << std::endl;
+
     // Reverse iterate to get a path
     glm::vec2 current = destination;
-    while (current != glm::vec2(-1, -1)) {
+    while (reach && current != glm::vec2(-1, -1)) {
         path_vector.push_back(current);
         current = std::get<1>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]);
     }
-    
+
+
     //path_vector.pop_back();
     std::reverse(path_vector.begin(), path_vector.end());
     for (glm::vec2 p : path_vector) {

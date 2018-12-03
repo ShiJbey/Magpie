@@ -126,14 +126,14 @@ void Inventory::updateInv(float elapse) {
             std::cout<<"invpos X initially is: "<<inv_trans->position.x<<std::endl;
         }
         */
-        if (state == OUT) {
+        if (state == S_OUT) {
             if (invX <= xInLim) { //keep rolling it out
                 invX += delX;
             }
             //state change to keep it out
             else {state = IDLEOUT;}
         }
-        else if (state == IN) {
+        else if (state == S_IN) {
             if (invX >= xOutLim) { //keep rolling it in
                 invX -= delX;
             }
@@ -168,5 +168,5 @@ void Inventory::drawInv(Scene::Camera const *cam){
         
     //avoid clipping through things
     glClear(GL_DEPTH_BUFFER_BIT);
-    inv->draw(cam);
+//    inv->draw(cam);
 }

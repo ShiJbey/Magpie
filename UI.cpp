@@ -169,13 +169,13 @@ void UI::stateChanger(char keyPressed) {
     if (keyPressed == 'i') {
         //no matter what inv is map should not be out
         map.state = Map::OFF;
-        if (inventory.state==Inventory::IN ||
+        if (inventory.state==Inventory::S_IN ||
             inventory.state == Inventory::IDLEIN) {
-            inventory.state = Inventory::OUT; //inv scrolling reverses direction
+            inventory.state = Inventory::S_OUT; //inv scrolling reverses direction
         }
-        else if (inventory.state==Inventory::OUT ||
+        else if (inventory.state==Inventory::S_OUT ||
                 inventory.state==Inventory::IDLEOUT) {
-            inventory.state = Inventory::IN; //inv scrolling reverses direction
+            inventory.state = Inventory::S_IN; //inv scrolling reverses direction
         }
         //std::cout<<"state of map is now: "<<map.state<<std::endl;
         std::cout<<"state of inv is now: "<<inventory.state<<std::endl;
@@ -219,15 +219,15 @@ void UI::drawUI(Scene::Camera const *cam) {
         things that will be drawn by ui->draw() [security level gauge]
         things that need to be drawn by draw_text [score, endgame countdown]
         */
-        ui->draw(camera);
+        //ui->draw(camera);
         //score
         ;
         if (endGame == true) { //endgame countdown
             ;
         }
     }
-    inventory.drawInv(camera);
-    map.drawMap(camera);
+    //inventory.drawInv(camera);
+    //map.drawMap(camera);
 }
 
 
