@@ -1,6 +1,10 @@
 
-#ifndef INVENTORY_H
-#define INVENTORY_H
+#pragma once
+
+#include <cstdint>
+#include "Scene.hpp"
+
+
 struct Inventory {
 
     //constructor
@@ -9,14 +13,27 @@ struct Inventory {
     ~Inventory();
 
     //draw inventory
-    void drawInv();
+    void drawInv(Scene::Camera const *camera);
+
+    //update inventory
+    void updateInv(float elapse);
     
-    enum STATE { S_OUT, S_IN, S_IDLE };
-
+    //four states, OUT for rolling out, IN for rolling in,
+    //IDLEIN for staying in, IDLEOUT for staying out
+    enum STATE{
+        IN,
+        OUT,
+        IDLEIN,
+        IDLEOUT
+    };
     //set initial state of inventory to idle
-    enum STATE state = S_IDLE;
+    enum STATE state = IDLEIN;
 
+    //TODO: find a good val for these and tweak them
+    float xOutLim = -2.0f;
+    float xInLim = -1.0f;
+    float delX = 0.5f; //the amount that inventory will slide in or out each time
+    float scroll_countdown = 1.0f;
+
+    uint32_t printouthelp = 1;
 };
-
-
-#endif
