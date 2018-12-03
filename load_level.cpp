@@ -128,7 +128,10 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > walls = {
         { 0, "wall_purple_MSH" },
-        { 1, "wall_skeleton_MSH" }
+        { 1, "wall_skeleton_MSH" },
+        { 2, "wall_clock_MSH" },
+        { 3, "wall_bulletin1_MSH" },
+        { 4, "wall_bulletin2_MSH" }
     };
 
     std::map<uint8_t, std::string > four_sided_corners = {
@@ -156,24 +159,33 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     };
 
     std::map<uint8_t, std::string > decorations = {
-        {0, "decoration_plant_MSH"}
+        {0, "decoration_plant_MSH"},
+        {1, "decoration_coatRack_MSH"},
+        {2, "decoration_redRope1_MSH"},
+        {3, "decoration_redRope2_MSH"},
+        {4, "decoration_redRope3_MSH"}
     };
 
     std::map<uint8_t, std::string > security_rooms = {
         {0, "security_table_MSH"},
         {1, "security_computer_MSH"},
         {2, "security_monitor1_MSH"},
-        {3, "security_monitor2_MSH"}
+        {3, "security_monitor2_MSH"},
+        {4, "security_locker_MSH"}
     };
 
     std::map<uint8_t, std::string > offices = {
         {0, "office_desk1_MSH"},
-        {1, "office_desk2_MSH"}
+        {1, "office_desk2_MSH"},
+        {2, "office_bookshelf_MSH"}
     };
 
 
     std::map<uint8_t, std::string > storage = {
         {0, "storage_crate_MSH"},
+        {1, "storage_boxes1_MSH"},
+        {2, "storage_boxes2_MSH"},
+        {3, "storage_boxes3_MSH"}
     };
 
     std::map<uint8_t, std::string > chairs = {
