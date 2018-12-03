@@ -171,7 +171,8 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
         {1, "security_computer_MSH"},
         {2, "security_monitor1_MSH"},
         {3, "security_monitor2_MSH"},
-        {4, "security_locker_MSH"}
+        {4, "security_locker_MSH"},
+        {5, "security_table2_MSH"}
     };
 
     std::map<uint8_t, std::string > offices = {
