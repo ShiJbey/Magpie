@@ -8,6 +8,7 @@
 #include "MagpieGame.hpp"
 #include "draw_freetype_text.hpp"
 #include "AnimatedModel.hpp"
+#include "startmenu.hpp"
 
 #include "TutorialMode.hpp"
 #include "Load.hpp"
@@ -51,6 +52,7 @@ namespace Magpie {
 
         std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
         create_player(player_position);
+        //create_player(glm::vec3(4.0f, 8.0f, 0.0f));
 
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
 
@@ -113,11 +115,23 @@ namespace Magpie {
                 }
             }
 
-//            for (auto const &room: game.get_level()->get_paintings()) {
-//                for (auto &painting: room.second) {
-//                    //painting->update_animation(elapsed);
-//                }
-//            }
+            for (auto const &room: game.get_level()->get_paintings()) {
+                for (auto &painting: room.second) {
+                    painting->update_animation(elapsed);
+                }
+            }
+
+            if(game.get_level()->pink_card != nullptr) {
+                game.get_level()->pink_card->update_animation(elapsed);
+            }
+
+            if(game.get_level()->green_card != nullptr) {
+                game.get_level()->green_card->update_animation(elapsed);
+            }
+
+            if(game.get_level()->master_key != nullptr) {
+                game.get_level()->master_key->update_animation(elapsed);
+            }
 
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
@@ -241,7 +255,7 @@ namespace Magpie {
         }
 
         {
-            //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 0.3f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         }
 
         GL_ERRORS();
@@ -530,6 +544,7 @@ namespace Magpie {
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
                             wall->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
+                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].program = 0;
                             visited.push_back(pos);
                             transparent_walls.push_back(wall);
                         }
@@ -665,11 +680,35 @@ namespace Magpie {
             }
         }
 
+        if(game.get_level()->pink_card != nullptr) {
+            if (game.get_level()->pink_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->pink_card->get_scene_object()->active) {
+                game.get_level()->pink_card->on_click();
+                game.get_player()->has_pink_card = true;
+            }
+        }
+
+        if(game.get_level()->green_card != nullptr) {
+            if (game.get_level()->green_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->green_card->get_scene_object()->active) {
+                game.get_level()->green_card->on_click();
+                game.get_player()->has_green_card = true;
+            }
+        }
+
+        if(game.get_level()->master_key != nullptr) {
+            if (game.get_level()->master_key->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->master_key->get_scene_object()->active) {
+                game.get_level()->master_key->on_click();
+                game.get_player()->has_master_key = true;
+            }
+        }
+
         for (uint32_t i = 0; i < game.get_level()->get_doors()->size(); i++) {
             if ((*game.get_level()->get_doors())[i]->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
-                
-                if ((*game.get_level()->get_doors())[i]->opened) {
-                    Door* door = (*game.get_level()->get_doors())[i];
+                Door* door = (*game.get_level()->get_doors())[i];
+                if (door->opened) {
+                    
                     // Find the position in the next room
                     auto room_iter = door->rooms.find(game.get_player()->get_current_room());
                     if (room_iter!= door->rooms.end()) {
@@ -689,7 +728,9 @@ namespace Magpie {
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
                         return true;
                     }
-                } else {
+                } else if ((door->access_level == Door::ACCESS_LEVEL::PINK && game.get_player()->has_pink_card)
+                            || (door->access_level == Door::ACCESS_LEVEL::GREEN && game.get_player()->has_green_card)
+                            || door->access_level == Door::ACCESS_LEVEL::NORMAL){
                     (*game.get_level()->get_doors())[i]->on_click();
                     animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
                     return true;
@@ -746,7 +787,6 @@ namespace Magpie {
         return handled;
     };
 
-
     void MagpieGameMode::show_tutorial() {
         std::shared_ptr< TutorialMode > tutorial = std::make_shared< TutorialMode >();
 
@@ -755,4 +795,25 @@ namespace Magpie {
 
         Mode::set_current(tutorial);
     }
+
+/*
+    void MagpieGameMode::open_start_menu() {
+        std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >();
+
+        std::shared_ptr< Mode > gameMode = shared_from_this();
+        menu->background = gameMode;
+
+        menu->choices.emplace_back("START GAME", [gameMode](){
+            Mode::set_current(gameMode);
+        });
+        menu->choices.emplace_back("QUIT", [](){
+            Mode::set_current(nullptr);
+        });
+
+        menu->selected = 1;
+
+        Mode::set_current(menu);
+    }
+    */
+
 }

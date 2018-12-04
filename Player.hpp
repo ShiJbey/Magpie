@@ -87,6 +87,10 @@ namespace Magpie {
         uint32_t get_score();
         uint32_t get_current_room();
 
+        // Keys placed in level
+        bool has_green_card = false;
+        bool has_pink_card = false;
+        bool has_master_key = false;
 
     protected:
 
