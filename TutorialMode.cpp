@@ -99,7 +99,7 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
 		window_anchor.x = ((anchor.x + aspect) / (2*aspect)) * viewport[2];
 		window_anchor.y = ((anchor.y + 1) / 2) * viewport[3];
 
-		RenderText(tutorial_font.value, text, window_anchor.x, window_anchor.y, font_scale, glm::vec4(0.f,1.f,0.f,1.f));
+		RenderText(tutorial_font.value, text, window_anchor.x, window_anchor.y, font_scale, glm::vec4(1.f,1.f,1.f,1.f));
 		anchor.y -= padding;
     };
 
@@ -114,13 +114,14 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
 	font_height = 0.04f;
 	padding = 0.2f;
 	write_line("BOXES disguise you from guards");
-    draw_object("$", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+    draw_object("$", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);
+    draw_object("D", glm::vec2(start.x + tab/3 + 0.18f, anchor.y + padding - icon_offset), 0.1f);
 	write_line("DOG TREATS distract guards");
-	draw_object("%", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+    draw_object("SPACE", glm::vec2(start.x + tab/5, anchor.y + padding - icon_offset), 0.08f);
 	write_line("KEY unlock display cases without breaking them");
-    draw_object("&", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+    draw_object("&(", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);
 	write_line("KEYCARDS unlock doors");
-	draw_object("^", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+	draw_object("^)", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);
     anchor.y -= section_break;
 
 	anchor.x = start.x;

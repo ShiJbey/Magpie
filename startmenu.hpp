@@ -24,7 +24,7 @@ namespace Magpie {
 
     struct EndMenu : public MenuMode {
         EndMenu() {
-            choices.emplace_back("GAME OVER!");
+            choices.emplace_back("GAME OVER");
             selected = 1;
         }
     };
