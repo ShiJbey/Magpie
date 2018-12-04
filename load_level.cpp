@@ -74,6 +74,10 @@ bool Magpie::PixelData::is_wall_corner_door() {
     return mesh_id == 4 || (mesh_id >= 16 && mesh_id <= 19);
 };
 
+bool Magpie::PixelData::is_corner_3() {
+    return get_mesh_id() == 18;
+};
+
 bool Magpie::PixelData::walls_to_left_and_right(std::vector< Magpie::PixelData > level_pixels, uint32_t level_width, uint32_t x, uint32_t y) {
     PixelData pixel_to_left = level_pixels[(y * level_width) + (x - 1)];
     PixelData pixel_to_right = level_pixels[(y * level_width) + (x + 1)];
@@ -686,7 +690,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     // Do Nothing
                 }
                 else if (y == level_data->level_length - 1) {
-                    obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                    //obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 }
                 else {
                     // Get the meshes that surround this wall
@@ -804,6 +808,10 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         }
                     }
                 }
+
+                if (current_pixel.is_item_location()) {
+                    level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
+                }
             }
 
             // 4-Corner
@@ -882,7 +890,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
                 displaycase->scene_object = scene.new_object(display_group);
                 displaycase->set_transform(&displaycase->scene_object->transform);
-                (*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                //(*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 displaycase->set_position(glm::vec3((float)x, (float)y, 0.0f));
                 level->add_displaycase(displaycase);
                 // Place geode
@@ -929,6 +937,26 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             Gem* gem = new Gem(obj);
             obj->transform->name = "Gem" + std::to_string(gem->get_instance_id());
             level->add_gem(1, gem);    
+        }
+    };
+
+    for (auto const &room : *(level->get_potential_wall_locations())) {
+        for (auto const &location: room.second) {
+            std::cout << "Making Painting" << std::endl;
+            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, 0);
+            assert(obj != nullptr);
+            obj->transform->rotation = location->rotation;
+            //obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
+            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+            //obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            PixelData pd = level_data->pixel_data[(uint32_t)location->position.y * level_data->level_width + (uint32_t)location->position.x];
+            if(pd.is_corner_3()) {
+                printf("Rotating extra\n");
+                obj->transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+            }
+            Painting* painting = new Painting(obj);
+            obj->transform->name = "Painting" + std::to_string(painting->get_instance_id());
+            level->add_painting(1, painting);    
         }
     };
 

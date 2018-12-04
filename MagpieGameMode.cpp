@@ -115,6 +115,12 @@ namespace Magpie {
                 }
             }
 
+            for (auto const &room: game.get_level()->get_paintings()) {
+                for (auto &painting: room.second) {
+                    painting->update_animation(elapsed);
+                }
+            }
+
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
         
@@ -234,7 +240,7 @@ namespace Magpie {
         }
 
         {
-            //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 0.3f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         }
 
         GL_ERRORS();

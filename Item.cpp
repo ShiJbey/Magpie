@@ -86,6 +86,8 @@ Magpie::Painting::Painting(): Magpie::Painting(nullptr) {
 
 Magpie::Painting::Painting (Scene::Object* obj_ptr) : Item(obj_ptr) {
     this->selling_price = Painting::SELLING_PRICE;
+    set_transform(&obj_ptr->transform);
+    AnimatedModel::instance_id = Item::instance_id;
 };
 
 void Magpie::Painting::on_click() {
@@ -103,6 +105,17 @@ Magpie::BoundingBox* Magpie::Painting::get_boundingbox() {
     return bounding_box;
 };
 
+void Magpie::Painting::update_animation(float elapsed) {
+    osc_tick += elapsed;
+    if (osc_tick >= (2.0f * 3.14f))
+        osc_tick = 0.0f;
+    //std::cout << "pizza" << std::endl;
+    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+    //(*transform)->position.x = std::sin(osc_tick * 3) * 0.1f;
+    (*transform)->rotation *= glm::angleAxis(glm::radians(std::sin(osc_tick * 3.0f) * 10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+};
+
+
 //////////////////////////////////////////////
 //                   GEODE                  //
 //////////////////////////////////////////////
@@ -113,4 +126,15 @@ Magpie::Geode::Geode() : Geode(nullptr) {
 
 Magpie::Geode::Geode(Scene::Object* obj_ptr) : Item(obj_ptr) {
     this->selling_price = SELLING_PRICE;
+    set_transform(&obj_ptr->transform);
+    AnimatedModel::instance_id = Item::instance_id;
+};
+
+void Magpie::Geode::update_animation(float elapsed) {
+    osc_tick += elapsed;
+    if (osc_tick >= (2.0f * 3.14f))
+        osc_tick = 0.0f;
+    //std::cout << "pizza" << std::endl;
+    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+    (*transform)->rotation *= glm::angleAxis(glm::radians(std::sin(osc_tick * 3.0f) * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 };
