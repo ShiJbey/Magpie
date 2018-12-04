@@ -33,7 +33,7 @@ namespace Magpie {
     };
 
 
-    class Gem : public Item, public Clickable, public Stealable {
+    class Gem : public Item, public Clickable, public Stealable, public AnimatedModel {
     public:
         const uint32_t SELLING_PRICE = 10;
 
@@ -41,12 +41,14 @@ namespace Magpie {
         Gem(Scene::Object* obj);
         BoundingBox* get_boundingbox();
         void on_click();
+        virtual void update_animation(float elapsed);
     protected:
+        float osc_tick = 0.0f;
 
         
     };
 
-    class Painting: public Item, public Clickable, public Stealable {
+    class Painting: public Item, public Clickable, public Stealable, public AnimatedModel {
     public:
 
         const uint32_t SELLING_PRICE = 10;
@@ -57,17 +59,22 @@ namespace Magpie {
         BoundingBox* get_boundingbox();
 
         void on_click();
-
+        virtual void update_animation(float elapsed);
     protected:
+        float osc_tick = 0.0f;
     };
 
-    class Geode: public Item, public Stealable {
+    class Geode: public Item, public Stealable, public AnimatedModel {
     public:
 
         const uint32_t SELLING_PRICE = 30;
         
         Geode ();
         Geode (Scene::Object* obj_ptr);
+
+        virtual void update_animation(float elapsed);
+    protected:
+        float osc_tick = 0.0f;
 
         
     };

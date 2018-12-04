@@ -1,7 +1,8 @@
 
 //#include "SignalQueue.h"
 #include "UI.h"
-#include <iostream>
+#include <string>
+#include "draw_freetype_text.hpp"
 
 #include "Load.hpp"
 #include "MeshBuffer.hpp"
@@ -196,7 +197,7 @@ void UI::stateChanger(char keyPressed) {
     }
 };
 
-void UI::drawUI(Scene::Camera const *cam) {
+void UI::drawUI(Scene::Camera const *cam, glm::uvec2 const &drawable_size) {
     { //drawing setup
         //light the map
         //set up light positions:
@@ -220,8 +221,6 @@ void UI::drawUI(Scene::Camera const *cam) {
         things that need to be drawn by draw_text [score, endgame countdown]
         */
         //ui->draw(camera);
-        //score
-        ;
         if (endGame == true) { //endgame countdown
             ;
         }
