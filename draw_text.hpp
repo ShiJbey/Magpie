@@ -12,5 +12,8 @@ void draw_text(std::string const &text, glm::vec2 const &anchor, float height, g
 //This version uses an arbitrary matrix transformation on characters of height 1.0f anchored at (0,0):
 void draw_text(std::string const &text, glm::mat4 const &transform, glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
+//Draws meshes assigned to characters
+void draw_object(std::string const &text, glm::vec2 const &anchor, float height);
+
 //compute the width drawn by 'draw_text' for a string:
 float text_width(std::string const &text, float height);
