@@ -18,8 +18,8 @@ void Magpie::Guard::consume_signal() {
 };
 
 void Magpie::Guard::update(float elapsed) {
-    update_state(elapsed);
     walk(elapsed);
+    update_state(elapsed);
     animation_manager->update(elapsed);
 };
 
@@ -35,8 +35,13 @@ void Magpie::Guard::update_state(float elapsed) {
 
     state_duration += elapsed;
 
+    if (glm::distance(get_position(), player->get_position()) < 0.1) {
+        player->game_over = true;
+    }
+
     // Check the guard's sight
     enum SIGHT view_state = (enum SIGHT) check_view();
+
 
     switch ((enum STATE) current_state) {
         case STATE::IDLE:
@@ -68,12 +73,14 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
     cautious = false;
 
     if (view_state == SIGHT::MAGPIE_ALERT) {
+        std::cout << "IDLE -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
         return;
     }
 
     if (view_state == SIGHT::MAGPIE_NOTICE) {
+        std::cout << "IDLE -> NOTICE" << std::endl;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
         return;
@@ -81,25 +88,23 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
 
     if (state_duration > 1.5f) {
         if (patrol_points.size() <= 1) return;
-        std::cout << "size" << patrol_points.size() << std::endl;
         patrol_index = (patrol_index + 1) % patrol_points.size();
-        std::cout << "NEXT PATROL POINT " << patrol_index << " (" << patrol_points[patrol_index].x << "," << patrol_points[patrol_index].y << ")" << std::endl;
         set_destination(patrol_points[patrol_index]);
-        std::cout << "IDLE1" << std::endl;
         set_state((uint32_t) STATE::PATROLING);
-        std::cout << "IDLE" << std::endl;
     }
 
 }
 
 void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
     if (view_state == SIGHT::MAGPIE_ALERT) {
+        std::cout << "PATROL -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
         return;
     }
 
     if (view_state == SIGHT::MAGPIE_NOTICE && !cautious) {
+        std::cout << "PATROL -> CAUTIOUS" << std::endl;
         cautious = true;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
@@ -109,71 +114,77 @@ void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
 
 void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
     if (view_state == SIGHT::MAGPIE_ALERT) {
+        std::cout << "CAUTIOUS-> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
         return;
-    }
-
-    if (state_duration > 1.5f) {
-        set_destination(interest_point);
-        set_state((uint32_t) STATE::PATROLING);
     }
 }
 
 void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
     if (state_duration > 1.5f) {
-        set_destination(interest_point);
+        std::cout << "ALERT->CHASING" << std::endl;
         set_state((uint32_t) STATE::CHASING);
+        Magpie::Guard::set_destination(glm::vec2(player->get_position()));
     }
 }
 
 void Magpie::Guard::handle_state_chasing(enum SIGHT view_state) {
-    if (view_state != SIGHT::NOTHING) {
-        set_state((uint32_t) STATE::CONFUSED);
-        return;
+//    if (view_state == SIGHT::NOTHING) {
+//        std::cout << "CHASING -> CONFUSED" << std::endl;
+//        set_state((uint32_t) STATE::CONFUSED);
+//        return;
+//    }
+    if (state_duration > 1.5f) {
+        set_state((uint32_t) STATE::CHASING);
+        set_destination(player->get_position());
     }
 }
 
 void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
 
     if (view_state == SIGHT::MAGPIE_ALERT) {
+        std::cout << "CONFUSED -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
+        set_destination(interest_point);
         return;
     }
 
     if (view_state == SIGHT::MAGPIE_NOTICE) {
+        std::cout << "CONFUSED -> NOTICE" << std::endl;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
+        set_destination(interest_point);
         return;
     }
 
     if (state_duration > 4.0f) {
-        patrol_index = 0;
-        set_destination(patrol_points[patrol_index]);
-        set_state((uint32_t) STATE::PATROLING);
+//        patrol_index = 0;
+//        set_destination(patrol_points[patrol_index]);
+//        set_state((uint32_t) STATE::PATROLING);
         cautious = false;
     }
 }
 
 uint32_t Magpie::Guard::check_view() {
-    return (uint32_t)SIGHT::NOTHING;
+    if (player->is_disguised()) return (uint32_t)SIGHT::NOTHING;
 
     glm::vec3 v = glm::vec3(board_position.x, board_position.y, 0) - player->get_position();
 
     glm::vec3 o_v3;
 
     switch (orientation) {
-        case DIRECTION::UP:
+        case DIRECTION::DOWN:
             o_v3 = glm::vec3(-1.0, -1.0, 0.0);
             break;
-        case DIRECTION::DOWN:
+        case DIRECTION::UP:
             o_v3 = glm::vec3(1.0, 1.0, 0.0);
             break;
-        case DIRECTION::RIGHT:
+        case DIRECTION::LEFT:
             o_v3 = glm::vec3(-1.0, 1.0, 0.0);
             break;
-        case DIRECTION::LEFT:
+        case DIRECTION::RIGHT:
             o_v3 = glm::vec3(1.0, -1.0, 0.0);
             break;
     }
@@ -181,12 +192,8 @@ uint32_t Magpie::Guard::check_view() {
     glm::vec3 vv = v * o_v3;
 
 
-    float x = vv.x;
-    float y = vv.y;
-
-    if (orientation == DIRECTION::UP || orientation == DIRECTION::DOWN) {
-        x = abs(x);
-    }
+    float x = -vv.x;
+    float y = -vv.y;
 
     if (orientation == DIRECTION::LEFT || orientation == DIRECTION::RIGHT) {
         y = abs(y);
@@ -196,7 +203,11 @@ uint32_t Magpie::Guard::check_view() {
         y = t;
     }
 
+    if (orientation == DIRECTION::UP || orientation == DIRECTION::DOWN) {
+        x = abs(x);
+    }
 //    std::cout << "O:" << (uint32_t)orientation <<  " o_v:" << o_v3.x << "," << o_v3.y << " v:" << x << "," << y << " vv:" << vv.x << "," << vv.y << std::endl;
+//    std::cout << (uint32_t)orientation << "  " << current_state << ", " << interest_point.x << "," << interest_point.y << std::endl;
 
     if (x <= 2 && y < 4 && y > 2) {
         return (uint32_t) SIGHT::MAGPIE_NOTICE;
@@ -234,7 +245,6 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
     result.push_back(p);
     glm::vec2 old_dir = glm::vec2(-1, -1);
     while (count < points.size()) {
-        std::cout << "x:" << p.x << " y:" << p.y << std::endl;
         count += 1;
         for (int i = 0; i < 4; i++) {
             // Won't turn back
@@ -249,7 +259,6 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
                 }
 
                 if (dir[i] != old_dir) {
-                    std::cout << "turn x:" << p.x << " y:" << p.y << std::endl;
                     old_dir = dir[i];
                     if (result[0] != p) result.push_back(p);
                     p = p + dir[i];
@@ -263,13 +272,6 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
 
     if (result.size() == 1 && result[0] != p) result.push_back(p);
 
-    std::cout << "RESULT" << std::endl;
-    for (auto i : result) {
-        std::cout << "x:" << i.x << " y:" << i.y << std::endl;
-    }
-
-    std::cout << std::endl;
-
     this->patrol_points = result;
 }
 
@@ -278,36 +280,52 @@ void Magpie::Guard::interact() {
 
 }
 
+void Magpie::Guard::set_model_orientation(uint32_t dir) {
+   switch(dir) {
+        case (uint32_t)GameAgent::DIRECTION::RIGHT :
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+//           std::cout << "DEBUG:: Orienting right" << std::endl;
+            break;
+        case (uint32_t)GameAgent::DIRECTION::LEFT :
+//            std::cout << "DEBUG:: Orienting left" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::UP :
+//            std::cout << "DEBUG:: Orienting up" << std::endl;
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case (uint32_t)GameAgent::DIRECTION::DOWN:
+//            std::cout << "DEBUG:: Orienting down" << std::endl;
+            (*transform)->rotation = original_rotation;
+            break;
+        default:
+            std::cout << "ERROR:: Invalid orientation" << std::endl;
+            break;
+    }
+}
 
 void Magpie::Guard::walk(float elapsed) {
 
     if (
             current_state == (uint32_t)STATE::IDLE ||
-            current_state == (uint32_t)STATE::CAUTIOUS ||
             current_state == (uint32_t)STATE::ALERT ||
             current_state == (uint32_t)STATE::CONFUSED
     ) return;
 
     if (is_new_path) {
+        std::cout << "NEW PATH" << std::endl;
         is_new_path = false;
         path = new_path;
 
         next_destination_index = 0;
 
-        printf("=====Starting on a new path=====\n");
-        printf("\tBeginning Destination Index: %d\n", next_destination_index);
-
 		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index], 0.0f);
         next_destination_index++;
         current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
 
-        printf("\t#### Destination Set ####\n");
-        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-        printf("\tNext Destination Index is now: %d\n", next_destination_index);
-
         accumulate_time = 0;
-		turnTo(current_destination);
-		set_model_orientation((uint32_t)orientation);
+		Magpie::Guard::turnTo(current_destination);
+		Magpie::Guard::set_model_orientation((uint32_t)orientation);
 		return;
     }
 
@@ -331,6 +349,10 @@ void Magpie::Guard::walk(float elapsed) {
     if (vector_to.x != 0) vector_to.x = vector_to.x / abs(vector_to.x);
     if (vector_to.y != 0) vector_to.y = vector_to.y / abs(vector_to.y);
 
+    movespeed = 1.0f;
+
+    if (current_state == (uint32_t)STATE::CHASING) movespeed = 2.5f;
+
 	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
 
 	glm::vec3 current_position = starting_point + glm::vec3(moving_distance, 0.0f);
@@ -345,15 +367,13 @@ void Magpie::Guard::walk(float elapsed) {
         } else {
             next_destination_index++;
         }
-
-        printf("\t#### Destination Set ####\n");
-            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-            printf("\tNext Destination Index is now: %d\n", next_destination_index);
-            turnTo(current_destination);
-            set_model_orientation((uint32_t)orientation);
+//        printf("\t#### Destination Set ####\n");
+//            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+//            printf("\tNext Destination Index is now: %d\n", next_destination_index);
+            Magpie::Guard::turnTo(current_destination);
+            Magpie::Guard::set_model_orientation((uint32_t)orientation);
 	}
-
-    set_position(current_position);
+	set_position(current_position);
 };
 
 void Magpie::Guard::set_position(glm::vec3 position) {
@@ -366,46 +386,49 @@ void Magpie::Guard::set_starting_point(glm::vec3 position) {
 }
 
 void Magpie::Guard::set_destination(glm::vec2 destination) {
-    std::cout << "Set Destination to" << destination.x << ", " << destination.y << std::endl;
-    Path path =
+    std::cout << "Guard Set Destination to" << destination.x << ", " << destination.y << std::endl;
+
+    if (destination == last_destination) return;
+    last_destination = destination;
+
+    Path p =
     Magpie::Navigation::getInstance().findPath(
             glm::vec2(get_position().x, get_position().y),
             glm::vec2(destination.x, destination.y)
     );
 
-    set_path(path);
+    Magpie::GameAgent::set_path(p);
 
-    std::cout << "Set Path" << destination.x << ", " << destination.y << std::endl;
+    std::cout << "Set Path" << this->path.get_path().size() << std::endl;
 
-    if (path.get_path().size() > 0) {
-        is_new_path = true;
-        //TODO:
-        set_state((uint32_t) STATE::PATROLING);
+   if (this->path.get_path().size() > 0) {
     } else {
-        set_state((uint32_t) STATE::IDLE);
+//        set_state((uint32_t) STATE::IDLE);
     }
 }
 
 void Magpie::Guard::turnTo(glm::vec3 destination) {
 
     float x_difference = destination.x - get_position().x;
+    x_difference = -x_difference;
     float y_difference = destination.y - get_position().y;
+    y_difference = -y_difference;
 
     // WARNING::Only handles movement in cardinal directions
     if (x_difference > 0) {
-        std::cout << "DEBUG:: Facing right" << std::endl;
+//        std::cout << "DEBUG:: Facing right" << std::endl;
         orientation = DIRECTION::LEFT;
     }
     else if (x_difference < 0) {
-        std::cout << "DEBUG:: Facing left" << std::endl;
+//        std::cout << "DEBUG:: Facing left" << std::endl;
         orientation = DIRECTION::RIGHT;
     }
     else {
         if (y_difference > 0) {
-            std::cout << "DEBUG:: Facing up" << std::endl;
+            std::cout << "DEBUG:: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         } else {
-            std::cout << "DEBUG:: Facing down" << std::endl;
+            std::cout << "DEBUG:: Facing up" << std::endl;
             orientation = DIRECTION::UP;
         }
     }

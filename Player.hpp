@@ -82,7 +82,6 @@ namespace Magpie {
         void set_current_room(uint32_t room_number);
         virtual void set_model_orientation(uint32_t dir);
 
-
         // GETTERS
         uint32_t get_score();
         uint32_t get_current_room();
@@ -91,6 +90,12 @@ namespace Magpie {
         bool has_green_card = false;
         bool has_pink_card = false;
         bool has_master_key = false;
+
+        bool is_disguised();
+
+        glm::vec3 final_destination = glm::vec3(-1, -1, -1);
+
+        bool game_over = false;
 
     protected:
 

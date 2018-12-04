@@ -12,9 +12,13 @@ Magpie::Player::Player() {
 
     current_destination = glm::ivec3(0, 0, 0);
     orientation = DIRECTION::LEFT;
-    movespeed = 10.0f;
+    movespeed = 2.0f;
 };
 
+
+bool Magpie::Player::is_disguised() {
+    return current_state == (uint32_t)STATE::DISGUISE_IDLE;
+}
 
 
 // Runs the lambda functions for each task on the hit list

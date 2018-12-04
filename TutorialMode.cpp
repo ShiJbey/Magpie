@@ -122,5 +122,9 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
 	padding = 0.17f;
 	write_line("ESCAPE WITHOUT GETTING CAUGHT");
 
+
+
+	draw_object("!@#", start, 0.3f);
+
 	glEnable(GL_DEPTH_TEST);
 }

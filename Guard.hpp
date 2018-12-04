@@ -63,11 +63,15 @@ namespace Magpie {
 
         void turnTo(glm::vec3 destination);
 
+        void set_model_orientation(uint32_t dir);
+
         // Loads Magpie model data specifically
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);   
 
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
+
+        glm::vec2 last_destination = glm::vec2(-1, -1);
 
     private:
         float state_duration = 0.0f;

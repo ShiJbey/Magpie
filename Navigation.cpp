@@ -144,7 +144,6 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
 Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
     reset_visited_matrix();
     
-    std::cout << "Current Position: (x: " <<  start.x << " , y: " << start.y << " )" << std::endl;
     std::vector<glm::vec2> path_vector;
 
     // Implement BFS for path finding
@@ -195,8 +194,6 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
             }
         }
     }
-
-    std::cout << "FINISH WHILE" << std::endl;
 
     // Reverse iterate to get a path
     glm::vec2 current = destination;
