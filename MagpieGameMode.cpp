@@ -216,7 +216,7 @@ namespace Magpie {
             scene.draw(camera);
 
             //draw UI
-            ui.drawUI(camera);
+            ui.drawUI(camera, drawable_size);
         }
 
         {

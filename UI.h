@@ -4,7 +4,6 @@
 
 #include "Inventory.h"
 #include "Map.h"
-#include "draw_text.hpp"
 #include "Signalable.hpp"
 
 
@@ -24,7 +23,7 @@ public:
     void stateChanger(char keyPressed);
 
     //draw function to draw all aspects of UI
-    void drawUI(Scene::Camera const *camera);
+    void drawUI(Scene::Camera const *camera, glm::uvec2 const &drawable_size);
 
     //if endGame is true it will trigger countdown for magpie escape
     bool endGame = false;
