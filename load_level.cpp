@@ -580,7 +580,22 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // Check if this is a start position for a guard
             if (current_pixel.is_guard_start_position()) {
-                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f));
+                GameAgent::DIRECTION dir = GameAgent::DIRECTION::RIGHT;
+                switch (customization_id) {
+                    case 1:
+                        dir = GameAgent::DIRECTION::UP;
+                        break;
+                    case 2:
+                        dir = GameAgent::DIRECTION::LEFT;
+                        break;
+                    case 3:
+                        dir = GameAgent::DIRECTION::DOWN;
+                        break;
+                    default:
+                        break;
+                }
+
+                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f), dir);
                 level->set_movement_matrix_position(x, y, true);
 
                 Scene::Object* obj = get_mesh(x, y, 3, 0);
