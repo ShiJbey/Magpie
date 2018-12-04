@@ -140,6 +140,7 @@ void draw_text(std::string const &text, glm::mat4 const &transform, glm::vec4 co
 void draw_object(std::string const &text, glm::vec2 const &anchor, float height) {
     glUseProgram(*icon_color_program);
 	glBindVertexArray(*text_meshes_for_icon_program);
+	glEnable(GL_DEPTH_TEST);
 
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
