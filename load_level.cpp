@@ -521,7 +521,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
         }
 
-        std::cout << "ERROR::GetMeshLambda:: Mesh name not found." << std::endl;
+        std::cout << "ERROR::GetMeshLambda:: Mesh ID " << mesh_id << "customization ID " << customization_id << "not found." << std::endl;
         return (Scene::Object *)nullptr;
     };
 
