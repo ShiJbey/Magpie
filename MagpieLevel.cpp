@@ -177,15 +177,15 @@ void Magpie::MagpieLevel::set_movement_matrix_position(uint32_t x, uint32_t y, b
     this->movement_matrix[x][y] = can_walk;
 };
 
-std::map< uint32_t, std::vector< Magpie::Painting > >* Magpie::MagpieLevel::get_paintings() {
-    return &paintings;
+std::map< uint32_t, std::vector< Magpie::Painting* > >& Magpie::MagpieLevel::get_paintings() {
+    return paintings;
 };
 
-std::map< uint32_t, std::vector< Magpie::Gem > >* Magpie::MagpieLevel::get_gems() {
-    return &gems;
+std::map< uint32_t, std::vector< Magpie::Gem* > >& Magpie::MagpieLevel::get_gems() {
+    return gems;
 };
 
-void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting painting) {
+void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting *painting) {
     auto it = paintings.find(room_number);
     if (it == paintings.end()) {
         paintings.insert({room_number, {painting}}); 
@@ -195,10 +195,11 @@ void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting pa
     }
 };
 
-void Magpie::MagpieLevel::add_gem(uint32_t room_number, Gem gem) {
-    auto it = paintings.find(room_number);
-    if (it == paintings.end()) {
-        gems.insert({room_number, {gem}}); 
+void Magpie::MagpieLevel::add_gem(uint32_t room_number, Gem* gem) {
+    auto it = gems.find(room_number);
+    if (it == gems.end()) {
+        std::vector< Gem* > gem_vec = { gem };
+        gems.insert({room_number, gem_vec}); 
     }
     else{
         gems[room_number].push_back(gem);

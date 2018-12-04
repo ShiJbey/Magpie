@@ -46,6 +46,8 @@ Magpie::Gem::Gem() : Magpie::Gem(nullptr) {
 
 Magpie::Gem::Gem(Scene::Object* obj) : Item(obj) {
     this->selling_price = Gem::SELLING_PRICE;
+    set_transform(&obj->transform);
+    AnimatedModel::instance_id = Item::instance_id;
 };
 
 Magpie::BoundingBox* Magpie::Gem::get_boundingbox() {
@@ -62,6 +64,16 @@ void Magpie::Gem::on_click() {
         scene_object->active = false;
     }
 };
+
+void Magpie::Gem::update_animation(float elapsed) {
+    osc_tick += elapsed;
+    if (osc_tick >= (2.0f * 3.14f))
+        osc_tick = 0.0f;
+    //std::cout << "pizza" << std::endl;
+    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+    (*transform)->position.z = 0.1f + std::sin(osc_tick * 3) * 0.1f;
+};
+
 
 
 //////////////////////////////////////////////

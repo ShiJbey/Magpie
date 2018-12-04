@@ -105,6 +105,13 @@ namespace Magpie {
             for (uint32_t i = 0; i < animated_scene_objects.size(); i++) {
                 animated_scene_objects[i]->get_animation_manager()->update(elapsed);
             }
+
+            for (auto const &room: game.get_level()->get_gems()) {
+                for (auto &gem: room.second) {
+                    gem->update_animation(elapsed);
+                }
+            }
+
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
         
@@ -598,25 +605,24 @@ namespace Magpie {
      */
     bool MagpieGameMode::handle_clickables(Magpie::Ray click_ray) {
 
-        for (auto it = game.get_level()->get_paintings()->begin(); it != game.get_level()->get_paintings()->end(); it++) {
-            for (auto paint_iter = it->second.begin(); paint_iter != it->second.end(); paint_iter++) {
-                if (paint_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                    && paint_iter->get_scene_object()->active) {
-                    paint_iter->steal(game.get_player()); //changing player score
+        for (const auto &room: game.get_level()->get_paintings()) {
+            for (auto &painting: room.second) {
+                if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                    && painting->get_scene_object()->active) {
+                    painting->steal(game.get_player()); //changing player score
                     //TODO: SEND SCORE TO UI HERE TOO
-                    paint_iter->on_click();
+                    painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     return true;
                 }
             }
         }
 
-        for (auto it = game.get_level()->get_gems()->begin(); it != game.get_level()->get_gems()->end(); it++) {
-            for (auto gem_iter = it->second.begin(); gem_iter != it->second.end(); gem_iter++) {
-                if (gem_iter->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                 && gem_iter->get_scene_object()->active) {
-                    gem_iter->steal(game.get_player());
-                    gem_iter->on_click();
+        for (const auto &room: game.get_level()->get_gems()) {
+            for (auto &gem: room.second) {
+                if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction) && gem->get_scene_object()->active) {
+                    gem->steal(game.get_player());
+                    gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     return true;
                 }
@@ -644,15 +650,15 @@ namespace Magpie {
                 
                 if ((*game.get_level()->get_doors())[i]->opened) {
                     Door* door = (*game.get_level()->get_doors())[i];
-                    if (door->room_a.x == (int)game.get_player()->get_position().x &&
-                        door->room_a.y == (int)game.get_player()->get_position().y) {
-
+                    // Find the position in the next room
+                    auto room_iter = door->rooms.find(game.get_player()->get_current_room());
+                    if (room_iter!= door->rooms.end()) {
                         game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
                             glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                            glm::vec2(door->room_b.x, door->room_b.y)));
-
-                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)door->room_b.x, (float)door->room_b.y));
+                            glm::vec2(room_iter->second.x, room_iter->second.y)));
                         
+                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)room_iter->second.x, (float)room_iter->second.y));
+
                         if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                             game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
                         }
@@ -663,27 +669,6 @@ namespace Magpie {
                         make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
                         return true;
                     }
-
-                     if (door->room_b.x == (int)game.get_player()->get_position().x &&
-                        door->room_b.y == (int)game.get_player()->get_position().y) {
-
-                        game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
-                            glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                            glm::vec2(door->room_a.x, door->room_a.y)));
-
-                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)door->room_a.x, (float)door->room_a.y));
-                        
-                        if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-                        }
-                        else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
-                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-                        }
-
-                        make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
-                        return true;
-                    }
-                    
                 } else {
                     (*game.get_level()->get_doors())[i]->on_click();
                     animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);

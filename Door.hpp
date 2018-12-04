@@ -6,6 +6,7 @@
 
 #include "Scene.hpp"
 #include <glm/glm.hpp>
+#include <map>
 
 namespace Magpie {
     struct Door : public Clickable, public AnimatedModel {
@@ -24,6 +25,8 @@ namespace Magpie {
         // Positions on either side of the door
         glm::ivec2 room_a;
         glm::ivec2 room_b;
+
+        std::map<uint32_t, glm::ivec2> rooms;
 
         bool locked;
         bool opened;
