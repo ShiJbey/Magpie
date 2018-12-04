@@ -40,7 +40,7 @@ void Magpie::FloatingNotificationText::update_animation(float elapsed) {
     printf("Pizza\n");
     elapsed_animation_time += elapsed;
 
-    if (scale < animation_duration / 2.0f) {
+    if (elapsed_animation_time < (animation_duration / 2.0f)) {
         this->scale = original_scale * (elapsed_animation_time / (animation_duration / 2.0f));
     } else {
         this->scale = original_scale;

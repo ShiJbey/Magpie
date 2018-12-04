@@ -979,7 +979,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             Gem* gem = new Gem(obj);
             obj->transform->name = "Gem" + std::to_string(gem->get_instance_id());
-            level->add_gem(1, gem);    
+            level->add_gem(room.first, gem);    
         }
     };
 
@@ -1000,7 +1000,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
             Painting* painting = new Painting(obj);
             obj->transform->name = "Painting" + std::to_string(painting->get_instance_id());
-            level->add_painting(1, painting);    
+            level->add_painting(room.first, painting);    
         }
     };
 

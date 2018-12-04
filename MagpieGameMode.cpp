@@ -657,6 +657,7 @@ namespace Magpie {
     bool MagpieGameMode::handle_clickables(Magpie::Ray click_ray) {
 
         for (const auto &room: game.get_level()->get_paintings()) {
+            if(room.first != game.get_player()->get_current_room()) continue;
             for (auto &painting: room.second) {
                 if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                     && painting->get_scene_object()->active
@@ -672,6 +673,7 @@ namespace Magpie {
         }
 
         for (const auto &room: game.get_level()->get_gems()) {
+            if(room.first != game.get_player()->get_current_room()) continue;
             for (auto &gem: room.second) {
                 if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                     && gem->get_scene_object()->active
