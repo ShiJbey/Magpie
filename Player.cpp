@@ -140,7 +140,9 @@ void Magpie::Player::consume_signal() {
 
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
-    
+
+    // Decrement the cool down time for dropping treats
+    dog_treat_cooldown -= elapsed;
     
     if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);
@@ -431,4 +433,16 @@ void Magpie::Player::set_path(Magpie::Path path) {
         this->path.set_path(modified_path);
         this->new_path.set_path(modified_path);
     }
+};
+
+void Magpie::Player::reset_treat_cooldown() {
+    set_treat_cooldown(2.0f);
+};
+
+void Magpie::Player::set_treat_cooldown(float cooldown_time) {
+    this->dog_treat_cooldown = cooldown_time;
+};
+
+bool Magpie::Player::can_place_treat() {
+    return this->dog_treat_cooldown <= 0.0f;
 };

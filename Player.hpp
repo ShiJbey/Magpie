@@ -83,6 +83,10 @@ namespace Magpie {
         virtual void set_model_orientation(uint32_t dir);
         virtual void set_path(Path path);
 
+        void reset_treat_cooldown();
+        void set_treat_cooldown(float cooldown_time);
+        bool can_place_treat();
+
         // GETTERS
         uint32_t get_score();
         uint32_t get_current_room();
@@ -91,6 +95,10 @@ namespace Magpie {
         bool has_green_card = false;
         bool has_pink_card = false;
         bool has_master_key = false;
+        bool has_cardboard_box = false;
+        bool has_dog_treats = false;
+
+        
 
         bool is_disguised();
 
@@ -110,5 +118,7 @@ namespace Magpie {
 
         // Used to force the player to walk through doors
         uint32_t current_room = 0;
+
+        float dog_treat_cooldown = 0.0f;
     };
 }

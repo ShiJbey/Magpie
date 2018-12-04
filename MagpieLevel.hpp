@@ -99,6 +99,8 @@ namespace Magpie {
         KeyCard *green_card = nullptr;
         KeyCard *pink_card = nullptr;
         KeyCard *master_key = nullptr;
+        DogTreat *dogTreatPickUp = nullptr;
+        CardboardBox *cardboard_box = nullptr;
 
     protected:
  

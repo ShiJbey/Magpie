@@ -13,9 +13,9 @@
 #include <random>
 #include <iterator>
 
-/**
- *  The Implementations of class Path.
- */
+//////////////////////////////////////////////
+//                   PATH                   //
+//////////////////////////////////////////////
 
 Magpie::Path::Path(std::vector<glm::vec2> path) {
     this->path = std::move(path);
@@ -23,8 +23,10 @@ Magpie::Path::Path(std::vector<glm::vec2> path) {
 }
 
 glm::vec2 Magpie::Path::next() {
-    //std::cout << "NEXT:" << it->x << ", " << it->y << std::endl;
-    if (it == path.end()) return glm::vec2(0, 0);
+    if (it == path.end()) {
+        std::cerr << "ERROR::Path.next():: Complete path giving additional positions" << std::endl;
+        return glm::vec2(0, 0);
+    }
     return *(it++);
 }
 
@@ -36,22 +38,27 @@ glm::vec2 Magpie::Path::top() {
     return *path.begin();
 }
 
+//////////////////////////////////////////////
+//               NAVIGATION                 //
+//////////////////////////////////////////////
+
+
 bool Magpie::Navigation::can_move_to(float x, float y) {
-    if (this->movement_matrix == nullptr) {
+    if (this->level_movement_matrix == nullptr) {
         return false;
     }
 
-    else if ((uint32_t)x >= (*movement_matrix).size() || (uint32_t)y >= (*movement_matrix)[(uint32_t)x].size()) {
+    else if ((uint32_t)x >= level_movement_matrix->size() || (uint32_t)y >= (*level_movement_matrix)[(uint32_t)x].size()) {
         return false;
     }
 
-    return (*movement_matrix)[(uint32_t)x][(uint32_t)y];
+    return (*level_movement_matrix)[(uint32_t)x][(uint32_t)y];
 }
 
 void Magpie::Navigation::print_movement_matrix() {
-    for (uint32_t y = (uint32_t)(*movement_matrix)[0].size() - 1; y != -1U; y--) {
-        for (uint32_t x = 0; x < (*movement_matrix).size(); x++) {
-            if ((*movement_matrix)[x][y]) {
+    for (uint32_t y = (uint32_t)(*level_movement_matrix)[0].size() - 1; y != -1U; y--) {
+        for (uint32_t x = 0; x < (*level_movement_matrix).size(); x++) {
+            if ((*level_movement_matrix)[x][y]) {
                 std::cout << "[ ]";
             } else {
                 std::cout << "[x]";
@@ -64,7 +71,6 @@ void Magpie::Navigation::print_movement_matrix() {
 void Magpie::Navigation::reset_visited_matrix() {
     for (uint32_t x = 0; x < visited_matrix.size(); x++) {
         for (uint32_t y = 0; y < visited_matrix[x].size(); y++) {
-            //std::get<0>(visited_matrix[x][y]) = false;
             visited_matrix[x][y] = std::make_tuple(false, glm::vec2((float)x, (float)y), 100000.0f);
         }
     }
@@ -93,44 +99,20 @@ std::vector<glm::vec2> Magpie::Navigation::get_adjacent(glm::vec2 pos) {
         adjacent_tiles.push_back(glm::vec2(pos.x, pos.y - 1));
     }
     
-    // Check position bottom left
-    if (can_move_to(pos.x - 1, pos.y - 1)) {
-        //adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y - 1));
-    }
-
-    // Check upper left
-    if (can_move_to(pos.x - 1, pos.y + 1)) {
-        //adjacent_tiles.push_back(glm::vec2(pos.x - 1, pos.y + 1));
-    }
-    
-    // Check position bottom right
-    if (can_move_to(pos.x + 1, pos.y - 1)) {
-        //adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y - 1));
-    }
-
-    // Check upper right
-    if (can_move_to(pos.x + 1, pos.y + 1)) {
-        //adjacent_tiles.push_back(glm::vec2(pos.x + 1, pos.y + 1));
-    }
-    
     // From https://en.cppreference.com/w/cpp/algorithm/random_shuffle
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(adjacent_tiles.begin(), adjacent_tiles.end(), g);
+    // std::random_device rd;
+    // std::mt19937 g(rd());
+    // std::shuffle(adjacent_tiles.begin(), adjacent_tiles.end(), g);
     return adjacent_tiles;
 };
 
-/**
- *  The Implementations of class Navigation.
- */
-
-void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >* matrix) {
-    this->movement_matrix = matrix;
+void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >* level_movement_matrix) {
+    this->level_movement_matrix = level_movement_matrix;
     this->visited_matrix.clear();
-    if (movement_matrix != nullptr) {
-        for (uint32_t x = 0; x < (*movement_matrix).size(); x++) {
+    if (level_movement_matrix != nullptr) {
+        for (uint32_t x = 0; x < level_movement_matrix->size(); x++) {
             std::vector< std::tuple< bool, glm::vec2, float > > col;
-            for (uint32_t y = 0; y < (*movement_matrix)[x].size(); y++) {
+            for (uint32_t y = 0; y < (*level_movement_matrix)[x].size(); y++) {
                 col.push_back(std::make_tuple(false, glm::vec2((float)x, (float)y), 100000.0f));
             }
             visited_matrix.push_back(col);
@@ -139,33 +121,33 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
     else {
         std::cerr << "WARNING: Navigation has been pass a null movement matrix." << std::endl;
     }
-}
+};
 
+// Implement BFS for path finding
+// https://www.redblobgames.com/pathfinding/tower-defense/
 Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
+    
     reset_visited_matrix();
-    
-    std::vector<glm::vec2> path_vector;
 
-    // Implement BFS for path finding
-    // https://www.redblobgames.com/pathfinding/tower-defense/
-    
     // Unexplored grid positions
     std::deque< glm::vec2 > frontier;
 
-    uint64_t start_x = trunc(start.x);
-//    double decimal_x = start.x - trunc(start.x);
-    uint64_t start_y = trunc(start.y);
-//    double decimal_y = start.y - trunc(start.y);
+    float start_x = glm::round(start.x);
+    float start_y = glm::round(start.y);
+
+    //uint64_t start_x = trunc(start.x);
+    //uint64_t start_y = trunc(start.y);
+    
+    //double decimal_x = start.x - trunc(start.x);
+    //double decimal_y = start.y - trunc(start.y);
 
     frontier.emplace_back(glm::uvec2(start_x, start_y));
 
-    visited_matrix[start_x][start_y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
+    visited_matrix[(uint32_t)start_x][(uint32_t)start_y] = std::make_tuple(true, glm::vec2(-1.0f, -1.0f), 0.0f);
 
-    bool reach = false;
+    bool destination_reached = false;
+
     // Perform BFS
-
-    //std::cout << can_move_to(start_x + 1, start_y) << std::endl;
-
     while( !frontier.empty() ) {
 
         glm::vec2 current = frontier.front();
@@ -177,7 +159,7 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
         for (auto it = adjacent_tiles.begin(); it != adjacent_tiles.end(); it++) {
 
             bool position_visited = std::get<0>(visited_matrix[(uint32_t)it->x][(uint32_t)it->y]);
-            float distance_from_start =  std::get<2>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]) + glm::length(*it - current);
+            float distance_from_start =  std::get<2>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]) + glm::length(*it - destination);
 
             if (distance_from_start < std::get<2>(visited_matrix[(uint32_t)it->x][(uint32_t)it->y])) {
                 visited_matrix[(uint32_t)it->x][(uint32_t)it->y] = std::make_tuple(true, current, distance_from_start);
@@ -188,35 +170,51 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
             }
 
             if (*it == destination) {
-                //std::cout << "GET TARGET" << std::endl;
-                reach = true;
+                destination_reached = true;
                 break;
             }
         }
     }
 
-    // Reverse iterate to get a path
+
+    std::vector<glm::vec2> path_vector;
+
+    // We return an empty path vector if the destination could not be reached
+    if (!destination_reached) {
+        return path_vector;
+    }
+
+    // Reverse iterate through visited matrix to get a path
     glm::vec2 current = destination;
-    while (reach && current != glm::vec2(-1, -1)) {
+    while (current != glm::vec2(-1, -1)) {
         path_vector.push_back(current);
         current = std::get<1>(visited_matrix[(uint32_t)current.x][(uint32_t)current.y]);
     }
-
-
-    //path_vector.pop_back();
+    // Reverse the path to get it in the correct order
     std::reverse(path_vector.begin(), path_vector.end());
-    //for (glm::vec2 p : path_vector) {
-    //    std::cout << "(" << p.x << "," << p.y << ")" << std::endl;
-    //}
+    
+    #ifdef NAVIGATION_DEBUG_VERBOSE
+    std::cout << "DEBUG::Navigation.findPath():: Generated Path" << std::endl;
+    for (glm::vec2 p : path_vector) {
+        std::cout << "\t(" << p.x << "," << p.y << ")" << std::endl;
+    }
+    #endif
     
 
     return Path(path_vector);
-}
+};
 
-void Magpie::Navigation::init(FloorTile*** floor_tiles, Door*** doors, uint32_t level_width, uint32_t level_height) {
-    this->floor_tiles = floor_tiles;
-    this->doors = doors;
-    this->level_width = level_width;
-    this->level_height = level_height;
+
+
+void Magpie::Navigation::init(std::vector< std::vector< bool > >* level_movement_matrix) {
+    this->level_movement_matrix = level_movement_matrix;
+};
+
+Magpie::Navigation::Navigation() : Navigation::Navigation(nullptr) {
+    // Do Nothing
+};
+
+Magpie::Navigation::Navigation(std::vector< std::vector< bool > >* level_movement_matrix) {
+    this->level_movement_matrix = level_movement_matrix;
 };
 

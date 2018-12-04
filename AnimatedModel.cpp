@@ -45,7 +45,7 @@ glm::vec3 Magpie::AnimatedModel::get_position() {
     if (transform != nullptr) {
         return (*transform)->position;
     }
-    std::cout << "WARNING::AnimatedModel:: " << "Requesting position of transformless model." << std::endl;
+    std::cerr << "ERROR::AnimatedModel.get_position():: " << "Requesting position of transformless model." << std::endl;
     return glm::vec3(-9999.0f, -9999.0f, -9999.0f);
 };
 
@@ -66,7 +66,7 @@ void Magpie::AnimatedModel::set_position(glm::vec3 position) {
         (*transform)->position = position;
         return;
     }
-    std::cout << "WARNING::AnimatedModel:: " << "Setting position of transformless model." << std::endl;
+    std::cerr << "ERROR::AnimatedModel.set_position():: " << "Setting position of transformless model." << std::endl;
 };
 
 void Magpie::AnimatedModel::set_transform(Scene::Transform** transform) {
@@ -81,23 +81,31 @@ void Magpie::AnimatedModel::set_animation_manager(Magpie::AnimationManager *anim
 void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
     switch(dir) {
         case 3 :
-//            std::cout << "DEBUG::AnimatedModel Orienting right" << std::endl;
+            #ifdef ANIMATED_MODEL_DEBUG_VERBOSE
+            std::cout << "DEBUG::AnimatedModel Orienting right" << std::endl;
+            #endif
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 1 :
-//            std::cout << "DEBUG::AnimatedModel Orienting left" << std::endl;
+            #ifdef ANIMATED_MODEL_DEBUG_VERBOSE
+            std::cout << "DEBUG::AnimatedModel Orienting left" << std::endl;
+            #endif
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 2 :
-//            std::cout << "DEBUG::AnimatedModel:: Orienting up" << std::endl;
+            #ifdef ANIMATED_MODEL_DEBUG_VERBOSE
+            std::cout << "DEBUG::AnimatedModel:: Orienting up" << std::endl;
+            #endif
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 0:
-//            std::cout << "DEBUG::AnimatedModel:: Orienting down" << std::endl;
+            #ifdef ANIMATED_MODEL_DEBUG_VERBOSE
+            std::cout << "DEBUG::AnimatedModel:: Orienting down" << std::endl;
+            #endif
             (*transform)->rotation = original_rotation;
             break;
         default:
-//            std::cout << "ERROR::AnimatedModel:: Invalid orientation" << std::endl;
+            std::cerr << "ERROR::AnimatedModel.set_model_orientation:: Invalid orientation" << std::endl;
             break;
     }
 };
