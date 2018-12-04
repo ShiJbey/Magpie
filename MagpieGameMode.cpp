@@ -113,11 +113,11 @@ namespace Magpie {
                 }
             }
 
-            for (auto const &room: game.get_level()->get_paintings()) {
-                for (auto &painting: room.second) {
-                    //painting->update_animation(elapsed);
-                }
-            }
+//            for (auto const &room: game.get_level()->get_paintings()) {
+//                for (auto &painting: room.second) {
+//                    //painting->update_animation(elapsed);
+//                }
+//            }
 
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
@@ -621,7 +621,9 @@ namespace Magpie {
         for (const auto &room: game.get_level()->get_paintings()) {
             for (auto &painting: room.second) {
                 if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                    && painting->get_scene_object()->active) {
+                    && painting->get_scene_object()->active
+                    && abs(game.get_player()->get_position().x - painting->get_position().x) <= 1
+                    && abs(game.get_player()->get_position().y - painting->get_position().y) <= 1) {
                     painting->steal(game.get_player()); //changing player score
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
