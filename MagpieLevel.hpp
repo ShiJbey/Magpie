@@ -94,6 +94,12 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_pedestal_locations();
         std::map< uint32_t, std::vector< Scene::Transform* > >* get_potential_table_locations();
 
+
+        // Keys placed in level
+        KeyCard *green_card = nullptr;
+        KeyCard *pink_card = nullptr;
+        KeyCard *master_key = nullptr;
+
     protected:
  
         // Size of the entire level
@@ -175,5 +181,7 @@ namespace Magpie {
         
         // Maps room numbers to maps of guard numbers to vectors of movement positions
         std::map< uint32_t, std::map< uint32_t, std::vector< glm::vec2 > > > guard_paths_by_room;
+
+        
     };
 }

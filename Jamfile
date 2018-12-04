@@ -112,6 +112,7 @@ CLIENT_NAMES =
 	ui_shader_program
 	draw_freetype_text
 	DisplayCase
+	startmenu
 	;
 
 if $(OS) = NT {
