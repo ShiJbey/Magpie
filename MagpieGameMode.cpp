@@ -232,11 +232,12 @@ namespace Magpie {
             scene.draw(camera);
 
             //score
-            RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
-                        0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-            //draw UI
-            ui.drawUI(camera, drawable_size);
+            if (Mode::current == shared_from_this()) {
+                RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
+                           0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                //draw UI
+                ui.drawUI(camera, drawable_size);
+            }
         }
 
         {
