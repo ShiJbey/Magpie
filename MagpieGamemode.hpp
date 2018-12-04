@@ -12,6 +12,7 @@
 #include "MeshBuffer.hpp"
 #include "GL.hpp"
 #include "Scene.hpp"
+#include "AnimatedText.hpp"
 
 #include <SDL.h>
 #include <glm/glm.hpp>
@@ -118,6 +119,9 @@ namespace Magpie {
 
         // Used for updating animations in the scene
         std::vector< AnimatedModel* > animated_scene_objects;
+
+        std::vector< FloatingNotificationText > animated_text_objects;
+        glm::vec2 screen_dimensions;
 
         // Tracks what walls or floor tiles need to be changed
         // back to using the vertex_color_program

@@ -113,6 +113,7 @@ CLIENT_NAMES =
 	draw_freetype_text
 	DisplayCase
 	startmenu
+	AnimatedText
 	;
 
 if $(OS) = NT {

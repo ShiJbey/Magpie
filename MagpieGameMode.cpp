@@ -133,6 +133,17 @@ namespace Magpie {
                 game.get_level()->master_key->update_animation(elapsed);
             }
 
+            // update animated text
+            for(auto i = animated_text_objects.begin(); i != animated_text_objects.end(); /*Incremement in loop*/) {
+                if (i->animation_complete()) {
+                    i = animated_text_objects.erase(i);
+                }
+                else {
+                    i->update_animation(elapsed);
+                    i++;
+                }
+            }
+
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
         
@@ -247,7 +258,7 @@ namespace Magpie {
 
             //score
             if (Mode::current == shared_from_this()) {
-                RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
+                RenderText(ransom_font.value, "$" + std::to_string(game.get_player()->get_score()),
                            0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
                 //draw UI
                 ui.drawUI(camera, drawable_size);
@@ -255,10 +266,16 @@ namespace Magpie {
         }
 
         {
+            // draw animated text
+            for (auto &text : animated_text_objects) {
+                text.draw();
+            }
             //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 0.3f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         }
 
         GL_ERRORS();
+
+        screen_dimensions = glm::vec2((float)drawable_size.x, (float)drawable_size.y);
     };
 
     
@@ -643,6 +660,7 @@ namespace Magpie {
                     painting->steal(game.get_player()); //changing player score
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
+                    animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(painting->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                     return true;
                 }
             }
@@ -657,6 +675,7 @@ namespace Magpie {
                     gem->steal(game.get_player());
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
+                    animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(gem->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                     return true;
                 }
             }
@@ -670,11 +689,10 @@ namespace Magpie {
                     displaycase->on_click();
                     return true;
                 }
-                else if (displaycase->opened && displaycase->geode != nullptr) {
+                else if (displaycase->opened && displaycase->geode != nullptr && displaycase->geode->get_scene_object()->active) {
                     displaycase->geode->steal(game.get_player());
                     displaycase->geode->get_scene_object()->active = false;
-                    scene.delete_object(displaycase->geode->get_scene_object());
-                    displaycase->geode = nullptr;
+                    animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(displaycase->geode->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                     return true;
                 }
             }
@@ -685,6 +703,8 @@ namespace Magpie {
                 && game.get_level()->pink_card->get_scene_object()->active) {
                 game.get_level()->pink_card->on_click();
                 game.get_player()->has_pink_card = true;
+                animated_text_objects.push_back(FloatingNotificationText("Found Pink Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 50.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                return true;
             }
         }
 
@@ -693,6 +713,8 @@ namespace Magpie {
                 && game.get_level()->green_card->get_scene_object()->active) {
                 game.get_level()->green_card->on_click();
                 game.get_player()->has_green_card = true;
+                animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                return true;
             }
         }
 
@@ -701,6 +723,8 @@ namespace Magpie {
                 && game.get_level()->master_key->get_scene_object()->active) {
                 game.get_level()->master_key->on_click();
                 game.get_player()->has_master_key = true;
+                animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                return true;
             }
         }
 
@@ -725,15 +749,21 @@ namespace Magpie {
                             game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         }
 
-                        make_close_walls_transparent((float)door->room_b.x, (float)door->room_b.y);
+                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
                         return true;
                     }
-                } else if ((door->access_level == Door::ACCESS_LEVEL::PINK && game.get_player()->has_pink_card)
-                            || (door->access_level == Door::ACCESS_LEVEL::GREEN && game.get_player()->has_green_card)
-                            || door->access_level == Door::ACCESS_LEVEL::NORMAL){
-                    (*game.get_level()->get_doors())[i]->on_click();
-                    animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
-                    return true;
+                } else {
+                    if ((door->access_level == Door::ACCESS_LEVEL::PINK && game.get_player()->has_pink_card)
+                                || (door->access_level == Door::ACCESS_LEVEL::GREEN && game.get_player()->has_green_card)
+                                || door->access_level == Door::ACCESS_LEVEL::NORMAL){
+
+                        (*game.get_level()->get_doors())[i]->on_click();
+                        animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
+                        return true;
+
+                    } else {
+                        animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    }
                 }
                 
             }

@@ -7,6 +7,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <chrono>
+#include <random>
+
 
 
 uint8_t Magpie::PixelData::MESH_MASK = 0b11111000;
@@ -585,6 +588,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             if (guard_number != 0) {
                 level->add_guard_path_position(room_number, guard_number, x, y);
                 level->set_movement_matrix_position(x, y, true);
+
+                Scene::Object* obj = get_mesh(x, y, 3, 0);
+                obj->transform->name = "floor_" + std::to_string(i);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                level->set_movement_matrix_position(x, y, true);
+                FloorTile*** floor = level->get_floor_matrix();
+                floor[x][y] = new FloorTile(obj, room_number);
             }
             
             // Floor Tile                           
@@ -906,6 +916,11 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, 69, 0);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 displaycase->geode = new Geode(obj);
+
+                Scene::Object* floor_obj = get_mesh(x, y, 3, 1);
+                floor_obj->transform->name = "floor_" + std::to_string(i);
+                floor_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
             }
             
 
@@ -954,9 +969,12 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
         }
     }
 
+    std::mt19937 mt_rand ((uint32_t)std::chrono::system_clock::now().time_since_epoch().count());
+
     for (auto const &room : *(level->get_potential_pedestal_locations())) {
         for (auto const &location: room.second) {
-            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, 0);
+            uint32_t cust_id = mt_rand() % 3;
+            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, cust_id);
             assert(obj != nullptr);
             obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             Gem* gem = new Gem(obj);
@@ -967,7 +985,9 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
     for (auto const &room : *(level->get_potential_wall_locations())) {
         for (auto const &location: room.second) {
-            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, 0);
+            // random customization id;
+            uint32_t cust_id = mt_rand() % 3;
+            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, cust_id);
             assert(obj != nullptr);
             obj->transform->rotation = location->rotation;
             //obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
