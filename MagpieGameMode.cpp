@@ -96,7 +96,7 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
         if (game.get_player()->game_over) {
-            std::cout << "GAME OVER !!!!!" << std::endl;
+            Mode::set_current(std::make_shared< Magpie::EndMenu >());
             return;
         }
         //if the map is out don't update anything

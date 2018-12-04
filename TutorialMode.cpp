@@ -83,6 +83,7 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
     float y_margin = 0.17f;
     float tab = 0.7f;
     float section_break = 0.08f;
+    float icon_offset = 0.01f;
 
 	float font_height = 0.05f;
 	float padding = 0.1f;
@@ -105,26 +106,27 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
     font_height = 0.06f;
     padding = 0.17f;
 	write_line("EARN MONEY BY STEALING ");
+	draw_object("!@#", glm::vec2(anchor.x + aspect, anchor.y + padding - icon_offset), 0.15f);
 	anchor.y -= section_break;
 
 	write_line("PICK UP KEY ITEMS TO UNLOCK NEW SKILLS");
 	anchor.x += tab;
 	font_height = 0.04f;
 	padding = 0.2f;
-	write_line("KEYCARDS unlock doors");
-	write_line("DOG TREATS distract guards");
-	write_line("KEY unlock display cases without breaking them");
 	write_line("BOXES disguise you from guards");
+    draw_object("$", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+	write_line("DOG TREATS distract guards");
+	draw_object("%", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+	write_line("KEY unlock display cases without breaking them");
+    draw_object("&", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
+	write_line("KEYCARDS unlock doors");
+	draw_object("^", glm::vec2(start.x + tab/2, anchor.y + padding - icon_offset), 0.2f);
     anchor.y -= section_break;
 
 	anchor.x = start.x;
 	font_height = 0.06f;
 	padding = 0.17f;
 	write_line("ESCAPE WITHOUT GETTING CAUGHT");
-
-
-
-	draw_object("!@#", start, 0.3f);
 
 	glEnable(GL_DEPTH_TEST);
 }

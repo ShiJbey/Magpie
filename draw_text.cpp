@@ -154,7 +154,7 @@ void draw_object(std::string const &text, glm::vec2 const &anchor, float height)
 
 	float x = 0.0f;
 	for (uint32_t i = 0; i < text.size(); ++i) {
-		if (i > 0) x += char_spacing(text[i-1], text[i]);
+		if (i > 0) x += char_spacing(text[i-1], text[i]) / 2.f;
 		if (text[i] != ' ') {
 			float s = 1.0f / char_height;
 			glm::mat4 mvp = transform * glm::mat4(
