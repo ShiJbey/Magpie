@@ -204,6 +204,14 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
         {1, "geode_bougie_MSH"}
     };
 
+    std::map<uint8_t, std::string > keys = {
+        {0, "keycard_pink_MSH"},
+        {1, "keycard_green_MSH"},
+        {2, "masterKey_pickup_MSH"}
+    };
+
+
+
 
 
     ret->insert({3, floors});
@@ -221,6 +229,7 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     ret->insert({24, offices});
     ret->insert({25, storage});
     ret->insert({26, chairs});
+    ret->insert({42, keys});
     ret->insert({69, other});
     
 
@@ -904,20 +913,37 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             }
-
+            // SECURITY OFFICE
             else if (mesh_id == 23) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-            }
 
+                if (customization_id == 0 && level->pink_card == nullptr) {
+                    Scene::Object* keycard_obj = get_mesh(x, y, 42, 0);
+                    keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                    level->pink_card = new KeyCard(Door::ACCESS_LEVEL::PINK, keycard_obj);
+                }
+            }
+            // OFFICES
             else if (mesh_id == 24) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-            }
 
+                if (customization_id == 0 && level->green_card == nullptr) {
+                    Scene::Object* keycard_obj = get_mesh(x, y, 42, 1);
+                    keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                    level->green_card = new KeyCard(Door::ACCESS_LEVEL::GREEN, keycard_obj);
+                }
+            }
+            //STORAGE
             else if (mesh_id == 25) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                if (customization_id == 0 && level->master_key == nullptr) {
+                    Scene::Object* keycard_obj = get_mesh(x, y, 42, 2);
+                    keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                    level->master_key = new KeyCard(Door::ACCESS_LEVEL::MASTER, keycard_obj);
+                }
             }
 
             else if (mesh_id == 26) {
@@ -930,7 +956,6 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
     for (auto const &room : *(level->get_potential_pedestal_locations())) {
         for (auto const &location: room.second) {
-            std::cout << "Making Gem" << std::endl;
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, 0);
             assert(obj != nullptr);
             obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
@@ -942,7 +967,6 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
     for (auto const &room : *(level->get_potential_wall_locations())) {
         for (auto const &location: room.second) {
-            std::cout << "Making Painting" << std::endl;
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, 0);
             assert(obj != nullptr);
             obj->transform->rotation = location->rotation;
@@ -959,47 +983,6 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             level->add_painting(1, painting);    
         }
     };
-
-    /*
-    for (uint32_t i = 0; i < level->get_potential_pedestal_locations().size(); i++) {
-        temp_transform = scene.new_transform();
-        temp_transform->name = "gem_" + std::to_string(i);
-        temp_transform->position.x = level->get_potential_pedestal_locations()[i]->position.x;
-        temp_transform->position.y = level->get_potential_pedestal_locations()[i]->position.y;
-        temp_transform->rotation = level->get_potential_pedestal_locations()[i]->rotation;
-
-        auto custom_mesh_grp = mesh_names->find(0);
-        if (custom_mesh_grp != mesh_names->end()) {
-            auto custom_mesh_name = custom_mesh_grp->second.find(6);
-            if (custom_mesh_name != custom_mesh_grp->second.end()) {
-
-                Scene::Object* obj = on_object(*scene, temp_transform, custom_mesh_name->second);
-                // TODO:: Get the actual room
-                level->add_gem(1, Gem(obj));
-                assert(obj != nullptr);
-            }
-        }
-    }
-
-    for (uint32_t i = 0; i < potential_wall_locations.size(); i++) {
-        temp_transform = scene->new_transform();
-        temp_transform->name = "painting_" + std::to_string(i);
-        temp_transform->position.x = potential_wall_locations[i]->position.x;
-        temp_transform->position.y = potential_wall_locations[i]->position.y;
-        temp_transform->rotation = potential_wall_locations[i]->rotation;
-        
-        auto custom_mesh_grp = mesh_names->find(0);
-        if (custom_mesh_grp != mesh_names->end()) {
-            auto custom_mesh_name = custom_mesh_grp->second.find(5);
-            if (custom_mesh_name != custom_mesh_grp->second.end()) {
-                
-                Scene::Object* obj = on_object(scene, temp_transform, custom_mesh_name->second);
-                // TODO:: Get the actual room
-                level->add_painting(1, Painting(obj));
-            }
-        }
-    }
-    */
 
     return level;
 }

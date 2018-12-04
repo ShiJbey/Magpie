@@ -12,7 +12,7 @@ Magpie::Player::Player() {
 
     current_destination = glm::ivec3(0, 0, 0);
     orientation = DIRECTION::LEFT;
-    movespeed = 2.0f;
+    movespeed = 10.0f;
 };
 
 

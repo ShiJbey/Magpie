@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 #include "Clickable.hpp"
 #include "Player.hpp"
+#include "Door.hpp"
 
 namespace Magpie {
 
@@ -75,6 +76,26 @@ namespace Magpie {
         virtual void update_animation(float elapsed);
     protected:
         float osc_tick = 0.0f;
+
+        
+    };
+
+    class KeyCard : public Item, public Clickable, public AnimatedModel {
+    public:
+        const uint32_t SELLING_PRICE = 10;
+
+        KeyCard(Door::ACCESS_LEVEL acces_level);
+        KeyCard(Door::ACCESS_LEVEL acces_level, Scene::Object* obj);
+
+        BoundingBox* get_boundingbox();
+        void on_click();
+        virtual void update_animation(float elapsed);
+
+        Door::ACCESS_LEVEL get_access_level();
+
+    protected:
+        float osc_tick = 0.0f;
+        Door::ACCESS_LEVEL access_level;
 
         
     };

@@ -15,6 +15,7 @@ namespace Magpie {
             NORMAL = 0,
             PINK,
             GREEN,
+            MASTER
         };
 
         // This is incremented each time we create a new player
