@@ -51,6 +51,9 @@ namespace Magpie {
         //draw is called after update:
         virtual void draw(glm::uvec2 const &drawable_size) override;
 
+        //default game start menu
+        //void open_start_menu();
+
         ////////////////////////////////////////////////
         //        Magpie Specific Functions           //
         ////////////////////////////////////////////////
