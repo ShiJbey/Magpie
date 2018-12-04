@@ -35,6 +35,7 @@ namespace Magpie {
         // Get the number id of the guard who walks using this position
         // in its path
         uint8_t guard_path_number();
+        bool is_corner_3();
 
         // NOTE: The following are for implementing high level mechanics
         // Does the mesh at this position have a special identifier

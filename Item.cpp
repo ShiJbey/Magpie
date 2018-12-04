@@ -111,7 +111,8 @@ void Magpie::Painting::update_animation(float elapsed) {
         osc_tick = 0.0f;
     //std::cout << "pizza" << std::endl;
     //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
-    (*transform)->position.x = std::sin(osc_tick * 3) * 0.1f;
+    //(*transform)->position.x = std::sin(osc_tick * 3) * 0.1f;
+    (*transform)->rotation *= glm::angleAxis(glm::radians(std::sin(osc_tick * 3.0f) * 10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 };
 
 
