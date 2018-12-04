@@ -432,32 +432,32 @@ void Magpie::Guard::set_destination(glm::vec2 destination) {
     }
 }
 
-void Magpie::Guard::turnTo(glm::vec3 destination) {
-
-    float x_difference = destination.x - get_position().x;
-    x_difference = -x_difference;
-    float y_difference = destination.y - get_position().y;
-    y_difference = -y_difference;
-
-    // WARNING::Only handles movement in cardinal directions
-    if (x_difference > 0) {
-//        std::cout << "DEBUG:: Facing right" << std::endl;
-        orientation = DIRECTION::LEFT;
-    }
-    else if (x_difference < 0) {
-//        std::cout << "DEBUG:: Facing left" << std::endl;
-        orientation = DIRECTION::RIGHT;
-    }
-    else {
-        if (y_difference > 0) {
-            //std::cout << "DEBUG:: Facing down" << std::endl;
-            orientation = DIRECTION::DOWN;
-        } else {
-            //std::cout << "DEBUG:: Facing up" << std::endl;
-            orientation = DIRECTION::UP;
-        }
-    }
-}
+//void Magpie::Guard::turnTo(glm::vec3 destination) {
+//
+//    float x_difference = destination.x - get_position().x;
+//    x_difference = -x_difference;
+//    float y_difference = destination.y - get_position().y;
+//    y_difference = -y_difference;
+//
+//    // WARNING::Only handles movement in cardinal directions
+//    if (x_difference > 0) {
+////        std::cout << "DEBUG:: Facing right" << std::endl;
+//        orientation = DIRECTION::LEFT;
+//    }
+//    else if (x_difference < 0) {
+////        std::cout << "DEBUG:: Facing left" << std::endl;
+//        orientation = DIRECTION::RIGHT;
+//    }
+//    else {
+//        if (y_difference > 0) {
+//            //std::cout << "DEBUG:: Facing down" << std::endl;
+//            orientation = DIRECTION::DOWN;
+//        } else {
+//            //std::cout << "DEBUG:: Facing up" << std::endl;
+//            orientation = DIRECTION::UP;
+//        }
+//    }
+//}
 
 /**
  * Loads a character model identically to how it imports scenes, 

@@ -34,7 +34,7 @@ namespace Magpie {
         DIRECTION get_orientation();
 
         void set_state(uint32_t state);
-        void set_path(Path path);
+        virtual void set_path(Path path);
         virtual void setDestination(glm::vec3 destination);
 
 

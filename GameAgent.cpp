@@ -70,6 +70,10 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
         std::vector<glm::vec2> modified_path = this->path.get_path();
         std::vector<glm::vec2> new_path = path.get_path();
 
+        if (new_path.back() == this->get_path()->get_path().back()) {
+            return;
+        }
+
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
 
@@ -78,6 +82,9 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
             modified_path.push_back(pos);
         }
 
+        
+
+        /*
         size_t size = modified_path.size();
         int x_direction = 0;
         if (modified_path[size-1].x != modified_path[0].x) {
@@ -121,6 +128,7 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
             }
             break;
         }
+        */
 
 
 
@@ -134,7 +142,7 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
 
 
         // Set the path to the newly modified one
-        this->path = Magpie::Path(result_path);
-        this->new_path = Magpie::Path(result_path);
+        this->path.set_path(modified_path);
+        this->new_path.set_path(modified_path);
     }
 };

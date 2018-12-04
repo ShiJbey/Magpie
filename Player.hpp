@@ -81,6 +81,7 @@ namespace Magpie {
         void set_score(uint32_t score);
         void set_current_room(uint32_t room_number);
         virtual void set_model_orientation(uint32_t dir);
+        virtual void set_path(Path path);
 
         // GETTERS
         uint32_t get_score();
