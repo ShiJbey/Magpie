@@ -222,6 +222,10 @@ namespace Magpie {
             //Draw scene:
             scene.draw(camera);
 
+            //score
+            RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
+                        0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
             //draw UI
             ui.drawUI(camera, drawable_size);
         }
@@ -610,7 +614,6 @@ namespace Magpie {
                 if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                     && painting->get_scene_object()->active) {
                     painting->steal(game.get_player()); //changing player score
-                    //TODO: SEND SCORE TO UI HERE TOO
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     return true;
