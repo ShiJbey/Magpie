@@ -4,7 +4,6 @@
 
 
 glm::vec2 Magpie::GameAgent::getDirectionVec2() {
-
     switch (orientation) {
         case DIRECTION::UP:
             return glm::vec2(0, 1);
@@ -14,14 +13,6 @@ glm::vec2 Magpie::GameAgent::getDirectionVec2() {
             return glm::vec2(0, -1);
         case DIRECTION::LEFT:
             return glm::vec2(-1, 0);
-        //case DIRECTION::UP_RIGHT:
-        //    return glm::vec2(1, 1);
-        //case DIRECTION::UP_LEFT:
-        //    return glm::vec2(-1, 1);
-        //case DIRECTION::DOWN_RIGHT:
-        //    return glm::vec2(1, -1);
-        //case DIRECTION::DOWN_LEFT:
-        //    return glm::vec2(-1, -1);
         default:
             return glm::vec2(0, 0);
     }
@@ -32,7 +23,6 @@ Magpie::GameAgent::DIRECTION Magpie::GameAgent::get_orientation() {
 };
 
 void Magpie::GameAgent::setDestination(glm::vec3 destination) {
-   /// this->path = Magpie::Navigation::getInstance().findPath(board_position, destination);
     current_destination = glm::vec3(this->path.top(), 0.0f);
     turnTo(current_destination);
 };
@@ -46,40 +36,7 @@ void Magpie::GameAgent::set_state(uint32_t state) {
 };
 
 void Magpie::GameAgent::turnTo(glm::vec3 destination) {
-    //std::cout << "TURNING" << std::endl;
-//
-    //// Face right
-    //if (destination.x > board_position.x) {
-    //    if (destination.y > board_position.y) {
-    //        orientation = DIRECTION::UP_RIGHT;
-    //    }
-    //    else if (destination.y < board_position.y) {
-    //        orientation = DIRECTION::DOWN_RIGHT;
-    //    }
-    //    else {
-    //        orientation = DIRECTION::RIGHT;
-    //    }
-    //}
-    //// Face Left
-    //else if (destination.x < board_position.x) {
-    //    if (destination.y > board_position.y) {
-    //        orientation = DIRECTION::UP_LEFT;
-    //    }
-    //    else if (destination.y < board_position.y) {
-    //        orientation = DIRECTION::DOWN_LEFT;
-    //    }
-    //    else {
-    //        orientation = DIRECTION::LEFT;
-    //    }
-    //}
-    //else {
-    //    if (destination.y > board_position.y) {
-    //        orientation = DIRECTION::UP;
-    //    }
-    //    else {
-    //        orientation = DIRECTION::DOWN;
-    //    }
-    //}
+    // Do nothing
 };
 
 Magpie::Path* Magpie::GameAgent::get_path() {
@@ -92,7 +49,6 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
         std::cout << "EMPTY PATH" << std::endl;
         return;
     }
-
     // The magpie has finished the previous path and this one
     // should replace the old one
     if (this->next_destination_index > this->path.get_path().size() + 1 ||
@@ -101,8 +57,9 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
         this->is_new_path = true;
         this->new_path = path;
         this->next_destination_index = 0;
-        printf("Reseting next destination index to %d\n", next_destination_index);
+       // printf("Reseting next destination index to %d\n", next_destination_index);
     }
+
     // The player has clicked for the magpie to move on a different path
     // while the Magpie was currently navigating a path
     else {
@@ -168,16 +125,16 @@ void Magpie::GameAgent::set_path(Magpie::Path path) {
 
 
 //         print the new path
-        std::cout << "**== Modified Path ==**" << std::endl;
-        std::cout << next_destination_index << ":" << result_path[next_destination_index].x  << "," << result_path[next_destination_index].y << std::endl;
-        for(auto &pos : result_path) {
-            std::cout << "\t( " << pos.x << ", " << pos.y << " )" << std::endl;
-        };
+        //std::cout << "**== Modified Path ==**" << std::endl;
+        //std::cout << next_destination_index << ":" << result_path[next_destination_index].x  << "," << result_path[next_destination_index].y << std::endl;
+        //for(auto &pos : result_path) {
+        //    std::cout << "\t( " << pos.x << ", " << pos.y << " )" << std::endl;
+        //};
 
 
 
         // Set the path to the newly modified one
-        this->path = result_path;
-        this->new_path = result_path;
+        this->path = Magpie::Path(result_path);
+        this->new_path = Magpie::Path(result_path);
     }
 };

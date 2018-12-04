@@ -164,7 +164,7 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
     bool reach = false;
     // Perform BFS
 
-    std::cout << can_move_to(start_x + 1, start_y) << std::endl;
+    //std::cout << can_move_to(start_x + 1, start_y) << std::endl;
 
     while( !frontier.empty() ) {
 
@@ -188,7 +188,7 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
             }
 
             if (*it == destination) {
-                std::cout << "GET TARGET" << std::endl;
+                //std::cout << "GET TARGET" << std::endl;
                 reach = true;
                 break;
             }
@@ -205,9 +205,9 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
 
     //path_vector.pop_back();
     std::reverse(path_vector.begin(), path_vector.end());
-    for (glm::vec2 p : path_vector) {
-        std::cout << "(" << p.x << "," << p.y << ")" << std::endl;
-    }
+    //for (glm::vec2 p : path_vector) {
+    //    std::cout << "(" << p.x << "," << p.y << ")" << std::endl;
+    //}
     
 
     return Path(path_vector);

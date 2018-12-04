@@ -172,6 +172,6 @@ void Magpie::KeyCard::update_animation(float elapsed) {
         osc_tick = 0.0f;
     //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
     
-    (*transform)->position.z = std::cos(osc_tick * 5) * 0.05f;
+    (*transform)->position.z = std::cos(osc_tick * 6) * 0.05f;
     (*transform)->position.z += 0.05f;
 };

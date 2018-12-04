@@ -278,28 +278,26 @@ uint32_t Magpie::Player::get_current_room() {
     return this->current_room;
 };
 
-void Magpie::Player::turnTo(glm::vec3 destination) {
-
-    
+void Magpie::Player::turnTo(glm::vec3 destination) {  
 
     float x_difference = destination.x - get_position().x;
     float y_difference = destination.y - get_position().y;
 
     // WARNING::Only handles movement in cardinal directions
     if (x_difference > 0) {
-        std::cout << "DEBUG:: Facing right" << std::endl;
+        //std::cout << "DEBUG:: Facing right" << std::endl;
         orientation = DIRECTION::RIGHT;
     }
     else if (x_difference < 0) {
-        std::cout << "DEBUG:: Facing left" << std::endl;
+        //std::cout << "DEBUG:: Facing left" << std::endl;
         orientation = DIRECTION::LEFT;
     }
     else {
         if (y_difference > 0) {
-            std::cout << "DEBUG:: Facing up" << std::endl;
+            //std::cout << "DEBUG:: Facing up" << std::endl;
             orientation = DIRECTION::UP;
         } else {
-            std::cout << "DEBUG:: Facing down" << std::endl;
+            //std::cout << "DEBUG:: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
     }
@@ -308,19 +306,19 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
 void Magpie::Player::set_model_orientation(uint32_t dir) {
     switch(dir) {
         case (uint32_t)GameAgent::DIRECTION::RIGHT :
-            std::cout << "DEBUG:: Orienting right" << std::endl;
+            //std::cout << "DEBUG:: Orienting right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::LEFT :
-            std::cout << "DEBUG:: Orienting left" << std::endl;
+            //std::cout << "DEBUG:: Orienting left" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::UP :
-            std::cout << "DEBUG:: Orienting up" << std::endl;
+            //std::cout << "DEBUG:: Orienting up" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::DOWN:
-            std::cout << "DEBUG:: Orienting down" << std::endl;
+            //std::cout << "DEBUG:: Orienting down" << std::endl;
             (*transform)->rotation = original_rotation;
             break;
         default:

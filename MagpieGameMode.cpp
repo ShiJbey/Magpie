@@ -50,7 +50,7 @@ namespace Magpie {
 
         glm::vec3 player_position = game.get_level()->get_player_start_position();
 
-        std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
+        //std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
         create_player(player_position);
         //create_player(glm::vec3(4.0f, 8.0f, 0.0f));
 
@@ -60,15 +60,15 @@ namespace Magpie {
 
         for (auto i : guard_start) {
             for (auto i2 : i.second) {
-                std::cout << "CREATE" << std::endl;
+                //std::cout << "CREATE" << std::endl;
                Guard* guard = create_guard(i2.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
-               for (auto p : path) {
-                   std::cout << p.x << "," << p.y << std::endl;
-               }
+               //for (auto p : path) {
+               //    std::cout << p.x << "," << p.y << std::endl;
+               //}
                guard->set_patrol_points(path);
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
 
 //        create_guard(glm::vec3(player_position.x, player_position.y - 10, player_position.z));
@@ -184,11 +184,11 @@ namespace Magpie {
                 return true;
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-                printf("Dropping the load!\n");
+                //printf("Dropping the load!\n");
                 drop_treat(game.get_player()->get_position());
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
-                printf("Swapping disguise\n");
+                //printf("Swapping disguise\n");
                 switch(game.get_player()->get_state()) {
                     case (uint32_t)Player::STATE::IDLE:
                         game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
@@ -642,7 +642,7 @@ namespace Magpie {
         pointOfIntersect.x = floor(pointOfIntersect.x + 0.5f);
         pointOfIntersect.y = floor(pointOfIntersect.y + 0.5f);
 
-        printf("Player clicked tile: (%f, %f, %f)\n", pointOfIntersect.x, pointOfIntersect.y, pointOfIntersect.z);
+        //printf("Player clicked tile: (%f, %f, %f)\n", pointOfIntersect.x, pointOfIntersect.y, pointOfIntersect.z);
 
         return pointOfIntersect;
     };
@@ -707,7 +707,9 @@ namespace Magpie {
 
         if(game.get_level()->pink_card != nullptr) {
             if (game.get_level()->pink_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->pink_card->get_scene_object()->active) {
+                && game.get_level()->pink_card->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->pink_card->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->pink_card->get_position().y) <= 1) {
                 game.get_level()->pink_card->on_click();
                 game.get_player()->has_pink_card = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Pink Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 50.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
@@ -717,7 +719,9 @@ namespace Magpie {
 
         if(game.get_level()->green_card != nullptr) {
             if (game.get_level()->green_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->green_card->get_scene_object()->active) {
+                && game.get_level()->green_card->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->green_card->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->green_card->get_position().y) <= 1) {
                 game.get_level()->green_card->on_click();
                 game.get_player()->has_green_card = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
@@ -727,7 +731,9 @@ namespace Magpie {
 
         if(game.get_level()->master_key != nullptr) {
             if (game.get_level()->master_key->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->master_key->get_scene_object()->active) {
+                && game.get_level()->master_key->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->master_key->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->master_key->get_position().y) <= 1) {
                 game.get_level()->master_key->on_click();
                 game.get_player()->has_master_key = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));

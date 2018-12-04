@@ -37,7 +37,6 @@ Magpie::FloatingNotificationText::FloatingNotificationText(std::string text, con
 };
 
 void Magpie::FloatingNotificationText::update_animation(float elapsed) {
-    printf("Pizza\n");
     elapsed_animation_time += elapsed;
 
     if (elapsed_animation_time < (animation_duration / 2.0f)) {

@@ -24,7 +24,7 @@ Magpie::BoundingBox* Magpie::DisplayCase::get_boundingbox() {
 };
 
 void Magpie::DisplayCase::on_click() {
-    std::cout << "Display Case Clicked" << std::endl;
+    //std::cout << "Display Case Clicked" << std::endl;
     glass->active = false;
     frame->active = false;
     opened = true;
