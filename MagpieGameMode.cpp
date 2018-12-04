@@ -634,7 +634,10 @@ namespace Magpie {
 
         for (const auto &room: game.get_level()->get_gems()) {
             for (auto &gem: room.second) {
-                if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction) && gem->get_scene_object()->active) {
+                if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                    && gem->get_scene_object()->active
+                    && abs(game.get_player()->get_position().x - gem->get_position().x) <= 1
+                    && abs(game.get_player()->get_position().y - gem->get_position().y) <= 1) {
                     gem->steal(game.get_player());
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
@@ -644,7 +647,9 @@ namespace Magpie {
         }
 
         for (auto const &displaycase : game.get_level()->get_displaycases()) {
-            if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+            if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+               && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
+               && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
                     displaycase->on_click();
                     return true;
