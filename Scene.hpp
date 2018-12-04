@@ -60,6 +60,7 @@ struct Scene {
 
 	//"Object"s contain information needed to render meshes:
 	struct Object {
+		bool active = true;
 		Transform *transform; //objects must be attached to transforms.
 		Object(Transform *transform_) : transform(transform_) {
 			assert(transform);
@@ -179,6 +180,7 @@ struct Scene {
 	//(you shouldn't be manipulating these pointers directly
 
 	//------ functions to traverse the scene ------
+	Transform* look_up(std::string const &name);
 
 	//Draw the scene from a given camera by computing appropriate matrices and sending all objects to OpenGL:
 	//"camera" must be non-null!

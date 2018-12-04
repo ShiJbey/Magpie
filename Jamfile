@@ -4,7 +4,7 @@
 #You shouldn't need to change it.
 
 if $(OS) = NT { #Windows
-	C++FLAGS = /nologo /Z7 /c /EHsc /W3 /WX /MD /I"kit-libs-win/out/include" /I"kit-libs-win/out/include/SDL2" /I"kit-libs-win/out/libpng"
+	C++FLAGS = /nologo /Z7 /c /EHsc /W3 /MD /I"kit-libs-win/out/include" /I"kit-libs-win/out/include/SDL2" /I"kit-libs-win/out/libpng" /I"freetype-2/include"
 		#disable a few warnings:
 		/wd4146 #-1U is still unsigned
 		/wd4297 #unforunately SDLmain is nothrow
@@ -13,17 +13,20 @@ if $(OS) = NT { #Windows
 		/LIBPATH:"kit-libs-win/out/lib"
 		/LIBPATH:"kit-libs-win/out/libpng"
 		/LIBPATH:"kit-libs-win/out/zlib"
+		/LIBPATH:"freetype-2/objs"
 	;
-	LINKLIBS = SDL2main.lib SDL2.lib OpenGL32.lib libpng.lib zlib.lib ;
+	LINKLIBS = SDL2main.lib SDL2.lib OpenGL32.lib libpng.lib zlib.lib freetype.lib ;
 
 	File dist\\SDL2.dll : kit-libs-win\\out\\dist\\SDL2.dll ;
 } else if $(OS) = MACOSX { #MacOS
 	KIT_LIBS = kit-libs-osx ;
+	FREETYPE = freetype-2 ;
 	C++ = clang++ ;
 	C++FLAGS =
 		-std=c++14 -g -Wall -Werror
 		-I$(KIT_LIBS)/libpng/include                           #libpng
 		-I$(KIT_LIBS)/glm/include                              #glm
+		-I$(FREETYPE)/include                                  #freetype2
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --cflags` #SDL2
 		;
 	LINK = clang++ ;
@@ -31,15 +34,18 @@ if $(OS) = NT { #Windows
 	LINKLIBS =
 		-L$(KIT_LIBS)/libpng/lib -lpng                      #libpng
 		-L$(KIT_LIBS)/zlib/lib -lz                          #zlib
+		-L$(FREETYPE)/objs -lfreetype                       #freetype
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --static-libs` -framework OpenGL #SDL2
 		;
 } else if $(OS) = LINUX { #Linux
 	KIT_LIBS = kit-libs-linux ;
+	FREETYPE = freetype-2 ;
 	C++ = g++ ;
 	C++FLAGS =
 		-std=c++11 -g -Wall -Werror
 		-I$(KIT_LIBS)/libpng/include                           #libpng
 		-I$(KIT_LIBS)/glm/include                              #glm
+		-I$(FREETYPE)/include                                  #freetype2
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --cflags` #SDL2
 		;
 	LINK = g++ ;
@@ -47,6 +53,7 @@ if $(OS) = NT { #Windows
 	LINKLIBS =
 		-L$(KIT_LIBS)/libpng/lib -lpng                      #libpng
 		-L$(KIT_LIBS)/zlib/lib -lz                          #zlib
+		-L$(FREETYPE)/objs -lfreetype                       #freetype
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --static-libs` -lGL #SDL2
 		;
 }
@@ -71,15 +78,42 @@ CLIENT_NAMES =
 	compile_program
 	vertex_color_program
 	texture_program
+	highlight_program
+	transparent_program
 	depth_program
 	Scene
 	Mode
-	GameMode
 	MenuMode
+	TutorialMode
 	Load
 	MeshBuffer
 	draw_text
 	Sound
+	TransformAnimation
+	FloorTile
+	Item
+	MagpieLevel
+	Navigation
+	load_level
+	GameAgent
+	Guard
+	Player
+	Signalable
+	MagpieGame
+	MagpieGameMode
+	AnimationManager
+	Clickable
+	Map
+	Inventory
+	AssetLoader
+	AnimatedModel
+	UI
+	Door
+	ui_shader_program
+	draw_freetype_text
+	DisplayCase
+	startmenu
+	AnimatedText
 	;
 
 if $(OS) = NT {

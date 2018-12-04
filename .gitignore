@@ -1,4 +1,4 @@
-objs/
+./objs/
 *.blend[0-9]
 dist/main
 dist/main.exe
@@ -8,5 +8,17 @@ dist/server
 dist/server.exe
 dist/SDL2.dll
 kit-libs-win
+kit-libs-win/**
 kit-libs-osx
 kit-libs-linux
+.vscode
+.idea
+dist/main.ilk
+dist/main.pdb
+*.exe
+*.obj
+freetype-2/build
+freetype-2/builds
+freetype-2/docs
+freetype-2/devel
+cmake-build-debug/

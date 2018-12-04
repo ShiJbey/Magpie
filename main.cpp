@@ -5,13 +5,15 @@
 #include "Load.hpp"
 
 //The 'GameMode' mode plays the game:
-#include "GameMode.hpp"
+#include "MagpieGamemode.hpp"
 
 //The 'Sound' header has functions for managing sound:
 #include "Sound.hpp"
 
 //GL.hpp will include a non-namespace-polluting set of opengl prototypes:
 #include "GL.hpp"
+
+#include "startmenu.hpp"
 
 //Includes for libSDL:
 #include <SDL.h>
@@ -35,7 +37,7 @@ int main(int argc, char **argv) {
 #endif
 	struct {
 		//TODO: this is where you set the title and size of your game window
-		std::string title = "TODO: Game Title";
+		std::string title = "Magpie";
 		glm::uvec2 size = glm::uvec2(640, 400);
 	} config;
 
@@ -118,7 +120,8 @@ int main(int argc, char **argv) {
 
 	//------------ create game mode + make current --------------
 
-	Mode::set_current(std::make_shared< GameMode >(/*client*/));
+	//Mode::set_current(std::make_shared< Magpie::MagpieGameMode >(/*client*/));
+	Mode::set_current(std::make_shared< Magpie::StartMenu >(/*client*/));
 
 	//------------ main loop ------------
 
