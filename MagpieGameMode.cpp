@@ -8,6 +8,7 @@
 #include "MagpieGame.hpp"
 #include "draw_freetype_text.hpp"
 #include "AnimatedModel.hpp"
+#include "startmenu.hpp"
 
 #include "MenuMode.hpp"
 #include "Load.hpp"
@@ -85,6 +86,8 @@ namespace Magpie {
         assert(game.get_level() != nullptr);
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+
+        StartMenu();
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -774,5 +777,25 @@ namespace Magpie {
         }
         return handled;
     };
+
+/*
+    void MagpieGameMode::open_start_menu() {
+        std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >();
+
+        std::shared_ptr< Mode > gameMode = shared_from_this();
+        menu->background = gameMode;
+
+        menu->choices.emplace_back("START GAME", [gameMode](){
+            Mode::set_current(gameMode);
+        });
+        menu->choices.emplace_back("QUIT", [](){
+            Mode::set_current(nullptr);
+        });
+
+        menu->selected = 1;
+
+        Mode::set_current(menu);
+    }
+    */
 
 }
