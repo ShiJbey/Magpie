@@ -81,23 +81,23 @@ void Magpie::AnimatedModel::set_animation_manager(Magpie::AnimationManager *anim
 void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
     switch(dir) {
         case 3 :
-            std::cout << "DEBUG::AnimatedModel Orienting right" << std::endl;
+//            std::cout << "DEBUG::AnimatedModel Orienting right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 1 :
-            std::cout << "DEBUG::AnimatedModel Orienting left" << std::endl;
+//            std::cout << "DEBUG::AnimatedModel Orienting left" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 2 :
-            std::cout << "DEBUG::AnimatedModel:: Orienting up" << std::endl;
+//            std::cout << "DEBUG::AnimatedModel:: Orienting up" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case 0:
-            std::cout << "DEBUG::AnimatedModel:: Orienting down" << std::endl;
+//            std::cout << "DEBUG::AnimatedModel:: Orienting down" << std::endl;
             (*transform)->rotation = original_rotation;
             break;
         default:
-            std::cout << "ERROR::AnimatedModel:: Invalid orientation" << std::endl;
+//            std::cout << "ERROR::AnimatedModel:: Invalid orientation" << std::endl;
             break;
     }
 };

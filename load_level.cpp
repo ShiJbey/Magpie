@@ -585,6 +585,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             if (guard_number != 0) {
                 level->add_guard_path_position(room_number, guard_number, x, y);
                 level->set_movement_matrix_position(x, y, true);
+
+                Scene::Object* obj = get_mesh(x, y, 3, 0);
+                obj->transform->name = "floor_" + std::to_string(i);
+                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+                FloorTile*** floor = level->get_floor_matrix();
+                floor[x][y] = new FloorTile(obj, room_number);
             }
             
             // Floor Tile                           

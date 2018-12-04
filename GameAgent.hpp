@@ -43,7 +43,7 @@ namespace Magpie {
         // Specific enums may be introduced in chid classes for
         // simplicity
         uint32_t current_state = 0;
-        float movespeed = 1.0f;
+        float movespeed = 1.5f;
 		float accumulate_time = 0.0f;
 		glm::vec3 starting_point;
         DIRECTION orientation;

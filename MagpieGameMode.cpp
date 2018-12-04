@@ -60,6 +60,7 @@ namespace Magpie {
 
         for (auto i : guard_start) {
             for (auto i2 : i.second) {
+                std::cout << "CREATE" << std::endl;
                Guard* guard = create_guard(i2.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
                for (auto p : path) {
@@ -70,7 +71,7 @@ namespace Magpie {
             std::cout << std::endl;
         }
 
-//        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
+//        create_guard(glm::vec3(player_position.x, player_position.y - 10, player_position.z));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
 //        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
 
@@ -94,6 +95,10 @@ namespace Magpie {
     };
 
     void MagpieGameMode::update(float elapsed) {
+        if (game.get_player()->game_over) {
+            std::cout << "GAME OVER !!!!!" << std::endl;
+            return;
+        }
         //if the map is out don't update anything
         if (ui.map.state == Map::OFF) {
             // Update the player
@@ -750,6 +755,11 @@ namespace Magpie {
      */
     bool MagpieGameMode::handle_player_movement(glm::vec3 click_floor_intersect) {
         if (game.get_level()->can_move_to(game.get_player()->get_current_room(), click_floor_intersect.x, click_floor_intersect.y)) {
+
+            if (click_floor_intersect == game.get_player()->final_destination) return true;
+
+            game.get_player()->final_destination = click_floor_intersect;
+
             game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
                 glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
                 glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
