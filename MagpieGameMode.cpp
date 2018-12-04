@@ -61,7 +61,7 @@ namespace Magpie {
         for (auto i : guard_start) {
             for (auto i2 : i.second) {
                 //std::cout << "CREATE" << std::endl;
-               Guard* guard = create_guard(i2.second);
+               Guard* guard = create_guard(i2.second.first, i2.second.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
                //for (auto p : path) {
                //    std::cout << p.x << "," << p.y << std::endl;
@@ -350,7 +350,7 @@ namespace Magpie {
         return player;
     };
 
-    Guard* MagpieGameMode::create_guard(glm::vec3 position) {
+    Guard* MagpieGameMode::create_guard(glm::vec3 position, GameAgent::DIRECTION dir) {
 
         Magpie::Guard* guard = new Guard();
         guard->player = game.get_player();
@@ -409,9 +409,26 @@ namespace Magpie {
             std::cerr << "ERROR:: Guard Transform not found" << std::endl;
         }
 
+        glm::vec3 turn_destination = position;
+        switch (dir) {
+            case GameAgent::DIRECTION::LEFT:
+                turn_destination.x--;
+                break;
+            case GameAgent::DIRECTION::RIGHT:
+                turn_destination.x++;
+                break;
+            case GameAgent::DIRECTION::UP:
+                turn_destination.y++;
+                break;
+            default:
+                turn_destination.y--;
+                break;
+        }
+
         // Set the guard at the proper place
         guard->set_position(position);
         guard->set_starting_point(position);
+        guard->turnTo(turn_destination);
 
         // Add the guard to the game
         game.add_guard(guard);

@@ -1,6 +1,7 @@
 #include "MagpieLevel.hpp"
 #include "FloorTile.hpp"
 #include "Door.hpp"
+#include "GameAgent.hpp"
 
 #include <algorithm>
 
@@ -255,7 +256,7 @@ glm::vec3 Magpie::MagpieLevel::get_player_start_position() {
     return this->player_start_position;
 }
 
-void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position) {
+void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, GameAgent::DIRECTION dir) {
     auto room_number_iter = guard_start_positions.find(room_number);
     if (room_number_iter != guard_start_positions.end()) {
         auto guard_number_iter = room_number_iter->second.find(guard_number);
@@ -263,16 +264,16 @@ void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_
             std::cout << "WARNING::MagpieLevel:: Attempting to add a duplicate start position" << std::endl; 
         }
         else {
-            guard_start_positions[room_number].insert(std::make_pair(guard_number, start_position));
+            guard_start_positions[room_number].insert(std::make_pair(guard_number, std::make_pair(start_position, dir)));
         }
     }
     else {
-        guard_start_positions.insert({room_number, std::map<uint32_t, glm::vec3>()});
-        guard_start_positions[room_number].insert(std::make_pair(guard_number, start_position));
+        guard_start_positions.insert({room_number, std::map<uint32_t, std::pair<glm::vec3, GameAgent::DIRECTION>>()});
+        guard_start_positions[room_number].insert(std::make_pair(guard_number, std::make_pair(start_position, dir)));
     }
 };
 
-std::map< uint32_t, std::map< uint32_t, glm::vec3 > >& Magpie::MagpieLevel::get_guard_start_positions() {
+std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, Magpie::GameAgent::DIRECTION> > >& Magpie::MagpieLevel::get_guard_start_positions() {
     return guard_start_positions;
 }
 

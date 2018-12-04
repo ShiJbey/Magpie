@@ -580,13 +580,22 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
             // Check if this is a start position for a guard
             if (current_pixel.is_guard_start_position()) {
-                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f));
-                level->set_movement_matrix_position(x, y, true);
-            }
+                GameAgent::DIRECTION dir = GameAgent::DIRECTION::RIGHT;
+                switch (customization_id) {
+                    case 1:
+                        dir = GameAgent::DIRECTION::UP;
+                        break;
+                    case 2:
+                        dir = GameAgent::DIRECTION::LEFT;
+                        break;
+                    case 3:
+                        dir = GameAgent::DIRECTION::DOWN;
+                        break;
+                    default:
+                        break;
+                }
 
-            // Check if it is part of a guards path
-            if (guard_number != 0) {
-                level->add_guard_path_position(room_number, guard_number, x, y);
+                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f), dir);
                 level->set_movement_matrix_position(x, y, true);
 
                 Scene::Object* obj = get_mesh(x, y, 3, 0);
@@ -596,9 +605,22 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 FloorTile*** floor = level->get_floor_matrix();
                 floor[x][y] = new FloorTile(obj, room_number);
             }
+
+            // Check if it is part of a guards path
+            if (guard_number != 0) {
+                level->add_guard_path_position(room_number, guard_number, x, y);
+                level->set_movement_matrix_position(x, y, true);
+
+//                Scene::Object* obj = get_mesh(x, y, 3, 0);
+//                obj->transform->name = "floor_" + std::to_string(i);
+//                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+//                level->set_movement_matrix_position(x, y, true);
+//                FloorTile*** floor = level->get_floor_matrix();
+//                floor[x][y] = new FloorTile(obj, room_number);
+            }
             
             // Floor Tile                           
-            else if (current_pixel.is_player_start_position() || mesh_id == 3) {
+            if (current_pixel.is_player_start_position() || mesh_id == 3) {
                 Scene::Object* obj = get_mesh(x, y, 3, customization_id);
                 obj->transform->name = "floor_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));

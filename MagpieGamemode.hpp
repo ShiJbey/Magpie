@@ -70,7 +70,7 @@ namespace Magpie {
 
         // Adds a new guard to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
-        Guard* create_guard(glm::vec3 position);
+        Guard* create_guard(glm::vec3 position, GameAgent::DIRECTION dir);
 
         // Adds a new player to the game by loading all the model data
         // and animations. Then it sets attributes for what programs to use
