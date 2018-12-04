@@ -9,7 +9,7 @@
 #include "draw_freetype_text.hpp"
 #include "AnimatedModel.hpp"
 
-#include "MenuMode.hpp"
+#include "TutorialMode.hpp"
 #include "Load.hpp"
 #include "MeshBuffer.hpp"
 #include "Scene.hpp"
@@ -54,19 +54,19 @@ namespace Magpie {
 
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
 
-//        auto guard_start = game.get_level()->get_guard_start_positions();
-//
-//        for (auto i : guard_start) {
-//            for (auto i2 : i.second) {
-//               Guard* guard = create_guard(i2.second);
-//               auto path = game.get_level()->get_guard_path(i.first, i2.first);
-//               for (auto p : path) {
-//                   std::cout << p.x << "," << p.y << std::endl;
-//               }
-//               guard->set_patrol_points(path);
-//            }
-//            std::cout << std::endl;
-//        }
+        auto guard_start = game.get_level()->get_guard_start_positions();
+
+        for (auto i : guard_start) {
+            for (auto i2 : i.second) {
+               Guard* guard = create_guard(i2.second);
+               auto path = game.get_level()->get_guard_path(i.first, i2.first);
+               for (auto p : path) {
+                   std::cout << p.x << "," << p.y << std::endl;
+               }
+               guard->set_patrol_points(path);
+            }
+            std::cout << std::endl;
+        }
 
 //        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
@@ -84,6 +84,7 @@ namespace Magpie {
         assert(game.get_level() != nullptr);
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -160,7 +161,11 @@ namespace Magpie {
                         break;
                 }
             }
-
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                //open tutorial screen on 'ESCAPE':
+                show_tutorial();
+                return true;
+            }
         }
 
         #ifdef FREE_FLIGHT
@@ -177,8 +182,6 @@ namespace Magpie {
                     break;
                 case SDL_SCANCODE_DOWN:
                     camera_trans->position.y -= 1.0f;
-                    break;
-                default:
                     break;
                 default:
                     break;
@@ -741,4 +744,13 @@ namespace Magpie {
         return handled;
     };
 
+
+    void MagpieGameMode::show_tutorial() {
+        std::shared_ptr< TutorialMode > tutorial = std::make_shared< TutorialMode >();
+
+        std::shared_ptr< Mode > game = shared_from_this();
+        tutorial->background = game;
+
+        Mode::set_current(tutorial);
+    }
 }

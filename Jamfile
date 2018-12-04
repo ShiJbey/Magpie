@@ -84,6 +84,7 @@ CLIENT_NAMES =
 	Scene
 	Mode
 	MenuMode
+	TutorialMode
 	Load
 	MeshBuffer
 	draw_text

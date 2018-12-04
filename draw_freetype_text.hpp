@@ -20,6 +20,7 @@ struct Character {
 };
 
 extern Load< std::map< GLchar, Character > > ransom_font;
+extern Load< std::map< GLchar, Character > > tutorial_font;
 
 // Probably need to Load the freetype library with the Load Class
 std::map< GLchar, Character >* load_font(uint32_t font_height, const std::string &font_file);

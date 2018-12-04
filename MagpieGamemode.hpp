@@ -100,6 +100,8 @@ namespace Magpie {
         // Creates a ray based on where the user clicks on the screen
         Ray create_click_ray(int mouseX, int mouseY, int screenWidth, int screenHeight, const Scene::Camera* cam);
 
+        //opens tutorial screen
+        void show_tutorial();
 
         ////////////////////////////////////////////////
         //                Attributes                  //
