@@ -429,6 +429,9 @@ namespace Magpie {
         guard->set_position(position);
         guard->set_starting_point(position);
         guard->turnTo(turn_destination);
+        guard->set_model_orientation((uint32_t)dir);
+
+        assert(guard->get_orientation() == dir);
 
         // Add the guard to the game
         game.add_guard(guard);
