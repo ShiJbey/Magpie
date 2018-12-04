@@ -804,6 +804,10 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         }
                     }
                 }
+
+                if (current_pixel.is_item_location()) {
+                    level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
+                }
             }
 
             // 4-Corner
@@ -882,7 +886,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
                 displaycase->scene_object = scene.new_object(display_group);
                 displaycase->set_transform(&displaycase->scene_object->transform);
-                (*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+                //(*displaycase->get_transform())->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
                 displaycase->set_position(glm::vec3((float)x, (float)y, 0.0f));
                 level->add_displaycase(displaycase);
                 // Place geode
@@ -929,6 +933,21 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             Gem* gem = new Gem(obj);
             obj->transform->name = "Gem" + std::to_string(gem->get_instance_id());
             level->add_gem(1, gem);    
+        }
+    };
+
+    for (auto const &room : *(level->get_potential_wall_locations())) {
+        for (auto const &location: room.second) {
+            std::cout << "Making Painting" << std::endl;
+            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, 0);
+            assert(obj != nullptr);
+            obj->transform->rotation = location->rotation;
+            //obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
+            obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+            //obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            Painting* painting = new Painting(obj);
+            obj->transform->name = "Painting" + std::to_string(painting->get_instance_id());
+            level->add_painting(1, painting);    
         }
     };
 

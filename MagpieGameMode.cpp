@@ -112,6 +112,12 @@ namespace Magpie {
                 }
             }
 
+            for (auto const &room: game.get_level()->get_paintings()) {
+                for (auto &painting: room.second) {
+                    //painting->update_animation(elapsed);
+                }
+            }
+
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
         
