@@ -72,47 +72,55 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
 		}
 	}
 	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
-	// Earn money by stealing
-	// Pick up key items along the way to unlock new skills
-	// Escape without getting caught by the guards
 
-	// 'LEFT CLICK' to steal
-
-	// Use keycards to travel through locked doors
-
-	// Break or unlock display cases
-
-	// Use 'SPACE' to drop dog treats to distract guards
-
-	// Disguise yourself with the 'D' key
 
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
     float aspect = viewport[2] / float(viewport[3]);
-    float font_height = 0.05f;
-    float margin = 0.1f;
-    float padding = 0.05f;
+    float x_margin = 0.2f;
+    float y_margin = 0.17f;
+    float tab = 0.7f;
+    float section_break = 0.08f;
 
-    float target_font_size = viewport[3] * font_height;
-    float font_scale = target_font_size / 64.f;
+	float font_height = 0.05f;
+	float padding = 0.1f;
+    glm::vec2 start = glm::vec2(-aspect+x_margin, 1-y_margin);
+    glm::vec2 anchor = start;
 
-    glm::vec2 start = glm::vec2(-aspect+margin, 1-margin);
+    auto write_line = [&](std::string text) {
+        float target_font_size = viewport[3] * font_height;
+        float font_scale = target_font_size / 64.f;
+		anchor.y -= font_height;
 
-    auto write_instruction = [&](glm::vec2 &anchor) {
-        anchor.y -= font_height;
+		glm::vec2 window_anchor = glm::vec2();
+		window_anchor.x = ((anchor.x + aspect) / (2*aspect)) * viewport[2];
+		window_anchor.y = ((anchor.y + 1) / 2) * viewport[3];
 
-        glm::vec2 window_anchor = glm::vec2();
-        window_anchor.x = ((anchor.x + aspect) / (2*aspect)) * viewport[2];
-        window_anchor.y = ((anchor.y + 1) / 2) * viewport[3];
-
-//      draw_text("TESTING BITCHES", anchor, font_height);
-        RenderText(tutorial_font.value, "TESTING BITCHES", window_anchor.x, window_anchor.y, font_scale, glm::vec4(0.f,1.f,0.f,1.f));
-
-        anchor.y -= padding;
+		RenderText(tutorial_font.value, text, window_anchor.x, window_anchor.y, font_scale, glm::vec4(0.f,1.f,0.f,1.f));
+		anchor.y -= padding;
     };
 
-    write_instruction(start);
+    font_height = 0.06f;
+    padding = 0.17f;
+	write_line("EARN MONEY BY STEALING ");
+	anchor.y -= section_break;
+
+	write_line("PICK UP KEY ITEMS TO UNLOCK NEW SKILLS");
+	anchor.x += tab;
+	font_height = 0.04f;
+	padding = 0.2f;
+	write_line("KEYCARDS unlock doors");
+	write_line("DOG TREATS distract guards");
+	write_line("KEY unlock display cases without breaking them");
+	write_line("BOXES disguise you from guards");
+    anchor.y -= section_break;
+
+	anchor.x = start.x;
+	font_height = 0.06f;
+	padding = 0.17f;
+	write_line("ESCAPE WITHOUT GETTING CAUGHT");
 
 	glEnable(GL_DEPTH_TEST);
 }
