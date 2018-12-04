@@ -21,4 +21,11 @@ namespace Magpie {
             selected = 1;
         }
     };
+
+    struct EndMenu : public MenuMode {
+        EndMenu() {
+            choices.emplace_back("GAME OVER!");
+            selected = 1;
+        }
+    };
 }
