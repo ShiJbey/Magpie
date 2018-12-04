@@ -10,7 +10,7 @@
 #include "AnimatedModel.hpp"
 #include "startmenu.hpp"
 
-#include "MenuMode.hpp"
+#include "TutorialMode.hpp"
 #include "Load.hpp"
 #include "MeshBuffer.hpp"
 #include "Scene.hpp"
@@ -56,19 +56,19 @@ namespace Magpie {
 
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
 
-//        auto guard_start = game.get_level()->get_guard_start_positions();
-//
-//        for (auto i : guard_start) {
-//            for (auto i2 : i.second) {
-//               Guard* guard = create_guard(i2.second);
-//               auto path = game.get_level()->get_guard_path(i.first, i2.first);
-//               for (auto p : path) {
-//                   std::cout << p.x << "," << p.y << std::endl;
-//               }
-//               guard->set_patrol_points(path);
-//            }
-//            std::cout << std::endl;
-//        }
+        auto guard_start = game.get_level()->get_guard_start_positions();
+
+        for (auto i : guard_start) {
+            for (auto i2 : i.second) {
+               Guard* guard = create_guard(i2.second);
+               auto path = game.get_level()->get_guard_path(i.first, i2.first);
+               for (auto p : path) {
+                   std::cout << p.x << "," << p.y << std::endl;
+               }
+               guard->set_patrol_points(path);
+            }
+            std::cout << std::endl;
+        }
 
 //        create_guard(glm::vec3(9.0f, 8.0f, 0.0f));
 //        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
@@ -87,7 +87,6 @@ namespace Magpie {
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
 
-        StartMenu();
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -189,7 +188,11 @@ namespace Magpie {
                         break;
                 }
             }
-
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                //open tutorial screen on 'ESCAPE':
+                show_tutorial();
+                return true;
+            }
         }
 
         #ifdef FREE_FLIGHT
@@ -206,8 +209,6 @@ namespace Magpie {
                     break;
                 case SDL_SCANCODE_DOWN:
                     camera_trans->position.y -= 1.0f;
-                    break;
-                default:
                     break;
                 default:
                     break;
@@ -245,11 +246,12 @@ namespace Magpie {
             scene.draw(camera);
 
             //score
-            RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
-                        0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-            //draw UI
-            ui.drawUI(camera, drawable_size);
+            if (Mode::current == shared_from_this()) {
+                RenderText(ransom_font.value, std::to_string(game.get_player()->get_score()),
+                           0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                //draw UI
+                ui.drawUI(camera, drawable_size);
+            }
         }
 
         {
@@ -635,7 +637,9 @@ namespace Magpie {
         for (const auto &room: game.get_level()->get_paintings()) {
             for (auto &painting: room.second) {
                 if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                    && painting->get_scene_object()->active) {
+                    && painting->get_scene_object()->active
+                    && abs(game.get_player()->get_position().x - painting->get_position().x) <= 1
+                    && abs(game.get_player()->get_position().y - painting->get_position().y) <= 1) {
                     painting->steal(game.get_player()); //changing player score
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
@@ -646,7 +650,10 @@ namespace Magpie {
 
         for (const auto &room: game.get_level()->get_gems()) {
             for (auto &gem: room.second) {
-                if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction) && gem->get_scene_object()->active) {
+                if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                    && gem->get_scene_object()->active
+                    && abs(game.get_player()->get_position().x - gem->get_position().x) <= 1
+                    && abs(game.get_player()->get_position().y - gem->get_position().y) <= 1) {
                     gem->steal(game.get_player());
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
@@ -656,7 +663,9 @@ namespace Magpie {
         }
 
         for (auto const &displaycase : game.get_level()->get_displaycases()) {
-            if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
+            if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+               && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
+               && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
                     displaycase->on_click();
                     return true;
@@ -777,6 +786,15 @@ namespace Magpie {
         }
         return handled;
     };
+
+    void MagpieGameMode::show_tutorial() {
+        std::shared_ptr< TutorialMode > tutorial = std::make_shared< TutorialMode >();
+
+        std::shared_ptr< Mode > game = shared_from_this();
+        tutorial->background = game;
+
+        Mode::set_current(tutorial);
+    }
 
 /*
     void MagpieGameMode::open_start_menu() {

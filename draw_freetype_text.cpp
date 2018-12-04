@@ -122,6 +122,10 @@ Load< std::map< GLchar, Character > > ransom_font(LoadTagDefault, [](){
     return load_font(64, data_path("fonts/DJB Ransom Note Clipped.ttf"));
 });
 
+Load< std::map< GLchar, Character > > tutorial_font(LoadTagDefault, [](){
+    return load_font(64, data_path("fonts/NeoBulletin Limited Free Version.ttf"));
+});
+
 void RenderText(const std::map< GLchar, Character >* font, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
     GLuint VAO, VBO;
 
