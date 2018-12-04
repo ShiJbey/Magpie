@@ -135,8 +135,6 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
             }
             visited_matrix.push_back(col);
         }
-
-        print_movement_matrix();
     }
     else {
         std::cerr << "WARNING: Navigation has been pass a null movement matrix." << std::endl;

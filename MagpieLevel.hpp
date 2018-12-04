@@ -63,16 +63,16 @@ namespace Magpie {
         glm::uvec2 get_dimensions();
         std::vector< std::vector< bool > >* get_movement_matrix();
         void set_movement_matrix_position(uint32_t x, uint32_t y, bool can_walk);
-        std::map< uint32_t, std::vector< Magpie::Painting > >* get_paintings();
-        std::map< uint32_t, std::vector< Magpie::Gem > >* get_gems();
+        std::map< uint32_t, std::vector< Magpie::Painting* > >& get_paintings();
+        std::map< uint32_t, std::vector< Magpie::Gem* > >& get_gems();
         FloorTile*** get_floor_matrix();
         std::vector< Door* >* get_doors();
         std::vector< DisplayCase* >& get_displaycases();
         void add_displaycase(DisplayCase* displaycase);
         
 
-        void add_painting(uint32_t room_number, Painting painting);
-        void add_gem(uint32_t room_number, Gem gem);
+        void add_painting(uint32_t room_number, Painting* painting);
+        void add_gem(uint32_t room_number, Gem* gem);
 
         
         void set_player_start_position(glm::vec3 start_position);
@@ -136,8 +136,8 @@ namespace Magpie {
         std::vector< std::vector< Scene::Transform* > > walls;
 
         // Maps room numbers to the vectors of items placed within that room
-        std::map< uint32_t, std::vector< Gem > > gems;
-        std::map< uint32_t, std::vector< Painting > > paintings;
+        std::map< uint32_t, std::vector< Gem* > > gems;
+        std::map< uint32_t, std::vector< Painting* > > paintings;
         
         // All the doors in the level
         std::vector< Door* > doors;

@@ -596,8 +596,10 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 std::string name = "Door_" + std::to_string(i);
                 level->set_movement_matrix_position(x, y, true);
                 Door* door = new Door();
+                bool animated_door = false;
 
                 if (customization_id >= 0 && customization_id <= 2) {
+                    animated_door = true;
                     // Spawn an animated door model
                     create_animated_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
                     // Add door the the levels vector of doors
@@ -651,6 +653,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         door->room_a = glm::ivec2(int(x), (int)y - 1);
                         door->room_b = glm::ivec2(int(x), (int)y + 1);
                     }
+                }
+
+                if (animated_door) {
+                    PixelData pa = level_data->pixel_data[door->room_a.y * level_data->level_width + door->room_a.x];
+                    PixelData pb = level_data->pixel_data[door->room_b.y * level_data->level_width + door->room_b.x];
+                    door->rooms.insert({pa.get_room_number(), door->room_b});
+                    door->rooms.insert({pb.get_room_number(), door->room_a});
                 }                   
             }
 
@@ -910,6 +919,18 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
 
         }
     }
+
+    for (auto const &room : *(level->get_potential_pedestal_locations())) {
+        for (auto const &location: room.second) {
+            std::cout << "Making Gem" << std::endl;
+            Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, 0);
+            assert(obj != nullptr);
+            obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            Gem* gem = new Gem(obj);
+            obj->transform->name = "Gem" + std::to_string(gem->get_instance_id());
+            level->add_gem(1, gem);    
+        }
+    };
 
     /*
     for (uint32_t i = 0; i < level->get_potential_pedestal_locations().size(); i++) {
