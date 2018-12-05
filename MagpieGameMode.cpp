@@ -275,6 +275,8 @@ namespace Magpie {
             if (Mode::current == shared_from_this()) {
                 RenderText(ransom_font.value, "$" + std::to_string(game.get_player()->get_score()),
                            0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                RenderText(tutorial_font.value, "'Click' to move and select, press 'ESC' for instructions",
+                           (float)drawable_size.x - 550.0f, 20.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
                 //draw UI
                 ui.drawUI(camera, drawable_size);
             }
