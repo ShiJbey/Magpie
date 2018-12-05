@@ -206,6 +206,17 @@ namespace Magpie {
                 show_tutorial();
                 return true;
             }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_EQUALS) {
+                presses_for_developer_mode--;
+                if (presses_for_developer_mode == 0) {
+                    game.get_player()->has_pink_card = true;
+                    game.get_player()->has_green_card= true;
+                    game.get_player()->has_master_key = true;
+                    game.get_player()->has_cardboard_box = true;
+                    game.get_player()->has_dog_treats = true;
+                    animated_text_objects.push_back(FloatingNotificationText("Cheat Active!", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                }
+            }
         }
 
         #ifdef FREE_FLIGHT
