@@ -13,20 +13,6 @@
 
 namespace Magpie {
 
-    struct HitlistTask {
-        bool completed = false;
-        std::string description;
-        //std::function< bool(Player *) > completion_check;
-
-        std::string to_string() {
-            if (completed) {
-                return "[ ] Task: " + description;
-            } else {
-                return "[x] Task: " + description;
-            }
-        };
-    };
-
     class Player: public AnimatedModel, public GameAgent, public Signalable {
     public:
         // This is incremented each time we create a new player
@@ -44,17 +30,6 @@ namespace Magpie {
         };
 
         Player();
-        
-        // Runs the lambda functions for each task on the hit list
-        // that has not been marked as completed
-        void update_hitlist();
-
-        // Returns true if all the tasks in the hitlist are marked as
-        // completed
-        bool hitlist_complete();
-
-        // Clean print out of the completion status of the player's tasks
-        void print_tasks();
 
         void walk(float elapsed);
 
@@ -111,10 +86,6 @@ namespace Magpie {
         // Maintains the total value of all items stolen
         // by the player
         uint32_t score;
-
-        // NOTE:: This is old code, but it may be used later
-        //        when the game is in a more polished state
-        std::vector < HitlistTask > hitlist;
 
         // Used to force the player to walk through doors
         uint32_t current_room = 0;

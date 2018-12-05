@@ -1035,7 +1035,6 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             //obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             PixelData pd = level_data->pixel_data[(uint32_t)location->position.y * level_data->level_width + (uint32_t)location->position.x];
             if(pd.is_corner_3()) {
-                printf("Rotating extra\n");
                 obj->transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
             }
             Painting* painting = new Painting(obj);

@@ -570,7 +570,7 @@ namespace Magpie {
                     // check if the position has been visited
                     if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
                         // Swap out the program information
-                        if (game.get_level()->get_wall(pos.x, pos.y)->room_number != game.get_player()->get_current_room()) {
+                        if (game.get_level()->get_wall(pos.x, pos.y)->room_number != game.get_level()->get_tile_room_number(x, y)) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
                             assert(wall != nullptr);
                             Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
@@ -584,7 +584,8 @@ namespace Magpie {
                         }
                     }
                 }
-                else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y)) {
+                else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y) && 
+                    game.get_level()->get_tile_room_number(pos.x, pos.y) == game.get_level()->get_tile_room_number(x, y)) {
                     
                     if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
                         // Add this position to the frontier
@@ -773,6 +774,7 @@ namespace Magpie {
                             glm::vec2(room_iter->second.x, room_iter->second.y)));
                         
                         game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)room_iter->second.x, (float)room_iter->second.y));
+                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
 
                         if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                             game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
@@ -781,7 +783,7 @@ namespace Magpie {
                             game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         }
 
-                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
+
                         return true;
                     }
                 } else {
@@ -819,20 +821,29 @@ namespace Magpie {
 
             game.get_player()->final_destination = click_floor_intersect;
 
-            game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
+            Path path = Magpie::Navigation::getInstance().findPath(
                 glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
+                glm::vec2(click_floor_intersect.x, click_floor_intersect.y));
+            
+            if (path.get_path().size() > 0) {
 
-            if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-                game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                make_close_walls_transparent((float)click_floor_intersect.x, (float)click_floor_intersect.y);
+                game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)click_floor_intersect.x, (float)click_floor_intersect.y));
+                game.get_player()->set_path(path);
+
+                if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                }
+                else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                }
+                return true;
+
             }
-            else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
-                game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-            }
-            return true;
+            
 
         } else {
-            std::cout << "DEBUG:: Player can't move to that position" << std::endl;
+            //std::cout << "DEBUG:: Player can't move to that position" << std::endl;
 
         }
         return false;

@@ -59,11 +59,13 @@ namespace Magpie {
 
         void set_starting_point(glm::vec3 position);
 
-        void set_destination(glm::vec2 destination);
+        virtual void set_destination(glm::vec2 destination);
 
-        void turnTo(glm::vec3 destination);
+        virtual void turnTo(glm::vec3 destination);
 
-        void set_model_orientation(uint32_t dir);
+        void set_path(Path path);
+
+        virtual void set_model_orientation(uint32_t dir);
 
         // Loads Magpie model data specifically
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,

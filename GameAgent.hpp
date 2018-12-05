@@ -13,11 +13,7 @@ namespace Magpie {
             UP = 0,
             RIGHT,
             DOWN,
-            LEFT,
-            //UP_RIGHT,
-            //UP_LEFT,
-            //DOWN_RIGHT,
-            //DOWN_LEFT
+            LEFT
         };
 
         // TODO: Place more generally relevant functions here
@@ -25,7 +21,7 @@ namespace Magpie {
         virtual void interact() = 0;
         
         virtual void walk(float elapsed) = 0;
-        virtual void turnTo(glm::vec3 destination);
+        virtual void turnTo(glm::vec3 destination) = 0;
 
 
         uint32_t get_state();
@@ -34,7 +30,7 @@ namespace Magpie {
         DIRECTION get_orientation();
 
         void set_state(uint32_t state);
-        virtual void set_path(Path path);
+        virtual void set_path(Path path) = 0;
         virtual void setDestination(glm::vec3 destination);
 
 
