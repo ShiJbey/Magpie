@@ -110,5 +110,9 @@ namespace Magpie {
 
         // Used to force the player to walk through doors
         uint32_t current_room = 0;
+
+        // For footstep sounds
+        float elapsed_since_step = 0.f;
+        bool first_step = false;
     };
 }

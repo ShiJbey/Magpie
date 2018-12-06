@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "AssetLoader.hpp"
 
 uint32_t Magpie::Player::instance_count = 0;
 
@@ -140,10 +141,24 @@ void Magpie::Player::consume_signal() {
 
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
-    
-    
+
+
     if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);
+
+        //play footsteps if walking
+        elapsed_since_step += elapsed;
+        if ((get_state() == (uint32_t)Player::STATE::WALKING && elapsed_since_step >= 0.33f) ||
+            elapsed_since_step >= .67f) {
+            elapsed_since_step = 0.f;
+            first_step = !first_step;
+
+            if (first_step) {
+                sample_magpie_walk1->play(get_position(), 0.2f);
+            } else {
+                sample_magpie_walk2->play(get_position(), 0.3f);
+            }
+        }
     }
 
     if (current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done()) {
@@ -162,11 +177,17 @@ void Magpie::Player::interact() {
 void Magpie::Player::set_position(glm::vec3 position) {
     Magpie::AnimatedModel::set_position(position);
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
+    Sound::listener.set_position(get_position());
 };
 
 void Magpie::Player::set_state(uint32_t state) {
     GameAgent::set_state(state);
     animation_manager->set_current_state(state);
+
+    if (state == (uint32_t)Player::STATE::WALKING || state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+        elapsed_since_step = 1.f;
+        first_step = false;
+    }
 };
 
 void Magpie::Player::set_score(uint32_t score) {

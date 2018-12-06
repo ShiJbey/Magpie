@@ -541,6 +541,9 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
         return (Scene::Object *)nullptr;
     };
 
+    std::mt19937 mt_rand ((uint32_t)std::chrono::system_clock::now().time_since_epoch().count());
+    std::uniform_real_distribution<> dist(0,1);
+
     // Iterate along x-axis
     for (uint32_t y = 0; y < level_data->level_length; y++) {
         // Iterate along y-axis
@@ -878,7 +881,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     level->add_potential_location(level->get_potential_pedestal_locations(), room_number, obj->transform);
                 }
             }
-    
+
             else if (mesh_id == 21) {
                 DisplayCase* displaycase = new DisplayCase();
                 Scene::Transform* display_group = nullptr;
@@ -935,7 +938,12 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 displaycase->set_position(glm::vec3((float)x, (float)y, 0.0f));
                 level->add_displaycase(displaycase);
                 // Place geode
-                Scene::Object* obj = get_mesh(x, y, 69, 0);
+                uint32_t cust_id;
+                float rand = dist(mt_rand);
+                if (rand < 0.75f) cust_id = 0;
+                else cust_id = 1;
+
+                Scene::Object* obj = get_mesh(x, y, 69, cust_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                 displaycase->geode = new Geode(obj);
 
@@ -943,6 +951,8 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 floor_obj->transform->name = "floor_" + std::to_string(i);
                 floor_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
+                if (rand < 0.75f) displaycase->geode->set_selling_price(50000);
+                else displaycase->geode->set_selling_price(100000);
             }
             
 
@@ -991,24 +1001,37 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
         }
     }
 
-    std::mt19937 mt_rand ((uint32_t)std::chrono::system_clock::now().time_since_epoch().count());
-
     for (auto const &room : *(level->get_potential_pedestal_locations())) {
         for (auto const &location: room.second) {
-            uint32_t cust_id = mt_rand() % 3;
+            uint32_t cust_id;
+            float rand = dist(mt_rand);
+            if (rand < 0.5f) cust_id = 0;
+            else if (rand < 0.85f) cust_id = 1;
+            else cust_id = 2;
+//            uint32_t cust_id = mt_rand() % 3;
+
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, cust_id);
             assert(obj != nullptr);
             obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             Gem* gem = new Gem(obj);
             obj->transform->name = "Gem" + std::to_string(gem->get_instance_id());
-            level->add_gem(room.first, gem);    
+            level->add_gem(room.first, gem);
+
+            if (rand < 0.5f) gem->set_selling_price(500);
+            else if (rand < 0.85f) gem->set_selling_price(2500);
+            else gem->set_selling_price(10000);
         }
     };
 
     for (auto const &room : *(level->get_potential_wall_locations())) {
         for (auto const &location: room.second) {
-            // random customization id;
-            uint32_t cust_id = mt_rand() % 3;
+            uint32_t cust_id;
+            float rand = dist(mt_rand);
+            if (rand < 0.5f) cust_id = 0;
+            else if (rand < 0.85f) cust_id = 1;
+            else cust_id = 2;
+//            uint32_t cust_id = mt_rand() % 3;
+
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, cust_id);
             assert(obj != nullptr);
             obj->transform->rotation = location->rotation;
@@ -1022,7 +1045,11 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
             }
             Painting* painting = new Painting(obj);
             obj->transform->name = "Painting" + std::to_string(painting->get_instance_id());
-            level->add_painting(room.first, painting);    
+            level->add_painting(room.first, painting);
+
+            if (rand < 0.5f) painting->set_selling_price(100);
+            else if (rand < 0.85f) painting->set_selling_price(400);
+            else painting->set_selling_price(1500);
         }
     };
 

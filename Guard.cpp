@@ -1,4 +1,5 @@
 #include "Guard.hpp"
+#include "AssetLoader.hpp"
 
 #include <iostream>
 #include "GameAgent.hpp"
@@ -54,6 +55,20 @@ void Magpie::Guard::set_state(uint32_t state) {
     last_state = (enum STATE) state;
     GameAgent::set_state(state);
     animation_manager->set_current_state(state);
+
+    switch((enum STATE) state) {
+        case STATE::CAUTIOUS:
+            sample_guard_cautious->play(get_position());
+            break;
+        case STATE::ALERT:
+            sample_guard_alert->play(get_position());
+            break;
+        case STATE::CONFUSED:
+            sample_guard_confused->play(get_position());
+            break;
+        default:
+            break;
+    }
 };
 
 void Magpie::Guard::update_state(float elapsed) {
