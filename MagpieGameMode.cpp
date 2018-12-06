@@ -183,7 +183,7 @@ namespace Magpie {
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
                     //printf("Dropping the load!\n");
-                    drop_treat(game.get_player()->get_position());
+                    dog_treats.push_back(drop_treat(game.get_player()->get_position()));
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
@@ -458,7 +458,7 @@ namespace Magpie {
         return guard;
     };
 
-    Item* MagpieGameMode::drop_treat(glm::vec3 position) {
+    DogTreat* MagpieGameMode::drop_treat(glm::vec3 position) {
         Scene::Transform* temp_transform = scene.new_transform();
         temp_transform->position = position;
 
@@ -471,10 +471,10 @@ namespace Magpie {
         obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
         obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 
-        Item* item = new Item(obj);
+        DogTreat* dog_treat = new DogTreat(obj);
         obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-        return item;
+        return dog_treat;
     };
 
     /**
