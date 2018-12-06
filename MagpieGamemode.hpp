@@ -120,6 +120,8 @@ namespace Magpie {
         // Used for updating animations in the scene
         std::vector< AnimatedModel* > animated_scene_objects;
         std::vector< DogTreat* > dog_treats;
+        
+        std::vector< Guard* > guards;
 
         std::vector< FloatingNotificationText > animated_text_objects;
         glm::vec2 screen_dimensions;

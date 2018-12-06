@@ -39,7 +39,8 @@
 #include <algorithm>
 #include <random>
 
-//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+#define GUARD_DEBUG // allows you to click on guards to get debug information
 
 namespace Magpie {
 
@@ -65,6 +66,7 @@ namespace Magpie {
                Guard* guard = create_guard(i2.second.first, i2.second.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
                guard->set_patrol_points(path);
+               guards.push_back(guard);
             }
         }
 
@@ -225,6 +227,14 @@ namespace Magpie {
                     animated_text_objects.push_back(FloatingNotificationText("Cheat Active!", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
+            #ifdef GUARD_DEBUG
+            // Reset all the guards to not print output
+            else if(evt.key.keysym.scancode == SDL_SCANCODE_1) {
+                for (auto &guard : guards) {
+                    guard->debug_focus = false;
+                }
+            }
+            #endif
         }
 
         #ifdef FREE_FLIGHT
@@ -804,6 +814,21 @@ namespace Magpie {
                 return true;
             }
         }
+
+        #ifdef GUARD_DEBUG
+        bool guard_clicked = false;
+        for (auto &guard : guards) {
+            if (guard->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction) && !guard_clicked) {
+                std::cout << "GUARD_DEBUG:: Guard (" << std::to_string(guard->get_instance_id())  << ") selected." << std::endl;
+                guard->debug_focus = true;
+                guard_clicked = true;
+            } else if (guard->debug_focus) {
+                guard->debug_focus = false;
+            }
+        }
+        if (guard_clicked)
+            return true;
+        #endif
 
         for (uint32_t i = 0; i < game.get_level()->get_doors()->size(); i++) {
             if ((*game.get_level()->get_doors())[i]->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {

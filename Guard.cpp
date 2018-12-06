@@ -47,6 +47,8 @@ void Magpie::Guard::update(float elapsed) {
     walk(elapsed);
     update_state(elapsed);
     animation_manager->update(elapsed);
+    if (debug_focus)
+        printf("\tPosition: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
 };
 
 
@@ -451,7 +453,10 @@ void Magpie::Guard::set_path(Magpie::Path path) {
 
     // Do nothing for empty path
     if (path.get_path().size() == 0) {
-        std::cout << "DEBUG::Guard.set_path():: EMPTY PATH" << std::endl;
+
+        if (debug_focus)
+            std::cout << "DEBUG::Guard.set_path():: EMPTY PATH" << std::endl;
+
         return;
     }
 
@@ -468,7 +473,10 @@ void Magpie::Guard::set_path(Magpie::Path path) {
     // The player has clicked for the magpie to move on a different path
     // while the Magpie was currently navigating a path
     else {
-        std::cout << "DEBUG::Guard.set_path():: Appending new path to previous\n" << std::endl;
+
+        if (debug_focus)
+            std::cout << "DEBUG::Guard.set_path():: Appending new path to previous\n" << std::endl;
+
         // Remove all locations in the path vector after the current destination
         // Append this path to the end of the old path and let the magpie continue
         // as normal
@@ -644,4 +652,17 @@ std::vector< std::string > Magpie::Guard::convert_animation_names(const Transfor
         }
     }
     return modified_names;
+};
+
+Magpie::BoundingBox* Magpie::Guard::get_boundingbox() {
+    if (bounding_box != nullptr) {
+        delete bounding_box;
+        bounding_box = nullptr;
+    }
+    this->bounding_box = new BoundingBox(get_position(), glm::vec3(0.75f, 0.75f, 1.5f), glm::vec3(-0.75f, -0.75f, 0.0f));
+    return this->bounding_box;
+};
+
+void Magpie::Guard::on_click() {
+    this->debug_focus = true;
 };

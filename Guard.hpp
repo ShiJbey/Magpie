@@ -4,12 +4,14 @@
 #include "Signalable.hpp"
 #include "AnimatedModel.hpp"
 #include "Player.hpp"
+#include "Clickable.hpp"
 
 namespace Magpie {
-    class Guard: public AnimatedModel, public GameAgent, public Signalable {
+    class Guard: public AnimatedModel, public GameAgent, public Signalable, public Clickable {
     public:
 
         Player* player;
+        bool debug_focus = false; // When debugging the game, is this guard printing to stdout
 
         // This is incremented each time we create a new player
         static uint32_t instance_count;
@@ -74,6 +76,9 @@ namespace Magpie {
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
 
         glm::vec2 last_destination = glm::vec2(-1, -1);
+
+        BoundingBox* get_boundingbox();
+        void on_click();
 
     private:
         float state_duration = 0.0f;
