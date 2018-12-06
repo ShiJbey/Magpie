@@ -482,7 +482,7 @@ void Magpie::Guard::set_path(Magpie::Path path) {
         }
 
         // Round the player's current position
-        glm::vec3 rounded_position = glm::round(get_position());
+//        glm::vec3 rounded_position = glm::round(get_position());
 
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());

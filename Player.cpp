@@ -370,16 +370,16 @@ void Magpie::Player::set_path(Magpie::Path path) {
         }
 
         // Round the player's current position
-        glm::vec3 rounded_position = glm::round(get_position());
+//        glm::vec3 rounded_position = glm::round(get_position());
 
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
 
         // Remove overlapping destinations
         if (modified_path.size() >= 2 && new_path.size() >= 2) {
-            auto mp_last_elm_iter = modified_path.rbegin() + 2;
-            auto mp_2nd_last_elm_iter = modified_path.rbegin() + 1;
-            auto np_1st_elm_iter = new_path.begin() + 1;
+//            auto mp_last_elm_iter = modified_path.rbegin() + 2;
+//            auto mp_2nd_last_elm_iter = modified_path.rbegin() + 1;
+//            auto np_1st_elm_iter = new_path.begin() + 1;
             auto np_2nd_elm_iter = new_path.begin() + 1;
             if (modified_path[modified_path.size() - 2] == new_path[0] && modified_path[modified_path.size() - 1] == new_path[1]) {
                 //std::cout << "DEBUG::Player.set_path:: duplicate destinations" << std::endl;
