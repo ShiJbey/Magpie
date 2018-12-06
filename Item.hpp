@@ -129,4 +129,16 @@ namespace Magpie {
                 
     };
 
+    class BackExit : public Item, public Clickable, public AnimatedModel {
+    public:
+
+        BackExit();
+        BackExit(Scene::Object* obj);
+
+        BoundingBox* get_boundingbox();
+        void on_click();
+    protected:
+        float osc_tick = 0.0f;
+    };
+
 }

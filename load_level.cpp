@@ -667,6 +667,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     door->scene_object = obj;
                     door->set_transform(&obj->transform);
                     (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                    level->back_exit = new BackExit(obj);
                 }
                 else{
                     create_front_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
