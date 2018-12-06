@@ -123,8 +123,8 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > paintings = {
         { 0, "painting_yellow_MSH" },
-        { 1, "painting_scream_MSH" },
-        { 2, "painting_rothko_MSH" }
+        { 1, "painting_rothko_MSH" },
+        { 2, "painting_scream_MSH" }
     };
 
     std::map<uint8_t, std::string > gems = {
