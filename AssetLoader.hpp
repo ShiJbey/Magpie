@@ -7,6 +7,7 @@
 
 #include "TransformAnimation.hpp"
 #include "AnimatedModel.hpp"
+#include "Sound.hpp"
 
 
 #include <string>
@@ -201,4 +202,29 @@ namespace Magpie {
     extern Load< Scene::Object::ProgramInfo > vertex_color_program_info;
     extern Load< Scene::Object::ProgramInfo > highlight_program_info;
     extern Load< Scene::Object::ProgramInfo > transparent_program_info;
+
+    // Sounds
+    extern Load< Sound::Sample > sample_ambient;
+    extern Load< Sound::Sample > sample_ambient_faster;
+    extern Load< Sound::Sample > sample_glass;
+    extern Load< Sound::Sample > sample_door;
+    extern Load< Sound::Sample > sample_pickup;
+    extern Load< Sound::Sample > sample_point1;
+    extern Load< Sound::Sample > sample_point2;
+    extern Load< Sound::Sample > sample_point3;
+    extern Load< Sound::Sample > sample_point4;
+    extern Load< Sound::Sample > sample_steal1;
+    extern Load< Sound::Sample > sample_steal2;
+    extern Load< Sound::Sample > sample_unlock1;
+    extern Load< Sound::Sample > sample_unlock2;
+    extern Load< Sound::Sample > sample_unlock3;
+    extern Load< Sound::Sample > sample_fail;
+    extern Load< Sound::Sample > sample_siren;
+    extern Load< Sound::Sample > sample_magpie_disguise;
+    extern Load< Sound::Sample > sample_magpie_walk1;
+    extern Load< Sound::Sample > sample_magpie_walk2;
+    extern Load< Sound::Sample > sample_guard_alert;
+    extern Load< Sound::Sample > sample_guard_cautious;
+    extern Load< Sound::Sample > sample_guard_confused;
+
 }

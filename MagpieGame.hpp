@@ -4,6 +4,7 @@
 #include "Guard.hpp"
 #include "MagpieLevel.hpp"
 #include "Scene.hpp"
+#include "Sound.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
@@ -29,6 +30,8 @@ namespace Magpie {
         void set_player(Player* player);
         void set_guards(std::vector< Guard* > guard_vec);
         void set_level(MagpieLevel* level);
+
+        std::shared_ptr< Sound::PlayingSample >current_music;
 
     protected:
         // Characters within the game

@@ -37,6 +37,7 @@
 #include <deque>
 #include <tuple>
 #include <algorithm>
+#include <random>
 
 //#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
 
@@ -71,6 +72,8 @@ namespace Magpie {
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+
+        game.current_music = sample_ambient->play(game.get_player()->get_position(), 0.3f, Sound::Loop);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -142,6 +145,9 @@ namespace Magpie {
 
             //update inventory too since map is off
             ui.inventory.updateInv(elapsed);
+
+            //update background music location
+            game.current_music->set_position(game.get_player()->get_position());
         
             #ifndef FREE_FLIGHT
             camera_trans->position.x = game.get_player()->get_position().x;
@@ -188,9 +194,11 @@ namespace Magpie {
                 //printf("Swapping disguise\n");
                 switch(game.get_player()->get_state()) {
                     case (uint32_t)Player::STATE::IDLE:
+                        sample_magpie_disguise->play(game.get_player()->get_position());
                         game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
                         break;
                     case (uint32_t)Player::STATE::WALKING:
+                        sample_magpie_disguise->play(game.get_player()->get_position());
                         game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         break;
                     case (uint32_t)Player::STATE::DISGUISE_IDLE:
@@ -440,6 +448,9 @@ namespace Magpie {
         guard->set_position(position);
         guard->set_starting_point(position);
         guard->turnTo(turn_destination);
+        guard->set_model_orientation((uint32_t)dir);
+
+        assert(guard->get_orientation() == dir);
 
         // Add the guard to the game
         game.add_guard(guard);
@@ -665,6 +676,16 @@ namespace Magpie {
      */
     bool MagpieGameMode::handle_clickables(Magpie::Ray click_ray) {
 
+        auto play_score_sound = [&](uint32_t score_value) {
+            if (score_value < 10000) {
+                sample_point2->play(game.get_player()->get_position(), 0.2f);
+            } else if (score_value < 100000) {
+                sample_point1->play(game.get_player()->get_position(), 0.2f);
+            } else {
+                sample_point3->play(game.get_player()->get_position(), 0.2f);
+            }
+        };
+
         for (const auto &room: game.get_level()->get_paintings()) {
             if(room.first != game.get_player()->get_current_room()) continue;
             for (auto &painting: room.second) {
@@ -676,6 +697,8 @@ namespace Magpie {
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(painting->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    sample_steal1->play(game.get_player()->get_position());
+                    play_score_sound(painting->get_selling_price());
                     return true;
                 }
             }
@@ -692,6 +715,8 @@ namespace Magpie {
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(gem->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    sample_steal1->play(game.get_player()->get_position());
+                    play_score_sound(gem->get_selling_price());
                     return true;
                 }
             }
@@ -703,12 +728,15 @@ namespace Magpie {
                && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
                     displaycase->on_click();
+                    sample_unlock1->play(game.get_player()->get_position());
                     return true;
                 }
                 else if (displaycase->opened && displaycase->geode != nullptr && displaycase->geode->get_scene_object()->active) {
                     displaycase->geode->steal(game.get_player());
                     displaycase->geode->get_scene_object()->active = false;
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(displaycase->geode->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    sample_steal1->play(game.get_player()->get_position());
+                    play_score_sound(displaycase->geode->get_selling_price());
                     return true;
                 }
             }
@@ -722,6 +750,7 @@ namespace Magpie {
                 game.get_level()->pink_card->on_click();
                 game.get_player()->has_pink_card = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Pink Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 50.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                sample_pickup->play(game.get_player()->get_position());
                 return true;
             }
         }
@@ -734,6 +763,7 @@ namespace Magpie {
                 game.get_level()->green_card->on_click();
                 game.get_player()->has_green_card = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                sample_pickup->play(game.get_player()->get_position());
                 return true;
             }
         }
@@ -746,6 +776,7 @@ namespace Magpie {
                 game.get_level()->master_key->on_click();
                 game.get_player()->has_master_key = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                sample_pickup->play(game.get_player()->get_position());
                 return true;
             }
         }
@@ -806,10 +837,14 @@ namespace Magpie {
 
                         (*game.get_level()->get_doors())[i]->on_click();
                         animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
+
+                        sample_door->play(door->get_position());
                         game.get_level()->set_movement_matrix_position((uint32_t)door->get_position().x, (uint32_t)door->get_position().y, true);
+
                         return true;
 
                     } else {
+                        sample_fail->play(door->get_position());
                         animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                         return true;
                     }
