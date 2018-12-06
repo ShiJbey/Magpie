@@ -189,11 +189,13 @@ namespace Magpie {
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
                     //printf("Dropping the load!\n");
+                    sample_treat->play(game.get_player()->get_position());
                     drop_treat(game.get_player()->get_position());
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
-                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    sample_cooldown->play(game.get_player()->get_position());
+//                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
