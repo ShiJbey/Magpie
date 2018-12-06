@@ -44,48 +44,32 @@
 namespace Magpie {
 
     MagpieGameMode::MagpieGameMode() {
+
         // build a level from the given level data
         load_level(final_map.value);
+        assert(game.get_level() != nullptr);
+
         // Obtain camera positioning from blender scene
         setup_camera();
-
+        
+        // Set up the player
         glm::vec3 player_position = game.get_level()->get_player_start_position();
-
-        //std::cout << "Player position " << player_position.x << ", " << player_position.y << std::endl;
         create_player(player_position);
-        //create_player(glm::vec3(4.0f, 8.0f, 0.0f));
-
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
+        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
 
+        // Instantiate Guards
         auto guard_start = game.get_level()->get_guard_start_positions();
-
         for (auto i : guard_start) {
             for (auto i2 : i.second) {
-                //std::cout << "CREATE" << std::endl;
                Guard* guard = create_guard(i2.second.first, i2.second.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
-               //for (auto p : path) {
-               //    std::cout << p.x << "," << p.y << std::endl;
-               //}
                guard->set_patrol_points(path);
             }
-            //std::cout << std::endl;
         }
 
-//        create_guard(glm::vec3(player_position.x, player_position.y - 10, player_position.z));
-//        create_guard(glm::vec3(6.0f, 7.0f, 0.0f));
-//        create_guard(glm::vec3(8.0f, 7.0f, 0.0f));
-
-        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-//        game.get_guards()[0]->set_patrol_points(
-//                points
-//        );
-//        game.get_guards()[1]->set_state((uint32_t)Guard::STATE::PATROLING);
-//        game.get_guards()[2]->set_state((uint32_t)Guard::STATE::CHASING);
-
+        // Set up the navigator
         Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
-
-        assert(game.get_level() != nullptr);
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
 
@@ -128,16 +112,24 @@ namespace Magpie {
                 }
             }
 
-            if(game.get_level()->pink_card != nullptr) {
+            if(game.get_level()->pink_card != nullptr && !game.get_player()->has_pink_card) {
                 game.get_level()->pink_card->update_animation(elapsed);
             }
 
-            if(game.get_level()->green_card != nullptr) {
+            if(game.get_level()->green_card != nullptr && !game.get_player()->has_green_card) {
                 game.get_level()->green_card->update_animation(elapsed);
             }
 
-            if(game.get_level()->master_key != nullptr) {
+            if(game.get_level()->master_key != nullptr && !game.get_player()->has_master_key) {
                 game.get_level()->master_key->update_animation(elapsed);
+            }
+
+            if(game.get_level()->dogTreatPickUp != nullptr && !game.get_player()->has_dog_treats) {
+                game.get_level()->dogTreatPickUp->update_animation(elapsed);
+            }
+
+            if(game.get_level()->cardboard_box != nullptr && !game.get_player()->has_cardboard_box) {
+                game.get_level()->cardboard_box->update_animation(elapsed);
             }
 
             // update animated text
@@ -188,11 +180,17 @@ namespace Magpie {
                 ui.stateChanger('i');
                 return true;
             }
-            else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-                //printf("Dropping the load!\n");
-                drop_treat(game.get_player()->get_position());
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
+                if (game.get_player()->can_place_treat()) {
+                    //printf("Dropping the load!\n");
+                    drop_treat(game.get_player()->get_position());
+                    game.get_player()->reset_treat_cooldown();
+                }
+                else {
+                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                }
             }
-            else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
                 //printf("Swapping disguise\n");
                 switch(game.get_player()->get_state()) {
                     case (uint32_t)Player::STATE::IDLE:
@@ -215,6 +213,17 @@ namespace Magpie {
                 //open tutorial screen on 'ESCAPE':
                 show_tutorial();
                 return true;
+            }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_EQUALS) {
+                presses_for_developer_mode--;
+                if (presses_for_developer_mode == 0) {
+                    game.get_player()->has_pink_card = true;
+                    game.get_player()->has_green_card= true;
+                    game.get_player()->has_master_key = true;
+                    game.get_player()->has_cardboard_box = true;
+                    game.get_player()->has_dog_treats = true;
+                    animated_text_objects.push_back(FloatingNotificationText("Cheat Active!", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                }
             }
         }
 
@@ -249,7 +258,7 @@ namespace Magpie {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //set up basic OpenGL state:
-        //glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendEquation(GL_FUNC_ADD);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -267,11 +276,15 @@ namespace Magpie {
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
+        }
 
+        {
             //score
             if (Mode::current == shared_from_this()) {
                 RenderText(ransom_font.value, "$" + std::to_string(game.get_player()->get_score()),
                            0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                RenderText(tutorial_font.value, "'Click' to move and select, press 'ESC' for instructions",
+                           (float)drawable_size.x - 550.0f, 20.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
                 //draw UI
                 ui.drawUI(camera, drawable_size);
             }
@@ -282,7 +295,6 @@ namespace Magpie {
             for (auto &text : animated_text_objects) {
                 text.draw();
             }
-            //RenderText(ransom_font.value, "Magpie Agent-1234", (float)drawable_size.x / 2.0f, (float)drawable_size.y / 2.0f, 0.3f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         }
 
         GL_ERRORS();
@@ -453,13 +465,14 @@ namespace Magpie {
         Scene::Object *obj = scene.new_object(temp_transform);
         Scene::Object::ProgramInfo default_program_info;
         default_program_info = *vertex_color_program_info.value;
-        default_program_info.vao = vertex_color_vaos->find("donut")->second;
+        default_program_info.vao = vertex_color_vaos->find("buildingTiles")->second;
         obj->programs[Scene::Object::ProgramTypeDefault] = default_program_info;
-        MeshBuffer::Mesh const &mesh = donut_mesh->lookup("Donut");
+        MeshBuffer::Mesh const &mesh = building_meshes->lookup("dogTreat_MSH");
         obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
         obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 
         Item* item = new Item(obj);
+        obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
         return item;
     };
@@ -555,9 +568,6 @@ namespace Magpie {
         }
         transparent_walls.clear();
 
-        //uint32_t level_width = game.get_level()->get_width();
-        //uint32_t level_length = game.get_level()->get_length();
-
         float player_pos_x = x;
         float player_pos_y = y;
 
@@ -579,13 +589,12 @@ namespace Magpie {
             adjacent_tiles.emplace_back(current.x, current.y - 1);
 
             for (auto &pos: adjacent_tiles) {
-                //printf("Pos - (x: %f, y: %f)\n", pos.x, pos.y);
                  // Check the tile above this one
                 if (game.get_level()->is_wall(pos.x, pos.y)) {
                     // check if the position has been visited
                     if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
                         // Swap out the program information
-                        if (game.get_level()->get_wall(pos.x, pos.y)->room_number != game.get_player()->get_current_room()) {
+                        if (game.get_level()->get_wall(pos.x, pos.y)->room_number != game.get_level()->get_tile_room_number(x, y)) {
                             Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
                             assert(wall != nullptr);
                             Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
@@ -597,24 +606,10 @@ namespace Magpie {
                             visited.push_back(pos);
                             transparent_walls.push_back(wall);
                         }
-                        /*
-                        if (pos.y < player_pos_y && !(game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
-                            
-                        }
-                        else if(pos.x < player_pos_x && (game.get_level()->is_wall(pos.x, pos.y + 1) || game.get_level()->is_wall(pos.x, pos.y - 1))) {
-                            Wall* wall = game.get_level()->get_wall(pos.x, pos.y);
-                            Scene::Object::ProgramInfo old_info = wall->scene_object->programs[Scene::Object::ProgramTypeDefault];
-                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault] = *transparent_program_info.value;
-                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *transparent_building_meshes_vao;
-                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
-                            wall->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
-                            visited.push_back(pos);
-                            transparent_walls.push_back(wall);
-                        }
-                        */
                     }
                 }
-                else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y)) {
+                else if (game.get_level()->can_move_to(game.get_player()->get_current_room(), pos.x, pos.y) && 
+                    game.get_level()->get_tile_room_number(pos.x, pos.y) == game.get_level()->get_tile_room_number(x, y)) {
                     
                     if(std::find(visited.begin(), visited.end(), pos) == visited.end()) {
                         // Add this position to the frontier
@@ -668,8 +663,6 @@ namespace Magpie {
         // Rounds the intersection to be a whole number tile position
         pointOfIntersect.x = floor(pointOfIntersect.x + 0.5f);
         pointOfIntersect.y = floor(pointOfIntersect.y + 0.5f);
-
-        //printf("Player clicked tile: (%f, %f, %f)\n", pointOfIntersect.x, pointOfIntersect.y, pointOfIntersect.z);
 
         return pointOfIntersect;
     };
@@ -749,7 +742,7 @@ namespace Magpie {
             }
         }
 
-        if(game.get_level()->pink_card != nullptr) {
+        if(game.get_level()->pink_card != nullptr && !game.get_player()->has_pink_card) {
             if (game.get_level()->pink_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                 && game.get_level()->pink_card->get_scene_object()->active
                 && abs(game.get_player()->get_position().x - game.get_level()->pink_card->get_position().x) <= 1
@@ -762,7 +755,7 @@ namespace Magpie {
             }
         }
 
-        if(game.get_level()->green_card != nullptr) {
+        if(game.get_level()->green_card != nullptr && !game.get_player()->has_green_card) {
             if (game.get_level()->green_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                 && game.get_level()->green_card->get_scene_object()->active
                 && abs(game.get_player()->get_position().x - game.get_level()->green_card->get_position().x) <= 1
@@ -775,7 +768,7 @@ namespace Magpie {
             }
         }
 
-        if(game.get_level()->master_key != nullptr) {
+        if(game.get_level()->master_key != nullptr && !game.get_player()->has_master_key) {
             if (game.get_level()->master_key->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                 && game.get_level()->master_key->get_scene_object()->active
                 && abs(game.get_player()->get_position().x - game.get_level()->master_key->get_position().x) <= 1
@@ -784,6 +777,30 @@ namespace Magpie {
                 game.get_player()->has_master_key = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 sample_pickup->play(game.get_player()->get_position());
+                return true;
+            }
+        }
+
+        if(game.get_level()->dogTreatPickUp != nullptr && !game.get_player()->has_dog_treats) {
+            if (game.get_level()->dogTreatPickUp->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->dogTreatPickUp->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->dogTreatPickUp->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->dogTreatPickUp->get_position().y) <= 1) {
+                game.get_level()->dogTreatPickUp->on_click();
+                game.get_player()->has_dog_treats = true;
+                animated_text_objects.push_back(FloatingNotificationText("Found Dog Treats", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                return true;
+            }
+        }
+
+        if(game.get_level()->cardboard_box != nullptr && !game.get_player()->has_cardboard_box) {
+            if (game.get_level()->cardboard_box->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->cardboard_box->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->cardboard_box->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->cardboard_box->get_position().y) <= 1) {
+                game.get_level()->cardboard_box->on_click();
+                game.get_player()->has_cardboard_box = true;
+                animated_text_objects.push_back(FloatingNotificationText("Found Box Disguise", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 return true;
             }
         }
@@ -801,6 +818,7 @@ namespace Magpie {
                             glm::vec2(room_iter->second.x, room_iter->second.y)));
                         
                         game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)room_iter->second.x, (float)room_iter->second.y));
+                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
 
                         if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                             game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
@@ -809,7 +827,7 @@ namespace Magpie {
                             game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         }
 
-                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
+
                         return true;
                     }
                 } else {
@@ -819,12 +837,16 @@ namespace Magpie {
 
                         (*game.get_level()->get_doors())[i]->on_click();
                         animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
+
                         sample_door->play(door->get_position());
+                        game.get_level()->set_movement_matrix_position((uint32_t)door->get_position().x, (uint32_t)door->get_position().y, true);
+
                         return true;
 
                     } else {
                         sample_fail->play(door->get_position());
                         animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                        return true;
                     }
                 }
                 
@@ -847,22 +869,30 @@ namespace Magpie {
 
             game.get_player()->final_destination = click_floor_intersect;
 
-            game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
+            Path path = Magpie::Navigation::getInstance().findPath(
                 glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                glm::vec2(click_floor_intersect.x, click_floor_intersect.y)));
+                glm::vec2(click_floor_intersect.x, click_floor_intersect.y));
             
-            //highlight_path_tiles();
+            if (path.get_path().size() > 0) {
 
-            if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-                game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-            }
-            else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
-                game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-            }
+                make_close_walls_transparent((float)click_floor_intersect.x, (float)click_floor_intersect.y);
+                game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)click_floor_intersect.x, (float)click_floor_intersect.y));
+                game.get_player()->set_path(path);
 
-            return true;
+                if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                }
+                else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                }
+                return true;
+
+            }
+            
+
         } else {
-            std::cout << "DEBUG:: Player can't move to that position" << std::endl;
+            //std::cout << "DEBUG:: Player can't move to that position" << std::endl;
+
         }
         return false;
     };
@@ -892,25 +922,5 @@ namespace Magpie {
 
         Mode::set_current(tutorial);
     }
-
-/*
-    void MagpieGameMode::open_start_menu() {
-        std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >();
-
-        std::shared_ptr< Mode > gameMode = shared_from_this();
-        menu->background = gameMode;
-
-        menu->choices.emplace_back("START GAME", [gameMode](){
-            Mode::set_current(gameMode);
-        });
-        menu->choices.emplace_back("QUIT", [](){
-            Mode::set_current(nullptr);
-        });
-
-        menu->selected = 1;
-
-        Mode::set_current(menu);
-    }
-    */
 
 }

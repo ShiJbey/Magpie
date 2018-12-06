@@ -37,7 +37,6 @@ namespace Magpie {
     };
 
     void Door::on_click() {
-        std::cout << "Door Clicked" << std::endl;
         this->opened = true;
     };
 

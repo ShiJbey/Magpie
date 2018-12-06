@@ -82,7 +82,6 @@ namespace Magpie {
 
     class KeyCard : public Item, public Clickable, public AnimatedModel {
     public:
-        const uint32_t SELLING_PRICE = 10;
 
         KeyCard(Door::ACCESS_LEVEL acces_level);
         KeyCard(Door::ACCESS_LEVEL acces_level, Scene::Object* obj);
@@ -98,6 +97,36 @@ namespace Magpie {
         Door::ACCESS_LEVEL access_level;
 
         
+    };
+
+    class DogTreat : public Item, public Clickable, public AnimatedModel {
+    public:
+
+        DogTreat();
+        DogTreat(Scene::Object* obj);
+
+        BoundingBox* get_boundingbox();
+        void on_click();
+        virtual void update_animation(float elapsed);
+
+    protected:
+        float osc_tick = 0.0f;
+                
+    };
+
+    class CardboardBox : public Item, public Clickable, public AnimatedModel {
+    public:
+
+        CardboardBox();
+        CardboardBox(Scene::Object* obj);
+
+        BoundingBox* get_boundingbox();
+        void on_click();
+        virtual void update_animation(float elapsed);
+
+    protected:
+        float osc_tick = 0.0f;
+                
     };
 
 }

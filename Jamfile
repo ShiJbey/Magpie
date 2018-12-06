@@ -9,7 +9,7 @@ if $(OS) = NT { #Windows
 		/wd4146 #-1U is still unsigned
 		/wd4297 #unforunately SDLmain is nothrow
 	;
-	LINKFLAGS = /nologo /SUBSYSTEM:CONSOLE /DEBUG:FASTLINK
+	LINKFLAGS = /nologo /SUBSYSTEM:CONSOLE /DEBUG:FASTLINK /NODEFAULTLIB:libcmtd.lib
 		/LIBPATH:"kit-libs-win/out/lib"
 		/LIBPATH:"kit-libs-win/out/libpng"
 		/LIBPATH:"kit-libs-win/out/zlib"
@@ -109,7 +109,6 @@ CLIENT_NAMES =
 	AnimatedModel
 	UI
 	Door
-	ui_shader_program
 	draw_freetype_text
 	DisplayCase
 	startmenu

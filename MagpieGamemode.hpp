@@ -130,5 +130,8 @@ namespace Magpie {
 
         //UI testing
         UI ui = UI(1, 1);
+
+        // counts the number of times the shift key has been hit
+        int presses_for_developer_mode = 5;
     };
 }

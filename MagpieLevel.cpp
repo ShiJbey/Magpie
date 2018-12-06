@@ -84,7 +84,8 @@ bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, float x, float y) {
         if (floor_tile == nullptr) {
             return false;
         } else {
-            return current_room == floor_tile->room_number;
+            return true;
+            //return current_room == floor_tile->room_number;
         } 
     }
     return false;    
@@ -96,7 +97,8 @@ bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, uint32_t x, uint32_
         if (floor_tile == nullptr) {
             return false;
         } else {
-            return current_room == floor_tile->room_number;
+            return true;
+            //return current_room == floor_tile->room_number;
         }
     }
     // OLD CODE
@@ -238,7 +240,6 @@ uint32_t Magpie::MagpieLevel::get_tile_room_number(uint32_t x, uint32_t y) {
 
 uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
     if ((x >= 0.0f && x < width) && (y >= 0.0f && y < length)) {
-        std::cout << "x:" << x << " y:" << y << " " << width << " " << length << std::endl;
         return floor_matrix[(uint32_t)x][(uint32_t)y]->room_number;
     }
     return -1U;

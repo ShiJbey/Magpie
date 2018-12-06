@@ -66,12 +66,15 @@ bool Magpie::BoundingBox::check_intersect(const glm::vec3 &ray_origin, const glm
     if ( t_max_all < t_min_all ) {
         return false;
     } else {
+        #ifdef BOUNDING_BOX_DEBUG_VERBOSE
         printf("Box Position: (x: %f, y: %f, z: %f)\n", position.x, position.y, position.z);
         printf("Ray origin: (x: %f, y: %f, z: %f)\n", ray_origin.x, ray_origin.y, ray_origin.z);
         printf("Ray Dir: (x: %f, y: %f, z: %f)\n", ray_dir.x, ray_dir.y, ray_dir.z);
         printf("Delta: (x: %f, y: %f, z: %f)\n", delta.x, delta.y, delta.z);
         printf("Max Values: (x: %f, y: %f, z: %f)\n", ray_origin.x + t_max.x * ray_dir.x, ray_origin.y + t_max.y * ray_dir.y, ray_origin.z + t_max.z * ray_dir.z);
         printf("Min Values: (x: %f, y: %f, z: %f)\n", ray_origin.x + t_min.x * ray_dir.x, ray_origin.y + t_min.y * ray_dir.y, ray_origin.z + t_min.z * ray_dir.z);
+        #endif
         return true;
+        
     }
 };

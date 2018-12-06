@@ -13,20 +13,6 @@
 
 namespace Magpie {
 
-    struct HitlistTask {
-        bool completed = false;
-        std::string description;
-        //std::function< bool(Player *) > completion_check;
-
-        std::string to_string() {
-            if (completed) {
-                return "[ ] Task: " + description;
-            } else {
-                return "[x] Task: " + description;
-            }
-        };
-    };
-
     class Player: public AnimatedModel, public GameAgent, public Signalable {
     public:
         // This is incremented each time we create a new player
@@ -44,17 +30,6 @@ namespace Magpie {
         };
 
         Player();
-        
-        // Runs the lambda functions for each task on the hit list
-        // that has not been marked as completed
-        void update_hitlist();
-
-        // Returns true if all the tasks in the hitlist are marked as
-        // completed
-        bool hitlist_complete();
-
-        // Clean print out of the completion status of the player's tasks
-        void print_tasks();
 
         void walk(float elapsed);
 
@@ -83,6 +58,10 @@ namespace Magpie {
         virtual void set_model_orientation(uint32_t dir);
         virtual void set_path(Path path);
 
+        void reset_treat_cooldown();
+        void set_treat_cooldown(float cooldown_time);
+        bool can_place_treat();
+
         // GETTERS
         uint32_t get_score();
         uint32_t get_current_room();
@@ -91,6 +70,10 @@ namespace Magpie {
         bool has_green_card = false;
         bool has_pink_card = false;
         bool has_master_key = false;
+        bool has_cardboard_box = false;
+        bool has_dog_treats = false;
+
+        
 
         bool is_disguised();
 
@@ -104,15 +87,13 @@ namespace Magpie {
         // by the player
         uint32_t score;
 
-        // NOTE:: This is old code, but it may be used later
-        //        when the game is in a more polished state
-        std::vector < HitlistTask > hitlist;
-
         // Used to force the player to walk through doors
         uint32_t current_room = 0;
 
         // For footstep sounds
         float elapsed_since_step = 0.f;
         bool first_step = false;
+      
+        float dog_treat_cooldown = 0.0f;
     };
 }

@@ -60,17 +60,16 @@ Magpie::BoundingBox* Magpie::Gem::get_boundingbox() {
 
 void Magpie::Gem::on_click() {
     if (scene_object->active) {
-        printf("DEBUG:: Gem has been clicked.\n");
         scene_object->active = false;
     }
 };
 
 void Magpie::Gem::update_animation(float elapsed) {
     osc_tick += elapsed;
+    
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-    //std::cout << "pizza" << std::endl;
-    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+
     (*transform)->position.z = 0.1f + std::sin(osc_tick * 3) * 0.1f;
 };
 
@@ -92,7 +91,6 @@ Magpie::Painting::Painting (Scene::Object* obj_ptr) : Item(obj_ptr) {
 
 void Magpie::Painting::on_click() {
     if (scene_object->active) {
-        printf("DEBUG:: Painting has been clicked.\n");
         scene_object->active = false;
     }
 };
@@ -107,9 +105,10 @@ Magpie::BoundingBox* Magpie::Painting::get_boundingbox() {
 
 void Magpie::Painting::update_animation(float elapsed) {
     osc_tick += elapsed;
+
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+        
     (*transform)->position.z = std::sin(osc_tick * 3) * 0.05f;
     (*transform)->position.z = std::cos(osc_tick * 5) * 0.05f;
 };
@@ -131,10 +130,10 @@ Magpie::Geode::Geode(Scene::Object* obj_ptr) : Item(obj_ptr) {
 
 void Magpie::Geode::update_animation(float elapsed) {
     osc_tick += elapsed;
+
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-    //std::cout << "pizza" << std::endl;
-    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+        
     (*transform)->rotation *= glm::angleAxis(glm::radians(std::sin(osc_tick * 3.0f) * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 };
 
@@ -143,6 +142,7 @@ void Magpie::Geode::update_animation(float elapsed) {
 //////////////////////////////////////////////
 
 Magpie::KeyCard::KeyCard(Door::ACCESS_LEVEL access_level): Magpie::KeyCard(access_level, nullptr) {
+    
 };
 
 Magpie::KeyCard::KeyCard(Door::ACCESS_LEVEL access_level, Scene::Object* obj_ptr) : Item(obj_ptr) {
@@ -153,7 +153,6 @@ Magpie::KeyCard::KeyCard(Door::ACCESS_LEVEL access_level, Scene::Object* obj_ptr
 
 void Magpie::KeyCard::on_click() {
     if (scene_object->active) {
-        printf("DEBUG:: KeyCard has been clicked.\n");
         scene_object->active = false;
     }
 };
@@ -168,10 +167,85 @@ Magpie::BoundingBox* Magpie::KeyCard::get_boundingbox() {
 
 void Magpie::KeyCard::update_animation(float elapsed) {
     osc_tick += elapsed;
+
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-    //(*transform)->rotation  *= glm::angleAxis(glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
-    
+
     (*transform)->position.z = std::cos(osc_tick * 6) * 0.05f;
     (*transform)->position.z += 0.05f;
 };
+
+//////////////////////////////////////////////
+//               DOG TREAT                  //
+//////////////////////////////////////////////
+
+Magpie::DogTreat::DogTreat(): Magpie::DogTreat(nullptr) {
+
+};
+
+Magpie::DogTreat::DogTreat(Scene::Object* obj_ptr) : Item(obj_ptr) {
+    set_transform(&obj_ptr->transform);
+    AnimatedModel::instance_id = Item::instance_id;
+};
+
+void Magpie::DogTreat::on_click() {
+    if (scene_object->active) {
+        scene_object->active = false;
+    }
+};
+
+Magpie::BoundingBox* Magpie::DogTreat::get_boundingbox() {
+    // Return the existing bounding box
+    if (this->bounding_box != nullptr) return this->bounding_box;
+    // Create a new bounding box
+    this->bounding_box = new BoundingBox(this->scene_object->transform->position, glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, -0.5f));
+    return bounding_box;
+};
+
+void Magpie::DogTreat::update_animation(float elapsed) {
+    osc_tick += elapsed;
+
+    if (osc_tick >= (2.0f * 3.14f))
+        osc_tick = 0.0f;
+
+    (*transform)->position.z = std::cos(osc_tick * 6) * 0.05f;
+    (*transform)->position.z += 0.05f;
+};
+
+//////////////////////////////////////////////
+//            CARDBOARD BOX                 //
+//////////////////////////////////////////////
+
+Magpie::CardboardBox::CardboardBox(): Magpie::CardboardBox(nullptr) {
+
+};
+
+Magpie::CardboardBox::CardboardBox(Scene::Object* obj_ptr) : Item(obj_ptr) {
+    set_transform(&obj_ptr->transform);
+    AnimatedModel::instance_id = Item::instance_id;
+};
+
+void Magpie::CardboardBox::on_click() {
+    if (scene_object->active) {
+        scene_object->active = false;
+    }
+};
+
+Magpie::BoundingBox* Magpie::CardboardBox::get_boundingbox() {
+    // Return the existing bounding box
+    if (this->bounding_box != nullptr) return this->bounding_box;
+    // Create a new bounding box
+    this->bounding_box = new BoundingBox(this->scene_object->transform->position, glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, -0.5f));
+    return bounding_box;
+};
+
+void Magpie::CardboardBox::update_animation(float elapsed) {
+    osc_tick += elapsed;
+
+    if (osc_tick >= (2.0f * 3.14f))
+        osc_tick = 0.0f;
+
+    (*transform)->position.z = std::cos(osc_tick * 6) * 0.05f;
+    (*transform)->position.z += 0.05f;
+};
+

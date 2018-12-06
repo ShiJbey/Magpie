@@ -16,36 +16,8 @@ Magpie::Player::Player() {
     movespeed = 2.0f;
 };
 
-
 bool Magpie::Player::is_disguised() {
     return current_state == (uint32_t)STATE::DISGUISE_IDLE;
-}
-
-
-// Runs the lambda functions for each task on the hit list
-// that has not been marked as completed
-void Magpie::Player::update_hitlist() {
-    for (uint32_t i = 0; i < hitlist.size(); i++) {
-        //hitlist[i].completion_check(this);
-    }
-};
-
-// Returns true if all the tasks in the hitlist are marked as
-// completed
-bool Magpie::Player::hitlist_complete() {
-    for (uint32_t i = 0; i < hitlist.size(); i++) {
-        if (!hitlist[i].completed) {
-            return false;
-        }
-    }
-    return true;
-};
-
-// Clean print out of the completion status of the player's tasks
-void Magpie::Player::print_tasks() {
-    for (uint32_t i = 0; i < hitlist.size(); i++) {
-        std::cout << hitlist[i].to_string() << std::endl;
-    }
 };
 
 void Magpie::Player::setDestination(glm::vec3 destination) {
@@ -63,16 +35,17 @@ void Magpie::Player::walk(float elapsed) {
 
         next_destination_index = 0;
 
-        printf("=====Starting on a new path=====\n");
-        printf("\tBeginning Destination Index: %d\n", next_destination_index);
+        //printf("=====Starting on a new path=====\n");
+        //printf("\tBeginning Destination Index: %d\n", next_destination_index);
+        //printf("\tStarting Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
 
 		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index], 0.0f);
         next_destination_index++;
         current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
 
-        printf("\t#### Destination Set ####\n");
-        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-        printf("\tNext Destination Index is now: %d\n", next_destination_index);
+        //printf("\t#### Destination Set ####\n");
+        //printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+        //printf("\tNext Destination Index is now: %d\n", next_destination_index);
 
         accumulate_time = 0;
 		turnTo(current_destination);
@@ -123,12 +96,12 @@ void Magpie::Player::walk(float elapsed) {
             next_destination_index++;
         }
 
-        printf("\t#### Destination Set ####\n");
-            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-            printf("\tNext Destination Index is now: %d\n", next_destination_index);
-            turnTo(current_destination);
-            set_model_orientation((uint32_t)orientation);
-		
+        //printf("\t#### Destination Set ####\n");
+        //printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+        //printf("\tNext Destination Index is now: %d\n", next_destination_index);
+        turnTo(current_destination);
+        set_model_orientation((uint32_t)orientation);
+    
         
 	}
 
@@ -142,7 +115,9 @@ void Magpie::Player::consume_signal() {
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
 
-
+    // Decrement the cool down time for dropping treats
+    dog_treat_cooldown -= elapsed;
+    
     if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);
 
@@ -192,7 +167,7 @@ void Magpie::Player::set_state(uint32_t state) {
 
 void Magpie::Player::set_score(uint32_t score) {
     this->score = score;
-    printf("DEBUG:: Player score is (%d).", this->score);
+    //printf("DEBUG:: Player score is (%d).", this->score);
 };
 
 uint32_t Magpie::Player::get_score() {
@@ -306,19 +281,19 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
 
     // WARNING::Only handles movement in cardinal directions
     if (x_difference > 0) {
-        //std::cout << "DEBUG:: Facing right" << std::endl;
+        //std::cout << "DEBUG::Player.turnTo():: Facing right" << std::endl;
         orientation = DIRECTION::RIGHT;
     }
     else if (x_difference < 0) {
-        //std::cout << "DEBUG:: Facing left" << std::endl;
+        //std::cout << "DEBUG::Player.turnTo():: Facing left" << std::endl;
         orientation = DIRECTION::LEFT;
     }
     else {
         if (y_difference > 0) {
-            //std::cout << "DEBUG:: Facing up" << std::endl;
+            //std::cout << "DEBUG::Player.turnTo():: Facing up" << std::endl;
             orientation = DIRECTION::UP;
         } else {
-            //std::cout << "DEBUG:: Facing down" << std::endl;
+            //std::cout << "DEBUG::Player.turnTo():: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
     }
@@ -327,19 +302,19 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
 void Magpie::Player::set_model_orientation(uint32_t dir) {
     switch(dir) {
         case (uint32_t)GameAgent::DIRECTION::RIGHT :
-            //std::cout << "DEBUG:: Orienting right" << std::endl;
+            //std::cout << "DEBUG::Player.set_model_orientation:: Orienting right" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::LEFT :
-            //std::cout << "DEBUG:: Orienting left" << std::endl;
+            //std::cout << "DEBUG::Player.set_model_orientation:: Orienting left" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::UP :
-            //std::cout << "DEBUG:: Orienting up" << std::endl;
+            //std::cout << "DEBUG::Player.set_model_orientation:: Orienting up" << std::endl;
             (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::DOWN:
-            //std::cout << "DEBUG:: Orienting down" << std::endl;
+            //std::cout << "DEBUG::Player.set_model_orientation:: Orienting down" << std::endl;
             (*transform)->rotation = original_rotation;
             break;
         default:
@@ -350,46 +325,76 @@ void Magpie::Player::set_model_orientation(uint32_t dir) {
 
 void Magpie::Player::set_path(Magpie::Path path) {
 
+    // Do nothing for empty path
     if (path.get_path().size() == 0) {
-        std::cout << "EMPTY PATH" << std::endl;
+        //std::cout << "DEBUG::Player.set_path():: EMPTY PATH" << std::endl;
         return;
     }
+
     // The magpie has finished the previous path and this one
     // should replace the old one
     if (this->next_destination_index > this->path.get_path().size() + 1 ||
-        this->next_destination_index == 0) {
+        this->next_destination_index == 0 || this->path.get_path().size() == 0) {
         
         this->is_new_path = true;
         this->new_path = path;
         this->next_destination_index = 0;
-       // printf("Reseting next destination index to %d\n", next_destination_index);
     }
 
     // The player has clicked for the magpie to move on a different path
     // while the Magpie was currently navigating a path
     else {
-        printf("PIZZA: Appending new path to previous\n");
+        //std::cout << "DEBUG::Player.set_path():: Appending new path to previous\n" << std::endl;
+
+        //std::cout << "DEBUG::Player.set_path():: Current Path" << std::endl;
+        //for (uint32_t i = 0; i < next_destination_index; i++) {
+        //    glm::vec2 pos = this->path.get_path()[i];
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
+
+        //std::cout << "DEBUG::Player.set_path():: Given Path" << std::endl;
+        //for (auto &pos: path.get_path()) {
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
+
         // Remove all locations in the path vector after the current destination
         // Append this path to the end of the old path and let the magpie continue
         // as normal
         std::vector<glm::vec2> modified_path = this->path.get_path();
         std::vector<glm::vec2> new_path = path.get_path();
 
+        // Ignore if the new path is taking you to the same place
+        // as your current path
         if (new_path.back() == this->get_path()->get_path().back()) {
             return;
         }
 
+        // Round the player's current position
+        glm::vec3 rounded_position = glm::round(get_position());
+
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
+
+        // Remove overlapping destinations
+        if (modified_path.size() >= 2 && new_path.size() >= 2) {
+            auto mp_last_elm_iter = modified_path.rbegin() + 2;
+            auto mp_2nd_last_elm_iter = modified_path.rbegin() + 1;
+            auto np_1st_elm_iter = new_path.begin() + 1;
+            auto np_2nd_elm_iter = new_path.begin() + 1;
+            if (modified_path[modified_path.size() - 2] == new_path[0] && modified_path[modified_path.size() - 1] == new_path[1]) {
+                //std::cout << "DEBUG::Player.set_path:: duplicate destinations" << std::endl;
+                new_path = std::vector<glm::vec2>(np_2nd_elm_iter + 1, new_path.end());
+            }
+        };
 
         // Append all the locations in the given path
         for(auto &pos : new_path) {
             modified_path.push_back(pos);
         }
 
-        this->set_position(glm::vec3(modified_path[next_destination_index].x, modified_path[next_destination_index].y, 0.0f));
-
-        
+        // Set the path to the newly modified one
+        this->path.set_path(modified_path);
+        this->new_path.set_path(modified_path);
 
         /*
         size_t size = modified_path.size();
@@ -448,8 +453,18 @@ void Magpie::Player::set_path(Magpie::Path path) {
 
 
 
-        // Set the path to the newly modified one
-        this->path.set_path(modified_path);
-        this->new_path.set_path(modified_path);
+        
     }
+};
+
+void Magpie::Player::reset_treat_cooldown() {
+    set_treat_cooldown(2.0f);
+};
+
+void Magpie::Player::set_treat_cooldown(float cooldown_time) {
+    this->dog_treat_cooldown = cooldown_time;
+};
+
+bool Magpie::Player::can_place_treat() {
+    return this->dog_treat_cooldown <= 0.0f;
 };
