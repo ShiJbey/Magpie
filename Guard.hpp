@@ -33,13 +33,13 @@ namespace Magpie {
 
         Guard();
 
-        void walk(float elapsed);
+        virtual void walk(float elapsed) override;
 
-        void consume_signal();
+        virtual void consume_signal() override;
 
         void update(float elapsed);
 
-        void update_state(float elapsed);
+        virtual void update_state(float elapsed) override;
 
         void interact();
 
@@ -61,17 +61,17 @@ namespace Magpie {
 
         virtual void set_destination(glm::vec2 destination);
 
-        virtual void turnTo(glm::vec3 destination);
+        virtual void turnTo(glm::vec3 destination) override;
 
-        void set_path(Path path);
+        virtual void set_path(Path path) override;
 
-        virtual void set_model_orientation(uint32_t dir);
+        virtual void set_model_orientation(uint32_t dir) override;
 
         // Loads Magpie model data specifically
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
-            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);   
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) override;   
 
-        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
+        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name) override;
 
         glm::vec2 last_destination = glm::vec2(-1, -1);
 

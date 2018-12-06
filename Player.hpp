@@ -31,32 +31,32 @@ namespace Magpie {
 
         Player();
 
-        void walk(float elapsed);
+        virtual void walk(float elapsed) override;
 
-        void consume_signal();
+        virtual void consume_signal() override;
 
         void update(float elapsed);
 
-        void update_state(float elapsed);
+        virtual void update_state(float elapsed) override;
 
-        void interact();
+        virtual void interact() override;
 
-        virtual void setDestination(glm::vec3 destination);
-        virtual void turnTo(glm::vec3 destination);
+        virtual void setDestination(glm::vec3 destination) override;
+        virtual void turnTo(glm::vec3 destination) override;
 
         // Loads Magpie model data specifically
         virtual Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
-            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object);
+            std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) override;
 
-        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name);
+        virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name) override;
 
         // SETTERS
         void set_position(glm::vec3 position);
         void set_state(uint32_t state);
         void set_score(uint32_t score);
         void set_current_room(uint32_t room_number);
-        virtual void set_model_orientation(uint32_t dir);
-        virtual void set_path(Path path);
+        virtual void set_model_orientation(uint32_t dir) override;
+        virtual void set_path(Path path) override;
 
         void reset_treat_cooldown();
         void set_treat_cooldown(float cooldown_time);

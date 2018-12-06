@@ -31,7 +31,7 @@ namespace Magpie {
 
         FloatingNotificationText(std::string text, const std::map< GLchar, Character >* font, glm::vec2 anchor, float scale,  glm::vec4 color_rgba, float animation_duration);
 
-        virtual void update_animation(float elapsed);
+        virtual void update_animation(float elapsed) override;
 
     };
 
@@ -42,7 +42,7 @@ namespace Magpie {
 
         WaitingText(std::string text, const std::map< GLchar, Character >* font, glm::vec2 anchor, float scale,  glm::vec4 color_rgba, float animation_duration);
 
-        virtual void update_animation(float elapsed);
+        virtual void update_animation(float elapsed) override;
 
     };
 

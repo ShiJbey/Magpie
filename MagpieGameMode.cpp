@@ -727,9 +727,16 @@ namespace Magpie {
                && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
                && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
-                    displaycase->on_click();
-                    sample_unlock1->play(game.get_player()->get_position());
-                    return true;
+                    if (game.get_player()->has_master_key) {
+                        displaycase->on_click();
+                        sample_unlock1->play(game.get_player()->get_position());
+                        return true;
+                    } else {
+                        sample_fail->play(displaycase->get_position());
+                        animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                        return true;
+                    }
+                    
                 }
                 else if (displaycase->opened && displaycase->geode != nullptr && displaycase->geode->get_scene_object()->active) {
                     displaycase->geode->steal(game.get_player());
