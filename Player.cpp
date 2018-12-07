@@ -120,8 +120,27 @@ void Magpie::Player::consume_signal() {
 void Magpie::Player::update(float elapsed) {
     animation_manager->update(elapsed);
 
+    if (box_wearing_cooldown <= 0.0f) {
+        box_wearing_cooldown = 5.0f;
+        if (current_state == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+            set_state((uint32_t)Player::STATE::IDLE);
+        }
+        else if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+            set_state((uint32_t)Player::STATE::WALKING);
+        }
+        
+    }
+
     // Decrement the cool down time for dropping treats
     dog_treat_cooldown -= elapsed;
+    
+
+    if (current_state == (uint32_t)Player::STATE::DISGUISE_IDLE || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+        box_wearing_cooldown -= elapsed;
+    } else {
+        box_button_cooldown -= elapsed;
+    }
+
     
     if (current_state == (uint32_t)Player::STATE::WALKING || current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
         walk(elapsed);

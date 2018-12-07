@@ -206,22 +206,30 @@ namespace Magpie {
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
                 //printf("Swapping disguise\n");
-                switch(game.get_player()->get_state()) {
-                    case (uint32_t)Player::STATE::IDLE:
-                        sample_magpie_disguise->play(game.get_player()->get_position());
-                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
-                        break;
-                    case (uint32_t)Player::STATE::WALKING:
-                        sample_magpie_disguise->play(game.get_player()->get_position());
-                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-                        break;
-                    case (uint32_t)Player::STATE::DISGUISE_IDLE:
-                        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-                        break;
-                    case (uint32_t)Player::STATE::DISGUISE_WALK:
-                        game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-                        break;
+                if (game.get_player()->box_button_cooldown <= 0.0f) {
+                    switch(game.get_player()->get_state()) {
+                        case (uint32_t)Player::STATE::IDLE:
+                            game.get_player()->box_button_cooldown = 10.0f;
+                            sample_magpie_disguise->play(game.get_player()->get_position());
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+                            break;
+                        case (uint32_t)Player::STATE::WALKING:
+                            game.get_player()->box_button_cooldown = 10.0f;
+                            sample_magpie_disguise->play(game.get_player()->get_position());
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                            break;
+                        case (uint32_t)Player::STATE::DISGUISE_IDLE:
+                            game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
+                            break;
+                        case (uint32_t)Player::STATE::DISGUISE_WALK:
+                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                            break;
+                    }
                 }
+                else {
+                    sample_fail->play(game.get_player()->get_position());
+                }
+                
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 //open tutorial screen on 'ESCAPE':

@@ -18,6 +18,9 @@ namespace Magpie {
         // This is incremented each time we create a new player
         static uint32_t instance_count;
 
+        float box_button_cooldown = 10.0f;
+        float box_wearing_cooldown = 5.0f;
+
         // States specific to the magpie player
         enum class STATE {
             IDLE = 0,
