@@ -2,6 +2,7 @@
 #include "AssetLoader.hpp"
 
 #include <iostream>
+#include <algorithm>
 #include "GameAgent.hpp"
 
 uint32_t Magpie::Guard::instance_count = 0;
@@ -312,6 +313,22 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
     }
 
     if (result.size() == 1 && result[0] != p) result.push_back(p);
+
+    // handles non-circular guard paths
+    if (result.size() >= 2) {
+        bool looping = false;
+        for (int i = 0; i < 4; i++) {
+            if (p + dir[i] == glm::vec2(starting_point.x, starting_point.y)) {
+                looping = true;
+                break;
+            }
+        }
+        if (!looping) {
+            std::vector<glm::vec2> backtrack = std::vector<glm::vec2>(result.begin()+1, result.end()-1);
+            std::reverse(backtrack.begin(), backtrack.end());
+            result.insert(result.end(), backtrack.begin(), backtrack.end());
+        }
+    }
 
     this->patrol_points = result;
 }
