@@ -466,8 +466,17 @@ namespace Magpie {
     Load< Sound::Sample > sample_fail(LoadTagDefault, [](){
         return new Sound::Sample(data_path("sounds/SFX/Magpie_Pick_Fail.wav"));
     });
+
     Load< Sound::Sample > sample_siren(LoadTagDefault, [](){
         return new Sound::Sample(data_path("sounds/SFX/Magpie_Gaurd_Siren.wav"));
+    });
+
+    Load< Sound::Sample > sample_treat(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Drop_Treat.wav"));
+    });
+
+    Load< Sound::Sample > sample_cooldown(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Can_t_Treat.wav"));
     });
 
     Load< Sound::Sample > sample_magpie_disguise(LoadTagDefault, [](){
@@ -492,6 +501,10 @@ namespace Magpie {
 
     Load< Sound::Sample > sample_guard_confused(LoadTagDefault, [](){
         return new Sound::Sample(data_path("sounds/Guard/Guard_Confused.wav"));
+    });
+
+    Load< Sound::Sample > sample_guard_munch(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Guard/Guard_Munching.wav"));
     });
     
 }

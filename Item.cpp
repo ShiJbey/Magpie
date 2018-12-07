@@ -249,3 +249,26 @@ void Magpie::CardboardBox::update_animation(float elapsed) {
     (*transform)->position.z += 0.05f;
 };
 
+//////////////////////////////////////////////
+//              BACK EXIT                   //
+//////////////////////////////////////////////
+
+Magpie::BackExit::BackExit(): Magpie::BackExit(nullptr) {
+
+};
+
+Magpie::BackExit::BackExit(Scene::Object* obj_ptr) : Item(obj_ptr) {
+    set_transform(&obj_ptr->transform);
+    AnimatedModel::instance_id = Item::instance_id;
+};
+
+void Magpie::BackExit::on_click() {
+};
+
+Magpie::BoundingBox* Magpie::BackExit::get_boundingbox() {
+    // Return the existing bounding box
+    if (this->bounding_box != nullptr) return this->bounding_box;
+    // Create a new bounding box
+    this->bounding_box = new BoundingBox(this->scene_object->transform->position, glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, -0.5f));
+    return bounding_box;
+};

@@ -101,6 +101,7 @@ namespace Magpie {
         KeyCard *master_key = nullptr;
         DogTreat *dogTreatPickUp = nullptr;
         CardboardBox *cardboard_box = nullptr;
+        BackExit *back_exit = nullptr;
 
     protected:
  

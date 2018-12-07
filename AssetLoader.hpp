@@ -220,11 +220,14 @@ namespace Magpie {
     extern Load< Sound::Sample > sample_unlock3;
     extern Load< Sound::Sample > sample_fail;
     extern Load< Sound::Sample > sample_siren;
+    extern Load< Sound::Sample > sample_treat;
+    extern Load< Sound::Sample > sample_cooldown;
     extern Load< Sound::Sample > sample_magpie_disguise;
     extern Load< Sound::Sample > sample_magpie_walk1;
     extern Load< Sound::Sample > sample_magpie_walk2;
     extern Load< Sound::Sample > sample_guard_alert;
     extern Load< Sound::Sample > sample_guard_cautious;
     extern Load< Sound::Sample > sample_guard_confused;
+    extern Load< Sound::Sample > sample_guard_munch;
 
 }
