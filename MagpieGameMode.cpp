@@ -55,6 +55,7 @@ namespace Magpie {
         // Set up the player
         glm::vec3 player_position = game.get_level()->get_player_start_position();
         create_player(player_position);
+        game.get_player()->has_cardboard_box = true;
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
         game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
 

@@ -17,7 +17,7 @@ Magpie::Player::Player() {
 };
 
 bool Magpie::Player::is_disguised() {
-    return current_state == (uint32_t)STATE::DISGUISE_IDLE;
+    return current_state == (uint32_t)STATE::DISGUISE_IDLE || current_state == (uint32_t) STATE::DISGUISE_WALK;
 };
 
 void Magpie::Player::setDestination(glm::vec3 destination) {
@@ -79,6 +79,10 @@ void Magpie::Player::walk(float elapsed) {
     if (vector_to.x != 0) vector_to.x = vector_to.x / abs(vector_to.x);
     if (vector_to.y != 0) vector_to.y = vector_to.y / abs(vector_to.y);
 
+
+    movespeed = 2.0f;
+
+    if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) movespeed = 1.0f;
 
 
 	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
