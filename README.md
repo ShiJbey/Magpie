@@ -1,5 +1,4 @@
 # Game Information
-(Note: fill in this portion with information about your game.)
 
 Title: Magpie
 
