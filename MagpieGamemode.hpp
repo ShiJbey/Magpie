@@ -78,7 +78,7 @@ namespace Magpie {
 
         // Places a "treat" at the players current position
         // treats distract the guards while they are walking
-        Item* drop_treat(glm::vec3 position);
+        DogTreat* drop_treat(glm::vec3 position);
       
         // Highlights the tile meshes along the player's path
         // NOTE:: This function will most likely be deleted since
@@ -119,6 +119,7 @@ namespace Magpie {
 
         // Used for updating animations in the scene
         std::vector< AnimatedModel* > animated_scene_objects;
+        std::vector< DogTreat* > dog_treats;
 
         std::vector< FloatingNotificationText > animated_text_objects;
         glm::vec2 screen_dimensions;

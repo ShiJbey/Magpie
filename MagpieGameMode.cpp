@@ -189,8 +189,10 @@ namespace Magpie {
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
                     //printf("Dropping the load!\n");
+                  
                     sample_treat->play(game.get_player()->get_position());
-                    drop_treat(game.get_player()->get_position());
+                    dog_treats.push_back(drop_treat(game.get_player()->get_position()));
+
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
@@ -494,7 +496,7 @@ namespace Magpie {
         return guard;
     };
 
-    Item* MagpieGameMode::drop_treat(glm::vec3 position) {
+    DogTreat* MagpieGameMode::drop_treat(glm::vec3 position) {
         Scene::Transform* temp_transform = scene.new_transform();
         temp_transform->position = position;
 
@@ -507,10 +509,10 @@ namespace Magpie {
         obj->programs[Scene::Object::ProgramTypeDefault].start = mesh.start;
         obj->programs[Scene::Object::ProgramTypeDefault].count = mesh.count;
 
-        Item* item = new Item(obj);
+        DogTreat* dog_treat = new DogTreat(obj);
         obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-        return item;
+        return dog_treat;
     };
 
     /**
@@ -763,9 +765,16 @@ namespace Magpie {
                && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
                && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
-                    displaycase->on_click();
-                    sample_unlock1->play(game.get_player()->get_position());
-                    return true;
+                    if (game.get_player()->has_master_key) {
+                        displaycase->on_click();
+                        sample_unlock1->play(game.get_player()->get_position());
+                        return true;
+                    } else {
+                        sample_fail->play(displaycase->get_position());
+                        animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                        return true;
+                    }
+                    
                 }
                 else if (displaycase->opened && displaycase->geode != nullptr && displaycase->geode->get_scene_object()->active) {
                     displaycase->geode->steal(game.get_player());
