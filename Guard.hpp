@@ -78,6 +78,7 @@ namespace Magpie {
     private:
         float state_duration = 0.0f;
         enum STATE last_state = STATE::IDLE;
+        float give_up_timer = 0.0f;
 
         std::vector<glm::vec2> patrol_points;
         glm::vec3 interest_point;

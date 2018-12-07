@@ -188,7 +188,7 @@ void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
 
 void Magpie::Guard::handle_state_chasing(enum SIGHT view_state) {
     if (view_state == SIGHT::NOTHING) {
-        if (state_duration > 1.5f) {
+        if (state_duration > 1.0f) {
             std::cout << "CHASING -> CONFUSED" << std::endl;
             set_state((uint32_t) STATE::CONFUSED);
             return;
@@ -434,7 +434,7 @@ void Magpie::Guard::walk(float elapsed) {
 
     movespeed = 1.0f;
 
-    if (current_state == (uint32_t)STATE::CHASING) movespeed = 2.0f;
+    if (current_state == (uint32_t)STATE::CHASING) movespeed = 1.75f;
 
 	glm::vec2 moving_distance = accumulate_time * vector_to * movespeed;
 
