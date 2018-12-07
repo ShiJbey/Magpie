@@ -123,7 +123,7 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 
 		float s = choice.height * (1.0f / 3.0f);
 
-		float width = text_width(label, 3.0f);
+		float width = text_width(label, 3.0f) / 2.0f;
 
 		if (is_selected) {
 			float star_width = text_width("*", 3.0f);

@@ -35,7 +35,7 @@ namespace Magpie {
 
         std::shared_ptr< Sound::PlayingSample >current_music;
 
-        const float escape_timer = 60.f;
+        const float escape_timer = 47.f;
         float elapsed_in_escape = -1.f;
         bool escape_started = false;
 

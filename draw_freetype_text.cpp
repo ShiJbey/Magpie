@@ -122,6 +122,10 @@ Load< std::map< GLchar, Character > > ransom_font(LoadTagDefault, [](){
     return load_font(64, data_path("fonts/DJB Ransom Note Clipped.ttf"));
 });
 
+Load< std::map< GLchar, Character > > ransom_font_big(LoadTagDefault, [](){
+    return load_font(256, data_path("fonts/DJB Ransom Note Clipped.ttf"));
+});
+
 Load< std::map< GLchar, Character > > tutorial_font(LoadTagDefault, [](){
     return load_font(64, data_path("fonts/NeoBulletin Limited Free Version.ttf"));
 });

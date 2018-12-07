@@ -177,14 +177,32 @@ void Magpie::EndMenu::draw(glm::uvec2 const &drawable_size) {
 
         if (game_win) {
             win_camera->aspect = drawable_size.x / float(drawable_size.y);
-            win_scene->draw(lose_camera);
-            RenderText(ransom_font.value, "You stole $" + std::to_string(game_score) + "!",
-                    0.f, 0.f, 1.f, glm::vec3(1.f, 1.f, 1.f));
+            win_scene->draw(win_camera);
+
+            float font_height = 0.1f;
+            float target_font_scale = viewport[3] * font_height;
+            float y_anchor = 0.35f * viewport[3];
+            float font_scale = target_font_scale / 256.f;
+            float x_anchor = (viewport[2] / 2.f) - 1600.f * font_scale;
+            RenderText(ransom_font_big.value, "You stole ", x_anchor, y_anchor, font_scale, glm::vec3(1.f, 1.f, 1.f));
+
+            font_height = 0.2f;
+            target_font_scale = viewport[3] * font_height;
+            font_scale = target_font_scale / 256.f;
+            x_anchor = viewport[2] / 2.f;
+            RenderText(ransom_font_big.value, "$" + std::to_string(game_score), x_anchor, y_anchor, font_scale, glm::vec3(1.f, 1.f, 1.f));
         } else {
             lose_camera->aspect = drawable_size.x / float(drawable_size.y);
             lose_scene->draw(lose_camera);
-            RenderText(ransom_font.value, "game over",
-                       0.f, 0.f, 1.f, glm::vec3(1.f, 1.f, 1.f));
+
+            float font_height = 0.2f;
+            float target_font_scale = viewport[3] * font_height;
+            float font_scale = target_font_scale / 256.f;
+            float y_anchor = 0.35f * viewport[3];
+            float x_anchor = (viewport[2] / 2.f) - 780.f * font_scale;
+
+            RenderText(ransom_font_big.value, "game over",
+                       x_anchor, y_anchor, font_scale, glm::vec3(1.f, 1.f, 1.f));
         }
     }
 
