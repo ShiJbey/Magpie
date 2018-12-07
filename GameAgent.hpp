@@ -42,6 +42,7 @@ namespace Magpie {
         float movespeed = 1.5f;
 		float accumulate_time = 0.0f;
 		glm::vec3 starting_point;
+		DIRECTION starting_orientation;
         DIRECTION orientation;
         glm::ivec3 board_position;
         glm::vec3 current_destination;

@@ -450,8 +450,9 @@ void Magpie::Guard::set_position(glm::vec3 position) {
     board_position = glm::ivec3((int)position.x, (int)position.y, 0);
 }
 
-void Magpie::Guard::set_starting_point(glm::vec3 position) {
+void Magpie::Guard::set_starting_point(glm::vec3 position, DIRECTION dir) {
     starting_point = position;
+    starting_orientation = dir;
 }
 
 void Magpie::Guard::set_destination(glm::vec2 destination) {
