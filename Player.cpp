@@ -160,7 +160,7 @@ void Magpie::Player::set_state(uint32_t state) {
     animation_manager->set_current_state(state);
 
     if (state == (uint32_t)Player::STATE::WALKING || state == (uint32_t)Player::STATE::DISGUISE_WALK) {
-        elapsed_since_step = 1.f;
+        elapsed_since_step = 1.0f;
         first_step = false;
     }
 };

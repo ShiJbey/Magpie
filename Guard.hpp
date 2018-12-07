@@ -11,6 +11,8 @@ namespace Magpie {
     public:
 
         Player* player;
+        std::vector< Scene::Object* >* dog_treats_in_level;
+
         bool debug_focus = false; // When debugging the game, is this guard printing to stdout
 
         // This is incremented each time we create a new player

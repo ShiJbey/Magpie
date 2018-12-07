@@ -73,7 +73,7 @@ blender --background --python export-scene.py -- guardDog_eat.blend:1 %DIST%/gua
 rem Export the Magpie animations
 blender --background --python export-transform-animation-hierarchy.py -- magpie_walk.blend magpieWalk_GRP 0 20 %DIST%/magpie/magpie_walk.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpie_idle.blend magpieIdle_GRP 0 60 %DIST%/magpie/magpie_idle.tanim
-blender --background --python export-transform-animation-hierarchy.py -- magpie_steal.blend magpieSteal_GRP 0 30 %DIST%/magpie/magpie_steal.tanim
+blender --background --python export-transform-animation-hierarchy.py -- magpie_steal.blend magpieSteal_GRP 0 15 %DIST%/magpie/magpie_steal.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpie_pick.blend magpiePick_GRP 0 15 %DIST%/magpie/magpie_pick.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpie_break.blend magpieBreak_GRP 0 15 %DIST%/magpie/magpie_break.tanim
 blender --background --python export-transform-animation-hierarchy.py -- magpieDisguise_idle.blend magpieDisguiseIdle_GRP 0 1 %DIST%/magpie/magpieDisguise_idle.tanim

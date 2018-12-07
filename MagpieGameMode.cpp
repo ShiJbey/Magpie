@@ -67,6 +67,7 @@ namespace Magpie {
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
                guard->set_patrol_points(path);
                guards.push_back(guard);
+               guard->dog_treats_in_level = &dog_treats;
             }
         }
 
@@ -184,8 +185,7 @@ namespace Magpie {
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
-                    //printf("Dropping the load!\n");
-                    dog_treats.push_back(drop_treat(game.get_player()->get_position()));
+                    dog_treats.push_back(drop_treat(game.get_player()->get_position())->get_scene_object());
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
