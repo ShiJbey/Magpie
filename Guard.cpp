@@ -125,6 +125,7 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
         std::cout << "IDLE -> NOTICE" << std::endl;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
+        set_destination(interest_point);
         return;
     }
 
@@ -157,6 +158,7 @@ void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
         cautious = true;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
+        set_destination(interest_point);
         return;
     }
 };
@@ -167,6 +169,12 @@ void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
         return;
+    }
+
+    if (glm::distance(interest_point, get_position()) < 0.1) {
+        set_destination(patrol_points[patrol_index]);
+        set_state((uint32_t) STATE::PATROLING);
+        cautious = false;
     }
 }
 
@@ -206,6 +214,7 @@ void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
         //std::cout << "CONFUSED -> NOTICE" << std::endl;
         set_state((uint32_t) STATE::CAUTIOUS);
         interest_point = player->get_position();
+        set_destination(interest_point);
         return;
     }
 
