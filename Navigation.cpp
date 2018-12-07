@@ -125,7 +125,7 @@ void Magpie::Navigation::set_movement_matrix(std::vector< std::vector< bool > >*
 
 // Implement BFS for path finding
 // https://www.redblobgames.com/pathfinding/tower-defense/
-Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
+Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination_f) {
     
     reset_visited_matrix();
 
@@ -134,6 +134,8 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
 
     float start_x = glm::round(start.x);
     float start_y = glm::round(start.y);
+
+    glm::vec2 destination = glm::round(destination_f);
 
     //uint64_t start_x = trunc(start.x);
     //uint64_t start_y = trunc(start.y);
