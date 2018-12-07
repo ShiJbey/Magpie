@@ -362,7 +362,7 @@ void Magpie::Guard::set_model_orientation(uint32_t dir) {
             break;
         case (uint32_t)GameAgent::DIRECTION::UP :
 //            std::cout << "DEBUG::Guard::set_model_orientation():: Orienting up" << std::endl;
-            (*transform)->rotation = original_rotation * gl::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            (*transform)->rotation = original_rotation * glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             break;
         case (uint32_t)GameAgent::DIRECTION::DOWN:
 //            std::cout << "DEBUG::Guard::set_model_orientation():: Orienting down" << std::endl;
