@@ -23,14 +23,14 @@ if $(OS) = NT { #Windows
 	FREETYPE = freetype-2 ;
 	C++ = clang++ ;
 	C++FLAGS =
-		-std=c++14 -g -Wall -Werror
+		-std=c++14 -g -Wall
 		-I$(KIT_LIBS)/libpng/include                           #libpng
 		-I$(KIT_LIBS)/glm/include                              #glm
 		-I$(FREETYPE)/include                                  #freetype2
 		`PATH=$(KIT_LIBS)/SDL2/bin:$PATH sdl2-config --cflags` #SDL2
 		;
 	LINK = clang++ ;
-	LINKFLAGS = -std=c++14 -g -Wall -Werror ;
+	LINKFLAGS = -std=c++14 -g -Wall ;
 	LINKLIBS =
 		-L$(KIT_LIBS)/libpng/lib -lpng                      #libpng
 		-L$(KIT_LIBS)/zlib/lib -lz                          #zlib
