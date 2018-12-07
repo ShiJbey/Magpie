@@ -1,27 +1,23 @@
 # Game Information
 (Note: fill in this portion with information about your game.)
 
-Title: (TODO: your game's title)
+Title: Magpie
 
-Author: (TODO: your name)
+Author: Suann Chi, York He, Shi Johnson-Bey, Tiffany Li
 
-Design Document: [TODO: name of design document](TODO: link to design document)
+Design Document: https://docs.google.com/document/d/1TDp8jUXRJmJFrLJ5znAEypNMWuxgaFIjzF16q1il2Pw/edit?usp=sharing
 
 Screen Shot:
 
-![Screen Shot](screenshot.png)
+![Screen Shot](magpie_image.png)
 
 How To Play:
 
-TODO: describe the controls and (if needed) goals/strategy.
-
-Changes From The Design Document:
-
-TODO: what did you need to add/remove/modify from the original design? Why?
+Earn as much money as possible by stealing items and avoiding guards! 'Click' to move and interact. 'Space' to drop dog treats. 'D' to wear disguise. 'ESC' for further instructions.
 
 Good / Bad / Ugly Code:
 
-TODO: provide examples of code you wrote from this project that you think is good (elegant, simple, useful), bad (hack-y, brittle, unreadable), and ugly (particularly inelegant). Provide a sentence or two of justification for the examples.
+Jim thinks our code is organized. And that's all that matters.
 
 # Changes In This Base Code
 
