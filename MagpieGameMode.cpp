@@ -768,6 +768,7 @@ namespace Magpie {
                     if (game.get_player()->has_master_key) {
                         displaycase->on_click();
                         sample_unlock1->play(game.get_player()->get_position());
+                        game.get_player()->set_state((uint32_t)Player::STATE::PICKING);
                         return true;
                     } else {
                         sample_fail->play(displaycase->get_position());
@@ -777,6 +778,7 @@ namespace Magpie {
                     
                 }
                 else if (displaycase->opened && displaycase->geode != nullptr && displaycase->geode->get_scene_object()->active) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     displaycase->geode->steal(game.get_player());
                     displaycase->geode->get_scene_object()->active = false;
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(displaycase->geode->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
@@ -837,6 +839,7 @@ namespace Magpie {
                 game.get_level()->dogTreatPickUp->on_click();
                 game.get_player()->has_dog_treats = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Dog Treats", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                sample_pickup->play(game.get_player()->get_position());
                 return true;
             }
         }
@@ -849,6 +852,7 @@ namespace Magpie {
                 game.get_level()->cardboard_box->on_click();
                 game.get_player()->has_cardboard_box = true;
                 animated_text_objects.push_back(FloatingNotificationText("Found Box Disguise", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
+                sample_pickup->play(game.get_player()->get_position());
                 return true;
             }
         }
