@@ -30,8 +30,14 @@ namespace Magpie {
         void set_player(Player* player);
         void set_guards(std::vector< Guard* > guard_vec);
         void set_level(MagpieLevel* level);
+        void trigger_escape();
+        float escape_update(float elapsed);  //returns time remaining in counter
 
         std::shared_ptr< Sound::PlayingSample >current_music;
+
+        const float escape_timer = 60.f;
+        float elapsed_in_escape = -1.f;
+        bool escape_started = false;
 
     protected:
         // Characters within the game

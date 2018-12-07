@@ -123,8 +123,8 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
 
     std::map<uint8_t, std::string > paintings = {
         { 0, "painting_yellow_MSH" },
-        { 1, "painting_scream_MSH" },
-        { 2, "painting_rothko_MSH" }
+        { 1, "painting_rothko_MSH" },
+        { 2, "painting_scream_MSH" }
     };
 
     std::map<uint8_t, std::string > gems = {
@@ -667,6 +667,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     door->scene_object = obj;
                     door->set_transform(&obj->transform);
                     (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+                    level->back_exit = new BackExit(obj);
                 }
                 else{
                     create_front_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));

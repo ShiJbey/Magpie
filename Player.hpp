@@ -80,6 +80,7 @@ namespace Magpie {
         glm::vec3 final_destination = glm::vec3(-1, -1, -1);
 
         bool game_over = false;
+        bool game_won = false;
 
     protected:
 

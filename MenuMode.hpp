@@ -18,7 +18,7 @@ struct MenuMode : public Mode {
 		std::string label;
 		std::function< void() > on_select;
 		//height / padding give item height and padding relative to a screen of height 2:
-		float height = 0.1f;
+		float height = 0.2f;
 		float padding = 0.01f;
 	};
 	std::vector< Choice > choices;

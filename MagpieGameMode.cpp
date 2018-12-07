@@ -73,7 +73,7 @@ namespace Magpie {
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
 
-        game.current_music = sample_ambient->play(game.get_player()->get_position(), 0.3f, Sound::Loop);
+        game.current_music = sample_ambient->play(game.get_player()->get_position(), 0.4f, Sound::Loop);
     };
 
     MagpieGameMode::~MagpieGameMode() {
@@ -82,7 +82,7 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
         if (game.get_player()->game_over) {
-            Mode::set_current(std::make_shared< Magpie::EndMenu >());
+            Mode::set_current(std::make_shared< Magpie::EndMenu >(game.get_player()->game_won, game.get_player()->get_score()));
             return;
         }
         //if the map is out don't update anything
@@ -148,6 +148,12 @@ namespace Magpie {
 
             //update background music location
             game.current_music->set_position(game.get_player()->get_position());
+
+            //escape stage logic
+            float time_remaining = game.escape_update(elapsed);
+            if (time_remaining <= 0) {
+                game.get_player()->game_over = true;
+            }
         
             #ifndef FREE_FLIGHT
             camera_trans->position.x = game.get_player()->get_position().x;
@@ -183,11 +189,15 @@ namespace Magpie {
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
                     //printf("Dropping the load!\n");
+                  
+                    sample_treat->play(game.get_player()->get_position());
                     dog_treats.push_back(drop_treat(game.get_player()->get_position()));
+
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
-                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    sample_cooldown->play(game.get_player()->get_position());
+//                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
@@ -225,6 +235,9 @@ namespace Magpie {
                     animated_text_objects.push_back(FloatingNotificationText("Cheat Active!", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_COMMA) {
+                game.trigger_escape();
+            }
         }
 
         #ifdef FREE_FLIGHT
@@ -253,6 +266,8 @@ namespace Magpie {
 
     void MagpieGameMode::draw(glm::uvec2 const &drawable_size) {
         glViewport(0, 0, drawable_size.x, drawable_size.y);
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
 
         glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -273,6 +288,12 @@ namespace Magpie {
             //use hemisphere light for sky light:
             glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
             glUniform3fv(vertex_color_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
+
+            if (game.escape_started) {
+                glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
+                glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
+            }
+
             camera->aspect = drawable_size.x / float(drawable_size.y);
             //Draw scene:
             scene.draw(camera);
@@ -287,6 +308,23 @@ namespace Magpie {
                            (float)drawable_size.x - 550.0f, 20.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
                 //draw UI
                 ui.drawUI(camera, drawable_size);
+
+                if (game.escape_started && !game.get_player()->game_over) {
+
+                    float aspect = viewport[2] / float(viewport[3]);
+                    float y_anchor = 0.7f;
+                    float x_anchor = -0.4f * aspect;
+                    float font_height = 0.08f;
+
+                    float target_font_size = viewport[3] * font_height;
+                    float font_scale = target_font_size / 64.f;
+                    float window_x_anchor = ((x_anchor + aspect) / (2*aspect)) * viewport[2];
+                    float window_y_anchor = ((y_anchor + 1) / 2) * viewport[3];
+
+                    uint32_t escape_time_remaining = std::ceil(game.escape_timer - game.elapsed_in_escape);
+                    RenderText(tutorial_font.value, "ESCAPE TO THE BACK! " + std::to_string(escape_time_remaining),
+                            window_x_anchor, window_y_anchor, font_scale, glm::vec3(1.0f, 0.2f, 0.2f));
+                }
             }
         }
 
@@ -775,6 +813,9 @@ namespace Magpie {
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 sample_pickup->play(game.get_player()->get_position());
+
+                //Trigger escape stage
+                game.trigger_escape();
                 return true;
             }
         }
@@ -816,6 +857,16 @@ namespace Magpie {
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Box Disguise", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 return true;
+            }
+        }
+
+        if (game.get_level()->back_exit != nullptr && game.escape_started && !game.get_player()->game_over) {
+            if (game.get_level()->back_exit->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && abs(game.get_player()->get_position().x - game.get_level()->back_exit->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->back_exit->get_position().y) <= 1) {
+                sample_door->play(game.get_player()->get_position());
+                game.get_player()->game_over = true;
+                game.get_player()->game_won = true;
             }
         }
 

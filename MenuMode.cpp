@@ -106,7 +106,7 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 	}
 	glDisable(GL_DEPTH_TEST);
 
-	float total_height = 0.0f;
+	float total_height = -1.0f;
 	for (auto const &choice : choices) {
 		total_height += choice.height + 2.0f * choice.padding;
 	}
