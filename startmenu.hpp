@@ -2,6 +2,7 @@
 
 #include "MenuMode.hpp"
 #include "MagpieGamemode.hpp"
+#include "TutorialMode.hpp"
 
 #include <functional>
 #include <vector>
@@ -10,22 +11,34 @@
 namespace Magpie {
     struct StartMenu : public MenuMode {
         StartMenu() {
-            choices.emplace_back("MAGPIE");
             choices.emplace_back("PLAY", [](){
-                Mode::set_current(std::make_shared< Magpie::MagpieGameMode >());
+                std::shared_ptr< Magpie::MagpieGameMode > gamemode = std::make_shared< Magpie::MagpieGameMode >();
+                Mode::set_current(gamemode);
+                gamemode->show_tutorial();
             });
             choices.emplace_back("QUIT", [](){
                 Mode::set_current(nullptr);
             });
-
-            selected = 1;
+            selected = 0;
         }
+
+        virtual void draw(glm::uvec2 const &drawable_size) override;
     };
 
     struct EndMenu : public MenuMode {
-        EndMenu() {
-            choices.emplace_back("GAME OVER");
-            selected = 1;
+        EndMenu(bool win = false, uint32_t score = 0) {
+            choices.emplace_back("QUIT", [](){
+                Mode::set_current(nullptr);
+            });
+            selected = 0;
+
+            game_win = win;
+            game_score = score;
         }
+
+        virtual void draw(glm::uvec2 const &drawable_size) override;
+
+        bool game_win = false;
+        uint32_t game_score = 0;
     };
 }

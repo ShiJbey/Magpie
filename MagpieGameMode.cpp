@@ -82,7 +82,7 @@ namespace Magpie {
 
     void MagpieGameMode::update(float elapsed) {
         if (game.get_player()->game_over) {
-            Mode::set_current(std::make_shared< Magpie::EndMenu >());
+            Mode::set_current(std::make_shared< Magpie::EndMenu >(game.get_player()->game_won, game.get_player()->get_score()));
             return;
         }
         //if the map is out don't update anything
@@ -850,6 +850,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->back_exit->get_position().y) <= 1) {
                 sample_door->play(game.get_player()->get_position());
                 game.get_player()->game_over = true;
+                game.get_player()->game_won = true;
             }
         }
 
