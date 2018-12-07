@@ -727,8 +727,10 @@ namespace Magpie {
                && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
                && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
                 if (!displaycase->opened) {
+                    game.get_player()->set_state((uint32_t)Player::STATE::PICKING);
                     if (game.get_player()->has_master_key) {
                         displaycase->on_click();
+                        game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                         sample_unlock1->play(game.get_player()->get_position());
                         return true;
                     } else {
@@ -756,6 +758,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->pink_card->get_position().y) <= 1) {
                 game.get_level()->pink_card->on_click();
                 game.get_player()->has_pink_card = true;
+                game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Pink Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 50.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 sample_pickup->play(game.get_player()->get_position());
                 return true;
@@ -769,6 +772,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->green_card->get_position().y) <= 1) {
                 game.get_level()->green_card->on_click();
                 game.get_player()->has_green_card = true;
+                game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 sample_pickup->play(game.get_player()->get_position());
                 return true;
@@ -782,6 +786,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->master_key->get_position().y) <= 1) {
                 game.get_level()->master_key->on_click();
                 game.get_player()->has_master_key = true;
+                game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 sample_pickup->play(game.get_player()->get_position());
                 return true;
@@ -795,6 +800,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->dogTreatPickUp->get_position().y) <= 1) {
                 game.get_level()->dogTreatPickUp->on_click();
                 game.get_player()->has_dog_treats = true;
+                game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Dog Treats", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 return true;
             }
@@ -807,6 +813,7 @@ namespace Magpie {
                 && abs(game.get_player()->get_position().y - game.get_level()->cardboard_box->get_position().y) <= 1) {
                 game.get_level()->cardboard_box->on_click();
                 game.get_player()->has_cardboard_box = true;
+                game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Box Disguise", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
                 return true;
             }
