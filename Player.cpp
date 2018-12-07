@@ -131,7 +131,7 @@ void Magpie::Player::update(float elapsed) {
             if (first_step) {
                 sample_magpie_walk1->play(get_position(), 0.2f);
             } else {
-                sample_magpie_walk2->play(get_position(), 0.3f);
+                sample_magpie_walk2->play(get_position(), 0.1f);
             }
         }
     }

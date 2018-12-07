@@ -46,6 +46,14 @@ bool TutorialMode::handle_event(SDL_Event const &e, glm::uvec2 const &window_siz
 			return true;
 		}
 	}
+
+	if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
+        if (on_escape) {
+            on_escape();
+        } else {
+            Mode::set_current(background);
+        }
+    }
 	return false;
 }
 

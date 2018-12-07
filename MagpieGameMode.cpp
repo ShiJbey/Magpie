@@ -735,7 +735,7 @@ namespace Magpie {
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(painting->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
+                    sample_steal1->play(game.get_player()->get_position(), 0.3f);
                     play_score_sound(painting->get_selling_price());
                     return true;
                 }
@@ -753,7 +753,7 @@ namespace Magpie {
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(gem->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
+                    sample_steal1->play(game.get_player()->get_position(), 0.3f);
                     play_score_sound(gem->get_selling_price());
                     return true;
                 }
@@ -782,7 +782,7 @@ namespace Magpie {
                     displaycase->geode->steal(game.get_player());
                     displaycase->geode->get_scene_object()->active = false;
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(displaycase->geode->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
+                    sample_steal1->play(game.get_player()->get_position(), 0.3f);
                     play_score_sound(displaycase->geode->get_selling_price());
                     return true;
                 }
