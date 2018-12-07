@@ -137,7 +137,7 @@ void Magpie::Player::update(float elapsed) {
     }
 
     if ((current_state == (uint32_t)Player::STATE::STEALING && animation_manager->get_current_animation()->animation_player->done())
-        /*|| (current_state == (uint32_t)Player::STATE::PICKING && animation_manager->get_current_animation()->animation_player->done())*/) {
+        || (current_state == (uint32_t)Player::STATE::PICKING && animation_manager->get_current_animation()->animation_player->done())) {
         set_state((uint32_t)Player::STATE::IDLE);
     }
 };

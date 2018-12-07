@@ -154,6 +154,9 @@ namespace Magpie {
             if (time_remaining <= 0) {
                 game.get_player()->game_over = true;
             }
+
+            //prevent spamming doors
+            door_click_elapsed += elapsed;
         
             #ifndef FREE_FLIGHT
             camera_trans->position.x = game.get_player()->get_position().x;
@@ -870,11 +873,12 @@ namespace Magpie {
         for (uint32_t i = 0; i < game.get_level()->get_doors()->size(); i++) {
             if ((*game.get_level()->get_doors())[i]->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)) {
                 Door* door = (*game.get_level()->get_doors())[i];
-                if (door->opened) {
+                if (door->opened && door_click_elapsed >= door_click_delay) {
                     
                     // Find the position in the next room
                     auto room_iter = door->rooms.find(game.get_player()->get_current_room());
                     if (room_iter!= door->rooms.end()) {
+                        door_click_elapsed = 0.f;
                         game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
                             glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
                             glm::vec2(room_iter->second.x, room_iter->second.y)));

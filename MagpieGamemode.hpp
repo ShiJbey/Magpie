@@ -134,5 +134,9 @@ namespace Magpie {
 
         // counts the number of times the shift key has been hit
         int presses_for_developer_mode = 5;
+
+        // prevents spamming doors
+        const float door_click_delay = 1.0f;
+        float door_click_elapsed = 0.0f;
     };
 }
