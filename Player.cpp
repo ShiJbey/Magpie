@@ -370,16 +370,13 @@ void Magpie::Player::set_path(Magpie::Path path) {
         }
 
         // Round the player's current position
-//        glm::vec3 rounded_position = glm::round(get_position());
+        //glm::vec3 rounded_position = glm::round(get_position());
 
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
 
         // Remove overlapping destinations
         if (modified_path.size() >= 2 && new_path.size() >= 2) {
-//            auto mp_last_elm_iter = modified_path.rbegin() + 2;
-//            auto mp_2nd_last_elm_iter = modified_path.rbegin() + 1;
-//            auto np_1st_elm_iter = new_path.begin() + 1;
             auto np_2nd_elm_iter = new_path.begin() + 1;
             if (modified_path[modified_path.size() - 2] == new_path[0] && modified_path[modified_path.size() - 1] == new_path[1]) {
                 //std::cout << "DEBUG::Player.set_path:: duplicate destinations" << std::endl;
@@ -395,65 +392,6 @@ void Magpie::Player::set_path(Magpie::Path path) {
         // Set the path to the newly modified one
         this->path.set_path(modified_path);
         this->new_path.set_path(modified_path);
-
-        /*
-        size_t size = modified_path.size();
-        int x_direction = 0;
-        if (modified_path[size-1].x != modified_path[0].x) {
-            x_direction = (int)(abs(modified_path[size-1].x - modified_path[0].x) / (modified_path[size-1].x - modified_path[0].x));
-        }
-        int y_direction = 0;
-        if (modified_path[size-1].y != modified_path[0].y) {
-            y_direction = (int)(abs(modified_path[size-1].y - modified_path[0].y) / (modified_path[size-1].y - modified_path[0].y));
-        }
-
-        std::vector<glm::vec2> result_path;
-
-        auto is_in = [modified_path](float x, float y){
-            for (auto i : modified_path) {
-                if (i.x == x && i.y == y) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        float xx = modified_path[0].x;
-        float yy = modified_path[0].y;
-
-        float original_x = modified_path[next_destination_index-1].x;
-        float original_y = modified_path[next_destination_index-1].y;
-
-        result_path.emplace_back(glm::vec2(xx, yy));
-        while (xx != modified_path[size-1].x || yy != modified_path[size-1].y) {
-            if (xx == original_x && yy == original_y) {
-                this->next_destination_index = result_path.size();
-            }
-            if (x_direction != 0 && is_in(xx + x_direction, yy)) {
-                result_path.emplace_back(glm::vec2(xx + x_direction, yy));
-                xx = xx + x_direction;
-                continue;
-            } else if(y_direction != 0 && is_in(xx, yy + y_direction)) {
-                result_path.emplace_back(glm::vec2(xx, yy + y_direction));
-                yy = yy + y_direction;
-                continue;
-            }
-            break;
-        }
-        */
-
-
-
-//         print the new path
-        //std::cout << "**== Modified Path ==**" << std::endl;
-        //std::cout << next_destination_index << ":" << result_path[next_destination_index].x  << "," << result_path[next_destination_index].y << std::endl;
-        //for(auto &pos : result_path) {
-        //    std::cout << "\t( " << pos.x << ", " << pos.y << " )" << std::endl;
-        //};
-
-
-
-        
     }
 };
 

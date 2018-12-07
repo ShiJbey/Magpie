@@ -39,8 +39,8 @@
 #include <algorithm>
 #include <random>
 
-#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
-#define GUARD_DEBUG // allows you to click on guards to get debug information
+//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+//#define GUARD_DEBUG // allows you to click on guards to get debug information
 
 namespace Magpie {
 
@@ -68,6 +68,7 @@ namespace Magpie {
                guard->set_patrol_points(path);
                guards.push_back(guard);
                guard->dog_treats_in_level = &dog_treats;
+               guard->debug_focus = true;
             }
         }
 
@@ -419,7 +420,7 @@ namespace Magpie {
         TransformAnimationPlayer* guard_patrol_animation = new TransformAnimationPlayer(*guard_dog_patrol_tanim, guard_model_patrol_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_chase_animation = new TransformAnimationPlayer(*guard_dog_chase_tanim, guard_model_chase_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_alert_animation = new TransformAnimationPlayer(*guard_dog_alert_tanim, guard_model_alert_transforms, 1.0f, false);
-        TransformAnimationPlayer* guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, true);
+        TransformAnimationPlayer* guard_confused_animation = new TransformAnimationPlayer(*guard_dog_confused_tanim, guard_model_confused_transforms, 1.0f, false);
         TransformAnimationPlayer* guard_cautious_animation = new TransformAnimationPlayer(*guard_dog_cautious_tanim, guard_model_cautious_transforms, 1.0f, true);
         TransformAnimationPlayer* guard_eat_animation = new TransformAnimationPlayer(*guard_dog_eat_tanim, guard_model_eat_transforms, 1.0f, false);
 

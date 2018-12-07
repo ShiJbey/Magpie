@@ -12,6 +12,7 @@ Magpie::Guard::Guard() {
 
     animation_manager = new AnimationManager();
     orientation = DIRECTION::LEFT;
+    movespeed = 2.0f;
 };
 
 void Magpie::Guard::consume_signal() {
@@ -44,7 +45,8 @@ void Magpie::Guard::turnTo(glm::vec3 destination) {
 };
 
 void Magpie::Guard::update(float elapsed) {
-    walk(elapsed);
+    if (current_state == (uint32_t)STATE::PATROLING || current_state == (uint32_t)STATE::CHASING || current_state == (uint32_t)STATE::CAUTIOUS)
+        walk(elapsed);
     update_state(elapsed);
     animation_manager->update(elapsed);
 };
@@ -114,14 +116,14 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
 
     if (view_state == SIGHT::MAGPIE_ALERT) {
         if (debug_focus)
-            std::cout << "IDLE -> ALERT" << std::endl;
+            std::cout << "Guard (" << get_instance_id() << ") " << "IDLE -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         return;
     }
 
     if (view_state == SIGHT::MAGPIE_NOTICE) {
         if (debug_focus)
-            std::cout << "IDLE -> NOTICE" << std::endl;
+            std::cout << "Guard (" << get_instance_id() << ") " << "IDLE -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         cautious = true;
         return;
@@ -130,7 +132,7 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
     // WARNING:: This may cause weird behavior when stationary guards return to their positions
     // after chasing
     if (state_duration > 1.5f) {
-        if (patrol_points.size > 1) {
+        if (patrol_points.size() > 1) {
             patrol_index = (patrol_index + 1) % patrol_points.size();
             set_destination(patrol_points[patrol_index]);
             set_state((uint32_t) STATE::PATROLING);
@@ -146,7 +148,7 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
 void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
     if (view_state == SIGHT::MAGPIE_ALERT) {
         if (debug_focus)
-            std::cout << "PATROL -> ALERT" << std::endl;
+            std::cout << "Guard (" << get_instance_id() << ") " << "PATROL -> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
         return;
@@ -154,79 +156,93 @@ void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state){
 
     if (view_state == SIGHT::MAGPIE_NOTICE && !cautious) {
         if (debug_focus)
-            std::cout << "PATROL -> CAUTIOUS" << std::endl;
+            std::cout << "Guard (" << get_instance_id() << ") " << "PATROL -> CAUTIOUS" << std::endl;
         cautious = true;
         set_state((uint32_t) STATE::CAUTIOUS);
         return;
     }
+
+    if (view_state == SIGHT::DONUT) {
+        if (debug_focus)
+            std::cout << "Guard (" << get_instance_id() << ") " << "PATROL -> EATING" << std::endl;
+        cautious = false;
+        set_state((uint32_t) STATE::EATING);
+        return;
+    }
+
+
 };
 
 void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
     
     if (view_state == SIGHT::MAGPIE_ALERT) {
         if (debug_focus)
-            std::cout << "CAUTIOUS-> ALERT" << std::endl;
+            std::cout << "Guard (" << get_instance_id() << ") " << "CAUTIOUS-> ALERT" << std::endl;
         set_state((uint32_t) STATE::ALERT);
+        cautious = false;
         interest_point = player->get_position();
         return;
     }
 
-    if (state_duration < 1.5f) {
-        // Check if there is a donut infront of the guard
-        switch(view_state) {
-            case SIGHT::DONUT:
-                set_state((uint32_t)STATE::EATING);
-                break;
-            case SIGHT::NOTHING:
-                set_state((uint32_t)STATE::CONFUSED);
-                break;
-            case SIGHT::MAGPIE_ALERT:
-                set_state((uint32_t)STATE::CHASING);
-                break;
-            default:
-                set_destination(player->get_position());
-                break;
-        }
+    if (state_duration > 3.0f) {
+        cautious = false;
+        std::cout << "Guard (" << get_instance_id() << ") " << "CAUTIOUS-> PATROL" << std::endl;
+        set_state((uint32_t)STATE::PATROLING);
     }
-    else {
-        set_state((uint32_t)STATE::CONFUSED);
-    }
+    
 }
 
 void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
     if (current_state == (uint32_t)Guard::STATE::ALERT && animation_manager->get_current_animation()->animation_player->done()) {
-        if (debug_focus)
-            std::cout << "ALERT->CHASING" << std::endl;
-        set_state((uint32_t) STATE::CHASING);
-        Magpie::Guard::set_destination(glm::vec2(player->get_position().x, player->get_position().y));
+        if (cautious) {
+            if (patrol_points.size() == 1) {
+                if (debug_focus)
+                    std::cout << "Guard (" << get_instance_id() << ") " << "ALERT->CHASING (cautious stationary)" << std::endl;
+                
+                set_state((uint32_t) STATE::CHASING);
+                Magpie::Guard::set_destination(glm::vec2(player->get_position().x, player->get_position().y));
+            }
+            else {
+                if (debug_focus)
+                    std::cout << "Guard (" << get_instance_id() << ") " << "ALERT->CAUTIOUS" << std::endl;
+                set_state((uint32_t) STATE::CAUTIOUS);
+            }
+        }
+        else {
+            if (debug_focus)
+                    std::cout << "Guard (" << get_instance_id() << ") " << "ALERT->CHASING" << std::endl;
+                
+            set_state((uint32_t) STATE::CHASING);
+            Magpie::Guard::set_destination(glm::vec2(player->get_position().x, player->get_position().y));
+        }
     }
 };
 
 void Magpie::Guard::handle_state_chasing(enum SIGHT view_state) {
-    // Guard only chases the player for a set amount of time
-    if (state_duration < 1.5f) {
-        // Check if there is a donut infront of the guard
-        switch(view_state) {
-            case SIGHT::DONUT:
-                set_state((uint32_t)STATE::EATING);
-                break;
-            case SIGHT::NOTHING:
+    switch(view_state) {
+        case SIGHT::DONUT:
+            std::cout << "Guard (" << get_instance_id() << ") " << "CHASE -> EAT" << std::endl;
+            set_state((uint32_t)STATE::EATING);
+            break;
+        case SIGHT::NOTHING:
+            if (state_duration > 1.0f) {
+                std::cout << "Guard (" << get_instance_id() << ") " << "CHASE -> CONFUSED" << std::endl;
                 set_state((uint32_t)STATE::CONFUSED);
-                break;
-            default:
+            } else {
                 set_destination(player->get_position());
-                break;
-        }
-    }
-    else {
-        set_state((uint32_t)STATE::CONFUSED);
+            }
+            break;
+        default:
+            set_destination(player->get_position());
+            state_duration = 0;
+            break;
     }
 };
 
 void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
     if (current_state == (uint32_t)STATE::CONFUSED && animation_manager->get_current_animation()->animation_player->done()) {
-       // Return to patrolling
-       set_state((uint32_t)STATE::PATROLING);
+       set_state((uint32_t)STATE::CAUTIOUS);
+       cautious = true;
        set_destination(patrol_points[patrol_index]);
     }
 };
@@ -471,8 +487,8 @@ void Magpie::Guard::set_starting_point(glm::vec3 position) {
 };
 
 void Magpie::Guard::set_destination(glm::vec2 destination) {
-    if (debug_focus)
-        std::cout << "Guard Set Destination to" << destination.x << ", " << destination.y << std::endl;
+    //if (debug_focus)
+    //    std::cout << "Guard Set Destination to" << destination.x << ", " << destination.y << std::endl;
 
     if (destination == last_destination) return;
     last_destination = destination;
@@ -492,7 +508,7 @@ void Magpie::Guard::set_destination(glm::vec2 destination) {
 
     }
     else {
-        set_state((uint32_t) STATE::IDLE);
+        //set_state((uint32_t) STATE::IDLE);
     }
 };
 
@@ -500,17 +516,14 @@ void Magpie::Guard::set_path(Magpie::Path path) {
 
     // Do nothing for empty path
     if (path.get_path().size() == 0) {
-
-        if (debug_focus)
-            std::cout << "DEBUG::Guard.set_path():: EMPTY PATH" << std::endl;
-
+        //std::cout << "DEBUG::Player.set_path():: EMPTY PATH" << std::endl;
         return;
     }
 
     // The magpie has finished the previous path and this one
     // should replace the old one
     if (this->next_destination_index > this->path.get_path().size() + 1 ||
-        this->next_destination_index == 0) {
+        this->next_destination_index == 0 || this->path.get_path().size() == 0) {
         
         this->is_new_path = true;
         this->new_path = path;
@@ -520,9 +533,18 @@ void Magpie::Guard::set_path(Magpie::Path path) {
     // The player has clicked for the magpie to move on a different path
     // while the Magpie was currently navigating a path
     else {
+        //std::cout << "DEBUG::Player.set_path():: Appending new path to previous\n" << std::endl;
 
-        if (debug_focus)
-            std::cout << "DEBUG::Guard.set_path():: Appending new path to previous\n" << std::endl;
+        //std::cout << "DEBUG::Player.set_path():: Current Path" << std::endl;
+        //for (uint32_t i = 0; i < next_destination_index; i++) {
+        //    glm::vec2 pos = this->path.get_path()[i];
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
+
+        //std::cout << "DEBUG::Player.set_path():: Given Path" << std::endl;
+        //for (auto &pos: path.get_path()) {
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
 
         // Remove all locations in the path vector after the current destination
         // Append this path to the end of the old path and let the magpie continue
@@ -542,23 +564,23 @@ void Magpie::Guard::set_path(Magpie::Path path) {
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
 
+        // Remove overlapping destinations
+        if (modified_path.size() >= 2 && new_path.size() >= 2) {
+            auto np_2nd_elm_iter = new_path.begin() + 1;
+            if (modified_path[modified_path.size() - 2] == new_path[0] && modified_path[modified_path.size() - 1] == new_path[1]) {
+                //std::cout << "DEBUG::Player.set_path:: duplicate destinations" << std::endl;
+                new_path = std::vector<glm::vec2>(np_2nd_elm_iter + 1, new_path.end());
+            }
+        };
+
         // Append all the locations in the given path
         for(auto &pos : new_path) {
             modified_path.push_back(pos);
         }
 
-        this->set_position(glm::vec3(modified_path[next_destination_index].x, modified_path[next_destination_index].y, 0.0f));
-
         // Set the path to the newly modified one
         this->path.set_path(modified_path);
         this->new_path.set_path(modified_path);
-
-        // Print the new path
-        //std::cout << "**== Modified Path ==**" << std::endl;
-        //std::cout << next_destination_index << ":" << result_path[next_destination_index].x  << "," << result_path[next_destination_index].y << std::endl;
-        //for(auto &pos : result_path) {
-        //    std::cout << "\t( " << pos.x << ", " << pos.y << " )" << std::endl;
-        //};        
     }
 };
 
