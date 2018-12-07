@@ -183,7 +183,7 @@ void Magpie::Guard::handle_state_chasing(enum SIGHT view_state) {
 //        set_state((uint32_t) STATE::CONFUSED);
 //        return;
 //    }
-    if (state_duration > 0.5f) {
+    if (state_duration > 1.0f) {
         set_state((uint32_t) STATE::CHASING);
         set_destination(player->get_position());
     }
@@ -379,7 +379,9 @@ void Magpie::Guard::walk(float elapsed) {
 
 	if (next_destination_index > this->path.get_path().size())
 	{
-		set_state((uint32_t)STATE::IDLE);
+	    if (current_state == (uint32_t)STATE::PATROLING)
+            set_state((uint32_t)STATE::IDLE);
+
 		next_destination_index = 0;
 		return;
 	}
@@ -457,19 +459,20 @@ void Magpie::Guard::set_destination(glm::vec2 destination) {
     }
 };
 
+
 void Magpie::Guard::set_path(Magpie::Path path) {
 
     // Do nothing for empty path
     if (path.get_path().size() == 0) {
-        std::cout << "DEBUG::Guard.set_path():: EMPTY PATH" << std::endl;
+        //std::cout << "DEBUG::Player.set_path():: EMPTY PATH" << std::endl;
         return;
     }
 
     // The magpie has finished the previous path and this one
     // should replace the old one
     if (this->next_destination_index > this->path.get_path().size() + 1 ||
-        this->next_destination_index == 0) {
-        
+        this->next_destination_index == 0 || this->path.get_path().size() == 0) {
+
         this->is_new_path = true;
         this->new_path = path;
         this->next_destination_index = 0;
@@ -478,7 +481,19 @@ void Magpie::Guard::set_path(Magpie::Path path) {
     // The player has clicked for the magpie to move on a different path
     // while the Magpie was currently navigating a path
     else {
-        std::cout << "DEBUG::Guard.set_path():: Appending new path to previous\n" << std::endl;
+        //std::cout << "DEBUG::Player.set_path():: Appending new path to previous\n" << std::endl;
+
+        //std::cout << "DEBUG::Player.set_path():: Current Path" << std::endl;
+        //for (uint32_t i = 0; i < next_destination_index; i++) {
+        //    glm::vec2 pos = this->path.get_path()[i];
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
+
+        //std::cout << "DEBUG::Player.set_path():: Given Path" << std::endl;
+        //for (auto &pos: path.get_path()) {
+        //    printf("(%f, %f)\n", pos.x, pos.y);
+        //}
+
         // Remove all locations in the path vector after the current destination
         // Append this path to the end of the old path and let the magpie continue
         // as normal
@@ -497,12 +512,22 @@ void Magpie::Guard::set_path(Magpie::Path path) {
         // Erase all locations after the next destination
         modified_path.erase(modified_path.begin() + next_destination_index, modified_path.end());
 
+        // Remove overlapping destinations
+        if (modified_path.size() >= 2 && new_path.size() >= 2) {
+//            auto mp_last_elm_iter = modified_path.rbegin() + 2;
+//            auto mp_2nd_last_elm_iter = modified_path.rbegin() + 1;
+//            auto np_1st_elm_iter = new_path.begin() + 1;
+            auto np_2nd_elm_iter = new_path.begin() + 1;
+            if (modified_path[modified_path.size() - 2] == new_path[0] && modified_path[modified_path.size() - 1] == new_path[1]) {
+                //std::cout << "DEBUG::Player.set_path:: duplicate destinations" << std::endl;
+                new_path = std::vector<glm::vec2>(np_2nd_elm_iter + 1, new_path.end());
+            }
+        };
+
         // Append all the locations in the given path
         for(auto &pos : new_path) {
             modified_path.push_back(pos);
         }
-
-        this->set_position(glm::vec3(modified_path[next_destination_index].x, modified_path[next_destination_index].y, 0.0f));
 
         // Set the path to the newly modified one
         this->path.set_path(modified_path);
@@ -565,7 +590,7 @@ void Magpie::Guard::set_path(Magpie::Path path) {
 
 
 
-        
+
     }
 };
 
