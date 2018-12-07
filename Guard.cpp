@@ -19,25 +19,26 @@ void Magpie::Guard::consume_signal() {
 };
 
 void Magpie::Guard::turnTo(glm::vec3 destination) {
-    
+
     float x_difference = destination.x - get_position().x;
     float y_difference = destination.y - get_position().y;
 
     // WARNING::Only handles movement in cardinal directions
-    if (x_difference > 0) {
-        //std::cout << "DEBUG:: Facing right" << std::endl;
-        orientation = DIRECTION::RIGHT;
-    }
-    else if (x_difference < 0) {
-        //std::cout << "DEBUG:: Facing left" << std::endl;
-        orientation = DIRECTION::LEFT;
-    }
-    else {
+    if (abs(x_difference) > abs(y_difference)) {
+        if (x_difference > 0) {
+//            std::cout << "DEBUG::Player.turnTo():: Facing right" << std::endl;
+            orientation = DIRECTION::RIGHT;
+        }
+        else if (x_difference < 0){
+//            std::cout << "DEBUG::Player.turnTo():: Facing left" << std::endl;
+            orientation = DIRECTION::LEFT;
+        }
+    } else {
         if (y_difference > 0) {
-            //std::cout << "DEBUG:: Facing up" << std::endl;
+//            std::cout << "DEBUG::Player.turnTo():: Facing up" << std::endl;
             orientation = DIRECTION::UP;
-        } else {
-            //std::cout << "DEBUG:: Facing down" << std::endl;
+        } else if (y_difference < 0){
+//            std::cout << "DEBUG::Player.turnTo():: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
     }

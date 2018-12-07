@@ -35,17 +35,17 @@ void Magpie::Player::walk(float elapsed) {
 
         next_destination_index = 0;
 
-        //printf("=====Starting on a new path=====\n");
-        //printf("\tBeginning Destination Index: %d\n", next_destination_index);
-        //printf("\tStarting Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
+//        printf("=====Starting on a new path=====\n");
+//        printf("\tBeginning Destination Index: %d\n", next_destination_index);
+//        printf("\tStarting Position: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
 
 		glm::vec3 next_destination = glm::vec3(path.get_path()[next_destination_index], 0.0f);
         next_destination_index++;
         current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
 
-        //printf("\t#### Destination Set ####\n");
-        //printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-        //printf("\tNext Destination Index is now: %d\n", next_destination_index);
+//        printf("\t#### Destination Set ####\n");
+//        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+//        printf("\tNext Destination Index is now: %d\n", next_destination_index);
 
         accumulate_time = 0;
 		turnTo(current_destination);
@@ -96,9 +96,10 @@ void Magpie::Player::walk(float elapsed) {
             next_destination_index++;
         }
 
-        //printf("\t#### Destination Set ####\n");
-        //printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-        //printf("\tNext Destination Index is now: %d\n", next_destination_index);
+//        printf("\t#### Destination Set ####\n");
+//        printf("\tCurent Postition: (%f, %f, %f)\n", get_position().x, get_position().y, get_position().z);
+//        printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+//        printf("\tNext Destination Index is now: %d\n", next_destination_index);
         turnTo(current_destination);
         set_model_orientation((uint32_t)orientation);
     
@@ -281,20 +282,21 @@ void Magpie::Player::turnTo(glm::vec3 destination) {
     float y_difference = destination.y - get_position().y;
 
     // WARNING::Only handles movement in cardinal directions
-    if (x_difference > 0) {
-        //std::cout << "DEBUG::Player.turnTo():: Facing right" << std::endl;
-        orientation = DIRECTION::RIGHT;
-    }
-    else if (x_difference < 0) {
-        //std::cout << "DEBUG::Player.turnTo():: Facing left" << std::endl;
-        orientation = DIRECTION::LEFT;
-    }
-    else {
+    if (abs(x_difference) > abs(y_difference)) {
+        if (x_difference > 0) {
+//            std::cout << "DEBUG::Player.turnTo():: Facing right" << std::endl;
+            orientation = DIRECTION::RIGHT;
+        }
+        else if (x_difference < 0){
+//            std::cout << "DEBUG::Player.turnTo():: Facing left" << std::endl;
+            orientation = DIRECTION::LEFT;
+        }
+    } else {
         if (y_difference > 0) {
-            //std::cout << "DEBUG::Player.turnTo():: Facing up" << std::endl;
+//            std::cout << "DEBUG::Player.turnTo():: Facing up" << std::endl;
             orientation = DIRECTION::UP;
-        } else {
-            //std::cout << "DEBUG::Player.turnTo():: Facing down" << std::endl;
+        } else if (y_difference < 0){
+//            std::cout << "DEBUG::Player.turnTo():: Facing down" << std::endl;
             orientation = DIRECTION::DOWN;
         }
     }
