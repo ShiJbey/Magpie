@@ -949,7 +949,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 level->add_displaycase(displaycase);
                 // Place geode
                 uint32_t cust_id;
-                float rand = dist(mt_rand);
+                float rand = (float)dist(mt_rand);
                 if (rand < 0.75f) cust_id = 0;
                 else cust_id = 1;
 
@@ -1023,7 +1023,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
     for (auto const &room : *(level->get_potential_pedestal_locations())) {
         for (auto const &location: room.second) {
             uint32_t cust_id;
-            float rand = dist(mt_rand);
+            float rand = (float)dist(mt_rand);
             if (rand < 0.5f) cust_id = 0;
             else if (rand < 0.85f) cust_id = 1;
             else cust_id = 2;
@@ -1045,7 +1045,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
     for (auto const &room : *(level->get_potential_wall_locations())) {
         for (auto const &location: room.second) {
             uint32_t cust_id;
-            float rand = dist(mt_rand);
+            float rand = (float)dist(mt_rand);
             if (rand < 0.5f) cust_id = 0;
             else if (rand < 0.85f) cust_id = 1;
             else cust_id = 2;
