@@ -57,7 +57,7 @@ namespace Magpie {
 
         void set_position(glm::vec3 position);
 
-        void set_starting_point(glm::vec3 position);
+        void set_starting_point(glm::vec3 position, DIRECTION orientation);
 
         virtual void set_destination(glm::vec2 destination);
 
