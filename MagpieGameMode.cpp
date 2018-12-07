@@ -487,7 +487,7 @@ namespace Magpie {
 
         // Set the guard at the proper place
         guard->set_position(position);
-        guard->set_starting_point(position);
+        guard->set_starting_point(position, dir);
         guard->turnTo(turn_destination);
         guard->set_model_orientation((uint32_t)dir);
 
