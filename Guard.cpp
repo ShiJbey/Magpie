@@ -77,7 +77,7 @@ void Magpie::Guard::update_state(float elapsed) {
 
     state_duration += elapsed;
 
-    if (glm::distance(get_position(), player->get_position()) < 0.1) {
+    if (glm::distance(get_position(), player->get_position()) < 0.5f) {
         player->game_over = true;
     }
 
@@ -432,13 +432,17 @@ void Magpie::Guard::walk(float elapsed) {
 		current_position = current_destination;
         if (next_destination_index < this->path.get_path().size()) {
             glm::vec2 next_destination = path.get_path()[next_destination_index++];
-		    current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
+            current_destination = glm::vec3(next_destination.x, next_destination.y, 0.0f);
         } else {
-            next_destination_index++;
+            if (current_state == (uint32_t)STATE::CHASING) {
+                set_destination(player->get_position());
+            } else {
+                next_destination_index++;
+            }
         }
-//        printf("\t#### Destination Set ####\n");
-//            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
-//            printf("\tNext Destination Index is now: %d\n", next_destination_index);
+        printf("\t#### Destination Set ####\n");
+            printf("\tCurrent Destination: (%f, %f, %f)\n", current_destination.x, current_destination.y, current_destination.z);
+            printf("\tNext Destination Index is now: %d\n", next_destination_index);
             Magpie::Guard::turnTo(current_destination);
             Magpie::Guard::set_model_orientation((uint32_t)orientation);
 	}
