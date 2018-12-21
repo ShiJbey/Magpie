@@ -41,7 +41,7 @@ namespace Magpie {
 
         virtual void update_state(float elapsed) override;
 
-        void interact();
+        virtual void interact() override;
 
         void set_state(uint32_t state);
 
@@ -78,7 +78,7 @@ namespace Magpie {
     private:
         float state_duration = 0.0f;
         enum STATE last_state = STATE::IDLE;
-        float give_up_timer = 0.0f;
+        //float give_up_timer = 0.0f;
 
         std::vector<glm::vec2> patrol_points;
         glm::vec3 interest_point;

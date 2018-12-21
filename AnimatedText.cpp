@@ -32,9 +32,11 @@ bool Magpie::AnimatedText::animation_complete() {
 /////////////////////////////////////////////// 
 
 Magpie::FloatingNotificationText::FloatingNotificationText(std::string text, const std::map< GLchar, Character >* font, glm::vec2 anchor, float scale,  glm::vec4 color_rgba, float animation_duration)
-    : AnimatedText(text, font, anchor, scale, color, animation_duration) {
+    : AnimatedText(text, font, anchor, scale, color_rgba, animation_duration) {
     this->original_scale = scale;
 };
+
+Magpie::FloatingNotificationText::~FloatingNotificationText() {};
 
 void Magpie::FloatingNotificationText::update_animation(float elapsed) {
     elapsed_animation_time += elapsed;
@@ -59,7 +61,7 @@ void Magpie::FloatingNotificationText::update_animation(float elapsed) {
 /////////////////////////////////////////////// 
 
 Magpie::WaitingText::WaitingText(std::string text, const std::map< GLchar, Character >* font, glm::vec2 anchor, float scale,  glm::vec4 color_rgba, float animation_duration)
-    : AnimatedText(text, font, anchor, scale, color, animation_duration) {
+    : AnimatedText(text, font, anchor, scale, color_rgba, animation_duration) {
     this->periods_added = 0;
     this->original_text = text;
 };

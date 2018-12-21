@@ -11,10 +11,6 @@
 #include FT_FREETYPE_H
 
 
-
-
-
-
 GLuint ttf_text_program_text_sampler2d = -1U;
 GLuint ttf_text_program_text_color_vf3 = -1U;
 GLuint ttf_text_program_projection_mat4 = -1U;
@@ -58,13 +54,15 @@ std::map< GLchar, Character >* load_font(uint32_t font_height, const std::string
     FT_Library ft;
 
     // All functions return a value different than 0 whenever an error occurred
-    if (FT_Init_FreeType(&ft))
+    if (FT_Init_FreeType(&ft)) {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+    }
 
     // Load font as face
     FT_Face face;
-    if (FT_New_Face(ft, font_file.c_str(), 0, &face))
+    if (FT_New_Face(ft, font_file.c_str(), 0, &face)){
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+    }
 
     // Set size to load glyphs as
     FT_Set_Pixel_Sizes(face, 0, font_height);
