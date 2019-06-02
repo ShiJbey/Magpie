@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Player.hpp"
-#include "Guard.hpp"
-#include "MagpieLevel.hpp"
-#include "Scene.hpp"
-#include "Sound.hpp"
+#include "characters/Player.hpp"
+#include "characters/Guard.hpp"
+#include "level/MagpieLevel.hpp"
+#include "base/Scene.hpp"
+#include "base/Sound.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
@@ -18,7 +18,7 @@
 
 namespace Magpie {
 
-    // Using this class to organize all important game logic
+    // Using this class to maintain the games's state
     class MagpieGame {
     public:
 

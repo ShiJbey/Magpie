@@ -1,0 +1,7 @@
+# Jamfile in the $(TOP)/ui/ directory
+
+SubDir TOP ui ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects UI.cpp Map.cpp draw_freetype_text.cpp ;

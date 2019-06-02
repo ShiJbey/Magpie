@@ -32,14 +32,14 @@ void Magpie::MagpieGame::set_level(Magpie::MagpieLevel* level) {
 void Magpie::MagpieGame::trigger_escape() {
     if (this->elapsed_in_escape >= 0) return;
     this->elapsed_in_escape = 0;
-    this->current_music->stop(1.f);
+    this->current_music->stop(1.0f);
 };
 
 float Magpie::MagpieGame::escape_update(float elapsed) {
     if (this->elapsed_in_escape >= 0) {
 
         //start escape stage with delay to let previous UI/sounds fade
-        if (this->elapsed_in_escape >= 3.f && !this->escape_started) {
+        if (this->elapsed_in_escape >= 3.0f && !this->escape_started) {
             this->escape_started = true;
             sample_siren->play(this->get_player()->get_position());
             this->current_music = sample_ambient_faster->play(this->get_player()->get_position(), 0.4f, Sound::Loop);

@@ -1,0 +1,7 @@
+# Jamfile in the $(TOP)/modes/ directory
+
+SubDir TOP modes ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects TutorialMode.cpp MagpieGameMode.cpp ;

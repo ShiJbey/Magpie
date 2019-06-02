@@ -1,0 +1,7 @@
+# Jamfile in the $(TOP)/characters/ai/ directory
+
+SubDir TOP characters ai ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects Navigation.cpp ;

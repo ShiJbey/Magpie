@@ -1,0 +1,12 @@
+# Jamfile in the  $(TOP)/base/ directory
+
+SubDir TOP base ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects load_save_png.cpp data_path.cpp compile_program.cpp vertex_color_program.cpp texture_program.cpp depth_program.cpp Scene.cpp Mode.cpp MenuMode.cpp Load.cpp MeshBuffer.cpp draw_text.cpp Sound.cpp ;
+
+if $(OS) = NT {
+	#On windows, an additional 'gl_shims' file is needed:
+	Objects gl_shims.cpp ;
+}

@@ -1,5 +1,6 @@
 #include "Signalable.hpp"
 
+// Checks if there is a signal in the queue
 bool Magpie::Signalable::has_signal() {
     return signal_queue.size() > 0;
 };

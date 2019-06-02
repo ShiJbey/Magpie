@@ -1,0 +1,7 @@
+# Jamfile in the $(TOP)/menus/ directory
+
+SubDir TOP menus ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects startmenu.cpp ;

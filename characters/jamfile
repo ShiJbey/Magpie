@@ -1,0 +1,9 @@
+# Jamfile in the $(TOP)/characters/ directory
+
+SubDir TOP characters ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects Inventory.cpp GameAgent.cpp Guard.cpp Player.cpp ;
+
+SubInclude TOP characters ai ;

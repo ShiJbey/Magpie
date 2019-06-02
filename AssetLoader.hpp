@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Load.hpp"
-#include "GL.hpp"
-#include "MeshBuffer.hpp"
-#include "load_level.hpp"
+#include "base/Load.hpp"
+#include "base/GL.hpp"
+#include "base/MeshBuffer.hpp"
+#include "level/load_level.hpp"
 
-#include "TransformAnimation.hpp"
-#include "AnimatedModel.hpp"
-#include "Sound.hpp"
+#include "animation/TransformAnimation.hpp"
+#include "animation/AnimatedModel.hpp"
+#include "base/Sound.hpp"
 
 
 #include <string>

@@ -1,8 +1,8 @@
 #include "AssetLoader.hpp"
-#include "data_path.hpp"
-#include "vertex_color_program.hpp"
-#include "highlight_program.hpp"
-#include "transparent_program.hpp"
+#include "base/data_path.hpp"
+#include "base/vertex_color_program.hpp"
+#include "shaders/highlight_program.hpp"
+#include "shaders/transparent_program.hpp"
 
 namespace Magpie {
 
@@ -362,19 +362,19 @@ namespace Magpie {
     });
 
     // LEVEL DATA
-    Load< Magpie::LevelData > sample_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > sample_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/sample-map.lvl"));
     });
 
-    Load< Magpie::LevelData > demo_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > demo_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/demo-map.lvl"));
     });
 
-    Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/demo-map-simple.lvl"));
     });
 
-    Load< Magpie::LevelData > final_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > final_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/final-map.lvl"));
     });
 
@@ -394,7 +394,7 @@ namespace Magpie {
         info->mvp_mat4 = highlight_program->object_to_clip_mat4;
         info->mv_mat4x3 = highlight_program->object_to_light_mat4x3;
         info->itmv_mat3 = highlight_program->normal_to_light_mat3;
-        return info;    
+        return info;
     });
 
     Load< Scene::Object::ProgramInfo > transparent_program_info(LoadTagDefault, []() {
@@ -506,5 +506,5 @@ namespace Magpie {
     Load< Sound::Sample > sample_guard_munch(LoadTagDefault, [](){
         return new Sound::Sample(data_path("sounds/Guard/Guard_Munching.wav"));
     });
-    
+
 }

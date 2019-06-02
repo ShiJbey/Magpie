@@ -1,19 +1,19 @@
 //Mode.hpp declares the "Mode::current" static member variable, which is used to decide where event-handling, updating, and drawing events go:
-#include "Mode.hpp"
+#include "base/Mode.hpp"
 
 //Load.hpp is included because of the call_load_functions() call:
-#include "Load.hpp"
+#include "base/Load.hpp"
 
 //The 'GameMode' mode plays the game:
-#include "MagpieGamemode.hpp"
+#include "modes/MagpieGamemode.hpp"
 
 //The 'Sound' header has functions for managing sound:
-#include "Sound.hpp"
+#include "base/Sound.hpp"
 
 //GL.hpp will include a non-namespace-polluting set of opengl prototypes:
-#include "GL.hpp"
+#include "base/GL.hpp"
 
-#include "startmenu.hpp"
+#include "menus/startmenu.hpp"
 
 //Includes for libSDL:
 #include <SDL.h>
@@ -120,8 +120,8 @@ int main(int argc, char **argv) {
 
 	//------------ create game mode + make current --------------
 
-	//Mode::set_current(std::make_shared< Magpie::MagpieGameMode >(/*client*/));
-	Mode::set_current(std::make_shared< Magpie::StartMenu >(/*client*/));
+	//Mode::set_current(std::make_shared< Magpie::MagpieGameMode >());
+	Mode::set_current(std::make_shared< Magpie::StartMenu >());
 
 	//------------ main loop ------------
 
