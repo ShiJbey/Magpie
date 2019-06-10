@@ -8,7 +8,7 @@
 #include "../ui/UI.h"
 
 #include "../base/Mode.hpp"
-#include "../animation/TransformAnimation.hpp"
+#include "../base/TransformAnimation.hpp"
 #include "../base/MeshBuffer.hpp"
 #include "../base/GL.hpp"
 #include "../base/Scene.hpp"
@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <thread>
 
 namespace Magpie {
 
@@ -68,12 +69,12 @@ namespace Magpie {
         void load_level(const LevelData *level_data);
         void setup_camera();
 
-        // Adds a new guard to the game by loading all the model data
-        // and animations. Then it sets attributes for what programs to use
+        // Adds a new guard to the game after loading all the model data
+        // and animations.
         Guard* create_guard(glm::vec3 position, GameAgent::DIRECTION dir);
 
-        // Adds a new player to the game by loading all the model data
-        // and animations. Then it sets attributes for what programs to use
+        // Adds a new player to the game after loading all the model data
+        // and animations.
         Player* create_player(glm::vec3 position);
 
         // Places a "treat" at the players current position
@@ -107,6 +108,8 @@ namespace Magpie {
         //opens tutorial screen
         void show_tutorial();
 
+        void update_env_animations(float elapsed);
+
         ////////////////////////////////////////////////
         //                Attributes                  //
         ////////////////////////////////////////////////
@@ -128,11 +131,16 @@ namespace Magpie {
         // back to using the vertex_color_program
         std::vector< Wall* > transparent_walls;
         std::vector< FloorTile* > highlighted_tiles;
+        FloorTile* destination_tile = nullptr;
+        Path potential_player_path;
 
         //UI testing
         UI ui = UI(1, 1);
 
         // counts the number of times the shift key has been hit
         int presses_for_developer_mode = 5;
+
+        // Threads for update loops
+        std::thread* animation_update_thread;
     };
 }

@@ -1,12 +1,11 @@
 #pragma once
 
 #include "GameAgent.hpp"
-#include "../Signalable.hpp"
 #include "../animation/AnimatedModel.hpp"
 #include "Player.hpp"
 
 namespace Magpie {
-    class Guard: public AnimatedModel, public GameAgent, public Signalable {
+    class Guard: public AnimatedModel, public GameAgent {
     public:
 
         Player* player;
@@ -28,29 +27,28 @@ namespace Magpie {
             NOTHING,
             MAGPIE_ALERT,
             MAGPIE_NOTICE,
-            DONUT
+            TREAT
         };
 
         Guard();
 
         virtual void walk(float elapsed) override;
-
-        virtual void consume_signal() override;
-
         void update(float elapsed);
-
-        virtual void update_state(float elapsed) override;
-
-        void interact();
-
+        // Updates atrtibutes related to the state of the Guard
+        virtual void update_state(float elapsed);
+        // Updates the state of the guard and the guards animation
         void set_state(uint32_t state);
 
+        // State handlers
         void handle_state_idle(enum SIGHT);
-        void handle_state_patrolling(enum SIGHT);
+        void handle_state_patrolling(enum SIGHT, float elapsed);
         void handle_state_cautious(enum SIGHT);
         void handle_state_alert(enum SIGHT);
-        void handle_state_chasing(enum SIGHT);
+        void handle_state_chasing(enum SIGHT, float elapsed);
         void handle_state_confused(enum SIGHT);
+
+        // Checks to see if the player or any distracting
+        // items are within the view of the, guard
         uint32_t check_view();
 
         void set_patrol_points(std::vector<glm::vec2>);
@@ -59,29 +57,30 @@ namespace Magpie {
 
         void set_starting_point(glm::vec3 position);
 
-        virtual void set_destination(glm::vec2 destination);
+        void turn_to(glm::vec2 loc);
 
-        virtual void turnTo(glm::vec3 destination) override;
+        virtual void set_model_rotation(uint32_t dir) override;
 
-        virtual void set_path(Path path) override;
-
-        virtual void set_model_orientation(uint32_t dir) override;
-
-        // Loads Magpie model data specifically
+        // Loads Guard character model data
         Scene::Transform* load_model(Scene& scene, const ModelData* model_data, std::string model_name,
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) override;
 
+        // Modifies the names of the guard character model to support instancing
         virtual std::vector< std::string > convert_animation_names(const TransformAnimation* tanim, std::string model_name) override;
 
-        glm::vec2 last_destination = glm::vec2(-1, -1);
+
 
     private:
+        // How long has the Guard been in the current state
         float state_duration = 0.0f;
-        enum STATE last_state = STATE::IDLE;
-
-        std::vector<glm::vec2> patrol_points;
-        glm::vec3 interest_point;
-        int patrol_index = 0;
-        bool cautious = false;
+        // What state was the guard in prior to the current one
+        STATE previous_state = STATE::IDLE;
+        // List of points that the guard patrols between
+        std::vector< glm::vec2 > patrol_points;
+        // Position of something of interest to the guard
+        // (e.g. the player and dog treats)
+        glm::vec2 interest_point;
+        // What patrol point is the Guard navigating toward
+        int patrol_point_index = 0;
     };
 }

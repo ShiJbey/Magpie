@@ -7,7 +7,7 @@
  *
  */
 
-#include "../base/Scene.hpp"
+#include "Scene.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>

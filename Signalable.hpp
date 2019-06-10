@@ -49,7 +49,9 @@ namespace Magpie {
         uint32_t get_group_id() { return this->group_id; }
 
     protected:
+        // Identifies this specific object
         uint32_t object_id;
+        // Identifies what group of objects this object belongs to
         uint32_t group_id;
         // The "signal mailbox" for this object
         std::deque< Signal > signal_queue;

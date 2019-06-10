@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../base/Mode.hpp"
-#include "../animation/TransformAnimation.hpp"
-
+#include "../base/TransformAnimation.hpp"
 #include "../base/MeshBuffer.hpp"
 #include "../base/GL.hpp"
 #include "../base/Scene.hpp"

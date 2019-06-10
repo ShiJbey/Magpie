@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../base/Scene.hpp"
+#include "../base/TransformAnimation.hpp"
+
 #include "AnimationManager.hpp"
-#include "TransformAnimation.hpp"
 
 #include <vector>
 #include <functional>
@@ -64,7 +65,7 @@ namespace Magpie {
         void set_position(glm::vec3 position);
         void set_transform(Scene::Transform** transform);
         void set_animation_manager(AnimationManager* animation_manager);
-        virtual void set_model_orientation(uint32_t dir);
+        virtual void set_model_rotation(uint32_t dir);
 
         // GETTERS
         glm::vec3 get_position();

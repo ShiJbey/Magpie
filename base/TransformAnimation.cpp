@@ -1,6 +1,6 @@
 #include "TransformAnimation.hpp"
 
-#include "../base/read_chunk.hpp"
+#include "read_chunk.hpp"
 
 #include <iostream>
 #include <fstream>

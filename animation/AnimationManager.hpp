@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../base/Scene.hpp"
-#include "TransformAnimation.hpp"
+#include "../base/TransformAnimation.hpp"
 
 #include <glm/glm.hpp>
 

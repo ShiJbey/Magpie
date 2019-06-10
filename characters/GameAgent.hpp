@@ -6,9 +6,14 @@
 
 namespace Magpie {
 
+    /**
+     * GameAgent is the abstract parent class that
+     * represents all the Characters in the game
+     */
     class GameAgent {
     public:
 
+        // Directions for GameAgents to face
         enum class DIRECTION {
             UP = 0,
             RIGHT,
@@ -16,39 +21,55 @@ namespace Magpie {
             LEFT
         };
 
-        // TODO: Place more generally relevant functions here
-        virtual void update_state(float elapsed) = 0;
-        virtual void interact() = 0;
-
+        // Update things like the current state
+        virtual void update(float elapsed) = 0;
+        // Moves the GameAgent toward its next destination
         virtual void walk(float elapsed) = 0;
-        virtual void turnTo(glm::vec3 destination) = 0;
+        // Returns what direction a given destination is from a given position
+        static DIRECTION direction_toward(glm::vec2 pos, glm::vec2 dest);
 
-
+        // Get and set the state of the GameAgent
         uint32_t get_state();
-        glm::vec2 getDirectionVec2();
-        Path* get_path();
-        DIRECTION get_orientation();
-
         void set_state(uint32_t state);
-        virtual void set_path(Path path) = 0;
-        virtual void setDestination(glm::vec3 destination);
+
+        // Gets and sets the current path of the GameAgent
+        Path* get_path();
+        virtual void set_path(Path path);
+        // Appends a path to the existing path
+        // This is used when changing the final destination mid path
+        virtual void append_path(Path new_path);
+
+        // Get the direction that the Game Agent is facing
+        void set_facing_direction(DIRECTION dir);
+        DIRECTION get_facing_direction();
+
+        // Get the facing direction as a vec2
+        glm::vec2 get_facing_direction_as_vec2();
+
+        // Sets the destination
+        virtual void set_destination(glm::vec2 destination);
 
 
     protected:
-        // All agents use an int to represent the current state
+        // All agents use an unsigned int to represent the current state
         // Specific enums may be introduced in chid classes for
-        // simplicity
+        // simplicity and more specific configurations
         uint32_t current_state = 0;
+        // How fast can this GameAgent walk
         float movespeed = 1.5f;
-		float accumulate_time = 0.0f;
-		glm::vec3 starting_point;
-        DIRECTION orientation;
-        glm::ivec3 board_position;
-        glm::vec3 current_destination;
-        bool at_destination;
+		// What position is the GameAgent coming from
+		glm::vec2 starting_point;
+        // What direction is the GameAgent facing
+        DIRECTION facing_direction;
+        // What position is the GamAgent moving towards
+        glm::vec2 current_destination;
+        glm::vec2 previous_destination;
+        // Has the GameAgent reached its destination
+        bool destination_reached;
+        // Path that the GameAgent is following
         Path path;
-        Path new_path;
-        bool is_new_path = false;
-        uint32_t next_destination_index = 0;
+        // Index of the current destination within the path
+        uint32_t path_destination_index = 0;
+
     };
 }

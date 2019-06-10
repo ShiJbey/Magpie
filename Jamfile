@@ -7,7 +7,7 @@ if $(OS) = NT { #Windows
 		/wd4146 #-1U is still unsigned
 		/wd4297 #unforunately SDLmain is nothrow
 	;
-	LINKFLAGS = /nologo /SUBSYSTEM:CONSOLE /DEBUG:FASTLINK /NODEFAULTLIB:libcmtd.lib
+	LINKFLAGS = /nologo /SUBSYSTEM:CONSOLE /DEBUG:FASTLINK /NODEFAULTLIB:LIBCMT
 		/LIBPATH:"kit-libs-win/out/lib"
 		/LIBPATH:"kit-libs-win/out/libpng"
 		/LIBPATH:"kit-libs-win/out/zlib"
@@ -63,14 +63,14 @@ TOP = . ;
 #Store the names of all the .cpp files to build into a variable:
 
 LOCATE_TARGET = objs ; #put objects in 'objs' directory
-Objects main.cpp Signalable.cpp MagpieGame.cpp Clickable.cpp AssetLoader.cpp ;
+Objects main.cpp Signalable.cpp MagpieGame.cpp Clickable.cpp AssetLoader.cpp game_settings.cpp ;
 
 LOCATE_TARGET = dist ; #put main in 'dist' directory
 for f in [ GLOB objs : *.obj ] {
 	OBS += "$(f:D)/$(f:BS)" ;
 }
 #ECHO $(OBS) ;
-MainFromObjects main : $(OBS) ;
+MainFromObjects Magpie : $(OBS) ;
 
 SubInclude TOP animation ;
 SubInclude TOP base ;

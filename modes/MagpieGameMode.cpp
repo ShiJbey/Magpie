@@ -1,16 +1,5 @@
 #include "MagpieGamemode.hpp"
 
-#include "../AssetLoader.hpp"
-#include "../Clickable.hpp"
-#include "../animation/AnimationManager.hpp"
-#include "../animation/TransformAnimation.hpp"
-#include "../level/load_level.hpp"
-#include "../MagpieGame.hpp"
-#include "../ui/draw_freetype_text.hpp"
-#include "../animation/AnimatedModel.hpp"
-#include "../menus/startmenu.hpp"
-
-#include "../modes/TutorialMode.hpp"
 #include "../base/Load.hpp"
 #include "../base/MeshBuffer.hpp"
 #include "../base/Scene.hpp"
@@ -22,9 +11,22 @@
 #include "../base/draw_text.hpp" //helper to... um.. draw text
 #include "../base/texture_program.hpp"
 #include "../base/vertex_color_program.hpp"
+#include "../base/depth_program.hpp"
+#include "../base/TransformAnimation.hpp"
+
+#include "../game_settings.hpp"
+#include "../AssetLoader.hpp"
+#include "../Clickable.hpp"
+#include "../MagpieGame.hpp"
+#include "../animation/AnimationManager.hpp"
+#include "../animation/AnimatedModel.hpp"
+#include "../level/load_level.hpp"
+#include "../ui/draw_freetype_text.hpp"
+#include "../menus/startmenu.hpp"
+#include "../modes/TutorialMode.hpp"
 #include "../shaders/highlight_program.hpp"
 #include "../shaders/transparent_program.hpp"
-#include "../base/depth_program.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
@@ -60,7 +62,7 @@ namespace Magpie {
 
         // Instantiate Guards
         auto guard_start = game.get_level()->get_guard_start_positions();
-        for (auto i : guard_start) {
+        for (auto i : *guard_start) {
             for (auto i2 : i.second) {
                Guard* guard = create_guard(i2.second.first, i2.second.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
@@ -69,68 +71,77 @@ namespace Magpie {
         }
 
         // Set up the navigator
-        Navigation::getInstance().set_movement_matrix(game.get_level()->get_movement_matrix());
+        Navigation::getInstance().set_navigation_grid(game.get_level()->get_nav_grid());
 
         make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
 
-        game.current_music = sample_ambient->play(game.get_player()->get_position(), 0.4f, Sound::Loop);
+        game.set_current_music(sample_ambient->play(game.get_player()->get_position(), 0.4f, Sound::Loop));
     };
 
     MagpieGameMode::~MagpieGameMode() {
-        // Do Nothing
+
+    };
+
+    void MagpieGameMode::update_env_animations(float elapsed) {
+        // Update any objects in the scene running animations
+            for (uint32_t i = 0; i < animated_scene_objects.size(); i++) {
+                animated_scene_objects[i]->get_animation_manager()->update(elapsed);
+            }
+
+            for (auto const &room: *game.get_level()->get_gems()) {
+                for (auto &gem: room.second) {
+                    gem->update_animation(elapsed);
+                }
+            }
+
+            for (auto const &room: *game.get_level()->get_paintings()) {
+                for (auto &painting: room.second) {
+                    painting->update_animation(elapsed);
+                }
+            }
+
+            if(game.get_level()->get_pink_card() != nullptr && !game.get_player()->has_pink_card) {
+                game.get_level()->get_pink_card()->update_animation(elapsed);
+            }
+
+            if(game.get_level()->get_green_card() != nullptr && !game.get_player()->has_green_card) {
+                game.get_level()->get_green_card()->update_animation(elapsed);
+            }
+
+            if(game.get_level()->get_master_key() != nullptr && !game.get_player()->has_master_key) {
+                game.get_level()->get_master_key()->update_animation(elapsed);
+            }
+
+            if(game.get_level()->get_dog_treat() != nullptr && !game.get_player()->has_dog_treats) {
+                game.get_level()->get_dog_treat()->update_animation(elapsed);
+            }
+
+            if(game.get_level()->get_cardboard_box() != nullptr && !game.get_player()->has_cardboard_box) {
+                game.get_level()->get_cardboard_box()->update_animation(elapsed);
+            }
     };
 
     void MagpieGameMode::update(float elapsed) {
-        if (game.get_player()->game_over) {
-            Mode::set_current(std::make_shared< Magpie::EndMenu >(game.get_player()->game_won, game.get_player()->get_score()));
+        // Open the end game screen if the game has ended
+        if (game.is_game_over()) {
+            Mode::set_current(
+                std::make_shared< Magpie::EndMenu >(game.is_game_over() &&
+                game.has_player_won(), game.get_player()->get_score()));
             return;
         }
+
         //if the map is out don't update anything
         if (ui.map.state == Map::OFF) {
             // Update the player
             game.get_player()->update(elapsed);
 
             // Update the guards
-            for (uint32_t i = 0; i < game.get_guards().size(); i++) {
-                game.get_guards()[i]->update(elapsed);
-            }
+            // for (uint32_t i = 0; i < game.get_guards().size(); i++) {
+            //     game.get_guards()[i]->update(elapsed);
+            // }
 
-            // Update any objects in the scene running animations
-            for (uint32_t i = 0; i < animated_scene_objects.size(); i++) {
-                animated_scene_objects[i]->get_animation_manager()->update(elapsed);
-            }
-
-            for (auto const &room: game.get_level()->get_gems()) {
-                for (auto &gem: room.second) {
-                    gem->update_animation(elapsed);
-                }
-            }
-
-            for (auto const &room: game.get_level()->get_paintings()) {
-                for (auto &painting: room.second) {
-                    painting->update_animation(elapsed);
-                }
-            }
-
-            if(game.get_level()->pink_card != nullptr && !game.get_player()->has_pink_card) {
-                game.get_level()->pink_card->update_animation(elapsed);
-            }
-
-            if(game.get_level()->green_card != nullptr && !game.get_player()->has_green_card) {
-                game.get_level()->green_card->update_animation(elapsed);
-            }
-
-            if(game.get_level()->master_key != nullptr && !game.get_player()->has_master_key) {
-                game.get_level()->master_key->update_animation(elapsed);
-            }
-
-            if(game.get_level()->dogTreatPickUp != nullptr && !game.get_player()->has_dog_treats) {
-                game.get_level()->dogTreatPickUp->update_animation(elapsed);
-            }
-
-            if(game.get_level()->cardboard_box != nullptr && !game.get_player()->has_cardboard_box) {
-                game.get_level()->cardboard_box->update_animation(elapsed);
-            }
+            // Update gems, paintings, keys, etc.
+            update_env_animations(elapsed);
 
             // update animated text
             for(auto i = animated_text_objects.begin(); i != animated_text_objects.end(); /*Incremement in loop*/) {
@@ -147,18 +158,16 @@ namespace Magpie {
             ui.inventory.updateInv(elapsed);
 
             //update background music location
-            game.current_music->set_position(game.get_player()->get_position());
+            game.get_current_music()->set_position(game.get_player()->get_position());
 
             //escape stage logic
-            float time_remaining = game.escape_update(elapsed);
-            if (time_remaining <= 0) {
-                game.get_player()->game_over = true;
+            if (game.has_escape_started()) {
+                game.escape_update(elapsed);
             }
 
-            #ifndef FREE_FLIGHT
             camera_trans->position.x = game.get_player()->get_position().x;
             camera_trans->position.y = game.get_player()->get_position().y;
-            #endif
+
         }
     };
 
@@ -176,6 +185,34 @@ namespace Magpie {
             handle_screen_click(click_ray);
         }
 
+        if (evt.type == SDL_MOUSEMOTION) {
+            Magpie::Ray click_ray = create_click_ray(evt.button.x, evt.button.y, window_size.x, window_size.y, camera);
+            glm::vec3 intersect = get_click_floor_intersect(click_ray, 0);
+
+            // Clear any highlighted path tiles
+            if (!highlighted_tiles.empty()) {
+                for (uint32_t i = 0; i < highlighted_tiles.size(); i++) {
+                    Scene::Object::ProgramInfo old_info = highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault];
+                    highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = *vertex_color_program_info.value;
+                    highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
+                    highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+                    highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
+                }
+            }
+            highlighted_tiles.clear();
+
+            // If we can move to the intersection, find a path and highlight it
+            if (game.get_level()->can_move_to(game.get_player()->get_current_room(), intersect.x, intersect.y)) {
+                // Find a path
+                Path p = Navigation::getInstance().findPath(game.get_player()->get_position(), intersect);
+                if (p.get_path().size() > 0) {
+                    potential_player_path = p;
+                    highlight_path_tiles();
+                    this->game.get_player()->turn_to(intersect);
+                }
+            }
+        }
+
         //keypress event handle
         if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
             if (evt.key.keysym.scancode == SDL_SCANCODE_M) { //M pressed for map
@@ -189,26 +226,30 @@ namespace Magpie {
             else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
                 if (game.get_player()->can_place_treat()) {
                     //printf("Dropping the load!\n");
-
-                    sample_treat->play(game.get_player()->get_position());
+                    if (!mute_sound)
+                        sample_treat->play(game.get_player()->get_position());
                     dog_treats.push_back(drop_treat(game.get_player()->get_position()));
 
                     game.get_player()->reset_treat_cooldown();
                 }
                 else {
-                    sample_cooldown->play(game.get_player()->get_position());
-//                    animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    if (!mute_sound) {
+                        sample_cooldown->play(game.get_player()->get_position());
+                    }
+                    //animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
                 //printf("Swapping disguise\n");
                 switch(game.get_player()->get_state()) {
                     case (uint32_t)Player::STATE::IDLE:
-                        sample_magpie_disguise->play(game.get_player()->get_position());
+                        if (!mute_sound)
+                            sample_magpie_disguise->play(game.get_player()->get_position());
                         game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
                         break;
                     case (uint32_t)Player::STATE::WALKING:
-                        sample_magpie_disguise->play(game.get_player()->get_position());
+                        if (!mute_sound)
+                            sample_magpie_disguise->play(game.get_player()->get_position());
                         game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                         break;
                     case (uint32_t)Player::STATE::DISGUISE_IDLE:
@@ -237,6 +278,10 @@ namespace Magpie {
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_COMMA) {
                 game.trigger_escape();
+            }
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_Q) {
+                mute_sound = true;
+                Sound::stop_all_samples();
             }
         }
 
@@ -289,13 +334,33 @@ namespace Magpie {
             glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
             glUniform3fv(vertex_color_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
 
-            if (game.escape_started) {
+            //set up light positions:
+            glUseProgram(highlight_program->program);
+
+            //don't use distant directional light at all (color == 0):
+            glUniform3fv(highlight_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+            glUniform3fv(highlight_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.0f,-1.0f))));
+            //use hemisphere light for sky light:
+            glUniform3fv(highlight_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
+            glUniform3fv(highlight_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
+
+            //set up light positions:
+            glUseProgram(transparent_program->program);
+
+            //don't use distant directional light at all (color == 0):
+            glUniform3fv(transparent_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+            glUniform3fv(transparent_program->sun_direction_vec3, 1, glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.0f,-1.0f))));
+            //use hemisphere light for sky light:
+            glUniform3fv(transparent_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(0.9f, 0.9f, 0.9f)));
+            glUniform3fv(transparent_program->sky_direction_vec3, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
+
+            if (game.has_escape_started()) {
+                // Turn everything red
                 glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
                 glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
             }
 
             camera->aspect = drawable_size.x / float(drawable_size.y);
-            //Draw scene:
             scene.draw(camera);
         }
 
@@ -309,7 +374,7 @@ namespace Magpie {
                 //draw UI
                 ui.drawUI(camera, drawable_size);
 
-                if (game.escape_started && !game.get_player()->game_over) {
+                if (game.has_escape_started() && !game.is_game_over()) {
 
                     float aspect = viewport[2] / float(viewport[3]);
                     float y_anchor = 0.7f;
@@ -321,7 +386,7 @@ namespace Magpie {
                     float window_x_anchor = ((x_anchor + aspect) / (2*aspect)) * viewport[2];
                     float window_y_anchor = ((y_anchor + 1) / 2) * viewport[3];
 
-                    uint32_t escape_time_remaining = (uint32_t)std::ceil(game.escape_timer - game.elapsed_in_escape);
+                    uint32_t escape_time_remaining = (uint32_t)std::ceil(game.ESCAPE_TIME - game.get_elapsed_in_escape());
                     RenderText(tutorial_font.value, "ESCAPE TO THE BACK! " + std::to_string(escape_time_remaining),
                             window_x_anchor, window_y_anchor, font_scale, glm::vec3(1.0f, 0.2f, 0.2f));
                 }
@@ -400,6 +465,8 @@ namespace Magpie {
 
         // Reposition as needed
         player->set_position(position);
+        player->turn_to(glm::vec2(0.0f,0.0f));
+        player->set_state((uint32_t)Player::STATE::IDLE);
 
         // Add the player to the game
         game.set_player(player);
@@ -484,12 +551,14 @@ namespace Magpie {
 
         // Set the guard at the proper place
         guard->set_position(position);
+
         guard->set_starting_point(position);
-        guard->turnTo(turn_destination);
-        guard->set_model_orientation((uint32_t)dir);
+        guard->turn_to(turn_destination);
+        //guard->set_model_rotation((uint32_t)dir);
 
-        assert(guard->get_orientation() == dir);
+        //assert(guard->get_facing_direction() == dir);
 
+        guard->set_state((uint32_t)Guard::STATE::IDLE);
         // Add the guard to the game
         game.add_guard(guard);
 
@@ -536,6 +605,10 @@ namespace Magpie {
         game.set_level(level);
     };
 
+    /**
+     * Finds the postition of the camera from a preset blender scene
+     * and imports the transform into the game
+     */
     void MagpieGameMode::setup_camera() {
         // We are just using this for the camera positioning
         scene.load(data_path("levels/camera_transform.scene"), [](Scene &s, Scene::Transform *t, std::string const &m){
@@ -543,7 +616,7 @@ namespace Magpie {
             s.delete_transform(t);
         });
 
-        //look up the camera:
+        //
         for (Scene::Camera *c = scene.first_camera; c != nullptr; c = c->alloc_next) {
             if (c->transform->name == "Camera") {
                 if (camera) throw std::runtime_error("Multiple 'Camera' objects in scene.");
@@ -559,7 +632,7 @@ namespace Magpie {
         // Move camera closer to the level
         camera_trans->position.x += 4.0f;
         camera_trans->position.y += 4.0f;
-    }
+    };
 
     /**
      * Highlights the path the player will take by swapping the
@@ -567,26 +640,15 @@ namespace Magpie {
      * the colors in the fragment shader.
      */
     void MagpieGameMode::highlight_path_tiles() {
-        if (!highlighted_tiles.empty()) {
-            for (uint32_t i = 0; i < highlighted_tiles.size(); i++) {
-                Scene::Object::ProgramInfo old_info = highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault];
-                highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault] = *vertex_color_program_info.value;
-                highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *building_meshes_vao;
-                highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
-                highlighted_tiles[i]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
-            }
-        }
-        highlighted_tiles.clear();
-
-        std::vector<glm::vec2> path = game.get_player()->get_path()->get_path();
-        FloorTile*** floor_matrix = game.get_level()->get_floor_matrix();
+        std::vector< glm::vec2 > path = potential_player_path.get_path();
         for (uint32_t i = 0; i < path.size(); i++) {
-            Scene::Object::ProgramInfo old_info = floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault];
-            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault] = *highlight_program_info.value;
-            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
-            highlighted_tiles.push_back(floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]);
-            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
-            floor_matrix[(uint32_t)path[i].x][(uint32_t)path[i].y]->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
+            FloorTile* tile = game.get_level()->get_floor_tile((uint32_t)path[i].x, (uint32_t)path[i].y);
+            Scene::Object::ProgramInfo old_info = tile->scene_object->programs[Scene::Object::ProgramTypeDefault];
+            tile->scene_object->programs[Scene::Object::ProgramTypeDefault] = *highlight_program_info.value;
+            tile->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
+            highlighted_tiles.push_back(tile);
+            tile->scene_object->programs[Scene::Object::ProgramTypeDefault].start = old_info.start;
+            tile->scene_object->programs[Scene::Object::ProgramTypeDefault].count = old_info.count;
         }
     };
 
@@ -657,7 +719,6 @@ namespace Magpie {
                 }
             }
         }
-
     };
 
     /**
@@ -724,7 +785,7 @@ namespace Magpie {
             }
         };
 
-        for (const auto &room: game.get_level()->get_paintings()) {
+        for (const auto &room: *game.get_level()->get_paintings()) {
             if(room.first != game.get_player()->get_current_room()) continue;
             for (auto &painting: room.second) {
                 if (painting->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
@@ -735,14 +796,18 @@ namespace Magpie {
                     painting->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(painting->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
-                    play_score_sound(painting->get_selling_price());
+
+                    if (!mute_sound) {
+                        sample_steal1->play(game.get_player()->get_position());
+                        play_score_sound(painting->get_selling_price());
+                    }
+
                     return true;
                 }
             }
         }
 
-        for (const auto &room: game.get_level()->get_gems()) {
+        for (const auto &room: *game.get_level()->get_gems()) {
             if(room.first != game.get_player()->get_current_room()) continue;
             for (auto &gem: room.second) {
                 if (gem->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
@@ -753,14 +818,19 @@ namespace Magpie {
                     gem->on_click();
                     game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(gem->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
-                    play_score_sound(gem->get_selling_price());
+
+
+                    if (!mute_sound) {
+                        sample_steal1->play(game.get_player()->get_position());
+                        play_score_sound(gem->get_selling_price());
+                    }
+
                     return true;
                 }
             }
         }
 
-        for (auto const &displaycase : game.get_level()->get_displaycases()) {
+        for (auto const &displaycase : *game.get_level()->get_displaycases()) {
             if(displaycase->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
                && abs(game.get_player()->get_position().x - displaycase->get_position().x) <= 1
                && abs(game.get_player()->get_position().y - displaycase->get_position().y) <= 1) {
@@ -769,10 +839,14 @@ namespace Magpie {
                     if (game.get_player()->has_master_key) {
                         displaycase->on_click();
                         game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
-                        sample_unlock1->play(game.get_player()->get_position());
+                        if (!mute_sound) {
+                            sample_unlock1->play(game.get_player()->get_position());
+                        }
                         return true;
                     } else {
-                        sample_fail->play(displaycase->get_position());
+                        if (!mute_sound) {
+                            sample_fail->play(displaycase->get_position());
+                        }
                         animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                         return true;
                     }
@@ -782,37 +856,44 @@ namespace Magpie {
                     displaycase->geode->steal(game.get_player());
                     displaycase->geode->get_scene_object()->active = false;
                     animated_text_objects.push_back(FloatingNotificationText("+$" + std::to_string(displaycase->geode->get_selling_price()), ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
-                    sample_steal1->play(game.get_player()->get_position());
-                    play_score_sound(displaycase->geode->get_selling_price());
+                    if (!mute_sound) {
+                        sample_steal1->play(game.get_player()->get_position());
+                        play_score_sound(displaycase->geode->get_selling_price());
+                    }
                     return true;
                 }
             }
         }
 
-        if(game.get_level()->pink_card != nullptr && !game.get_player()->has_pink_card) {
-            if (game.get_level()->pink_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->pink_card->get_scene_object()->active
-                && abs(game.get_player()->get_position().x - game.get_level()->pink_card->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->pink_card->get_position().y) <= 1) {
-                game.get_level()->pink_card->on_click();
+        if(game.get_level()->get_pink_card() != nullptr && !game.get_player()->has_pink_card) {
+            if (game.get_level()->get_pink_card()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->get_pink_card()->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->get_pink_card()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_pink_card()->get_position().y) <= 1) {
+                game.get_level()->get_pink_card()->on_click();
                 game.get_player()->has_pink_card = true;
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Pink Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 50.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
-                sample_pickup->play(game.get_player()->get_position());
+                if (!mute_sound) {
+                    sample_pickup->play(game.get_player()->get_position());
+                }
                 return true;
             }
         }
 
-        if(game.get_level()->green_card != nullptr && !game.get_player()->has_green_card) {
-            if (game.get_level()->green_card->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->green_card->get_scene_object()->active
-                && abs(game.get_player()->get_position().x - game.get_level()->green_card->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->green_card->get_position().y) <= 1) {
-                game.get_level()->green_card->on_click();
+        if(game.get_level()->get_green_card() != nullptr && !game.get_player()->has_green_card) {
+            if (game.get_level()->get_green_card()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->get_green_card()->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->get_green_card()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_green_card()->get_position().y) <= 1) {
+                game.get_level()->get_green_card()->on_click();
                 game.get_player()->has_green_card = true;
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Green Keycard", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
-                sample_pickup->play(game.get_player()->get_position());
+
+                if (!mute_sound) {
+                    sample_pickup->play(game.get_player()->get_position());
+                }
 
                 //Trigger escape stage
                 game.trigger_escape();
@@ -820,26 +901,28 @@ namespace Magpie {
             }
         }
 
-        if(game.get_level()->master_key != nullptr && !game.get_player()->has_master_key) {
-            if (game.get_level()->master_key->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->master_key->get_scene_object()->active
-                && abs(game.get_player()->get_position().x - game.get_level()->master_key->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->master_key->get_position().y) <= 1) {
-                game.get_level()->master_key->on_click();
+        if(game.get_level()->get_master_key() != nullptr && !game.get_player()->has_master_key) {
+            if (game.get_level()->get_master_key()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->get_master_key()->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->get_master_key()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_master_key()->get_position().y) <= 1) {
+                game.get_level()->get_master_key()->on_click();
                 game.get_player()->has_master_key = true;
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Master Key", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
-                sample_pickup->play(game.get_player()->get_position());
+                if (!mute_sound) {
+                    sample_pickup->play(game.get_player()->get_position());
+                }
                 return true;
             }
         }
 
-        if(game.get_level()->dogTreatPickUp != nullptr && !game.get_player()->has_dog_treats) {
-            if (game.get_level()->dogTreatPickUp->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->dogTreatPickUp->get_scene_object()->active
-                && abs(game.get_player()->get_position().x - game.get_level()->dogTreatPickUp->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->dogTreatPickUp->get_position().y) <= 1) {
-                game.get_level()->dogTreatPickUp->on_click();
+        if(game.get_level()->get_dog_treat() != nullptr && !game.get_player()->has_dog_treats) {
+            if (game.get_level()->get_dog_treat()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->get_dog_treat()->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->get_dog_treat()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_dog_treat()->get_position().y) <= 1) {
+                game.get_level()->get_dog_treat()->on_click();
                 game.get_player()->has_dog_treats = true;
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Dog Treats", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
@@ -847,12 +930,12 @@ namespace Magpie {
             }
         }
 
-        if(game.get_level()->cardboard_box != nullptr && !game.get_player()->has_cardboard_box) {
-            if (game.get_level()->cardboard_box->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && game.get_level()->cardboard_box->get_scene_object()->active
-                && abs(game.get_player()->get_position().x - game.get_level()->cardboard_box->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->cardboard_box->get_position().y) <= 1) {
-                game.get_level()->cardboard_box->on_click();
+        if(game.get_level()->get_cardboard_box() != nullptr && !game.get_player()->has_cardboard_box) {
+            if (game.get_level()->get_cardboard_box()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && game.get_level()->get_cardboard_box()->get_scene_object()->active
+                && abs(game.get_player()->get_position().x - game.get_level()->get_cardboard_box()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_cardboard_box()->get_position().y) <= 1) {
+                game.get_level()->get_cardboard_box()->on_click();
                 game.get_player()->has_cardboard_box = true;
                 game.get_player()->set_state((uint32_t)Player::STATE::STEALING);
                 animated_text_objects.push_back(FloatingNotificationText("Found Box Disguise", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 100.0f, screen_dimensions.y / 2.0f + 50.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f));
@@ -860,13 +943,14 @@ namespace Magpie {
             }
         }
 
-        if (game.get_level()->back_exit != nullptr && game.escape_started && !game.get_player()->game_over) {
-            if (game.get_level()->back_exit->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
-                && abs(game.get_player()->get_position().x - game.get_level()->back_exit->get_position().x) <= 1
-                && abs(game.get_player()->get_position().y - game.get_level()->back_exit->get_position().y) <= 1) {
-                sample_door->play(game.get_player()->get_position());
-                game.get_player()->game_over = true;
-                game.get_player()->game_won = true;
+        if (game.get_level()->get_back_exit() != nullptr && game.has_escape_started() && !game.is_game_over()) {
+            if (game.get_level()->get_back_exit()->get_boundingbox()->check_intersect(click_ray.origin, click_ray.direction)
+                && abs(game.get_player()->get_position().x - game.get_level()->get_back_exit()->get_position().x) <= 1
+                && abs(game.get_player()->get_position().y - game.get_level()->get_back_exit()->get_position().y) <= 1) {
+                if (!mute_sound) {
+                    sample_door->play(game.get_player()->get_position());
+                }
+                game.set_game_over(true);
             }
         }
 
@@ -899,28 +983,25 @@ namespace Magpie {
                     if ((door->access_level == Door::ACCESS_LEVEL::PINK && game.get_player()->has_pink_card)
                                 || (door->access_level == Door::ACCESS_LEVEL::GREEN && game.get_player()->has_green_card)
                                 || door->access_level == Door::ACCESS_LEVEL::NORMAL){
-
                         (*game.get_level()->get_doors())[i]->on_click();
                         animated_scene_objects.push_back((*game.get_level()->get_doors())[i]);
-
-                        sample_door->play(door->get_position());
-                        game.get_level()->set_movement_matrix_position((uint32_t)door->get_position().x, (uint32_t)door->get_position().y, true);
-
+                        if (!mute_sound) {
+                            sample_door->play(door->get_position());
+                        }
+                        game.get_level()->set_nav_grid_position((uint32_t)door->get_position().x, (uint32_t)door->get_position().y, true);
                         return true;
-
                     } else {
-                        sample_fail->play(door->get_position());
+                        if (!mute_sound){
+                            sample_fail->play(door->get_position());
+                        }
                         animated_text_objects.push_back(FloatingNotificationText("Locked", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                         return true;
                     }
                 }
-
             }
         }
-
         return false;
     };
-
 
     /**
      * Given the rounded position of where the ray intersected with the floor,
@@ -928,37 +1009,28 @@ namespace Magpie {
      * state as needed.
      */
     bool MagpieGameMode::handle_player_movement(glm::vec3 click_floor_intersect) {
+        // Only move if the space is in the same room as the player
         if (game.get_level()->can_move_to(game.get_player()->get_current_room(), click_floor_intersect.x, click_floor_intersect.y)) {
 
-            if (click_floor_intersect == game.get_player()->final_destination) return true;
-
-            game.get_player()->final_destination = click_floor_intersect;
-
-            Path path = Magpie::Navigation::getInstance().findPath(
-                glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                glm::vec2(click_floor_intersect.x, click_floor_intersect.y));
-
-            if (path.get_path().size() > 0) {
+            if (potential_player_path.get_path().size() > 0) {
 
                 make_close_walls_transparent((float)click_floor_intersect.x, (float)click_floor_intersect.y);
                 game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)click_floor_intersect.x, (float)click_floor_intersect.y));
-                game.get_player()->set_path(path);
+                game.get_player()->append_path(potential_player_path);
+                printf("Move Click\n");
 
+                // Change the state of the player
                 if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
                     game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
                 }
                 else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
                     game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
                 }
+
                 return true;
-
             }
-
-
-        } else {
-            //std::cout << "DEBUG:: Player can't move to that position" << std::endl;
-
         }
+
         return false;
     };
 
@@ -979,6 +1051,9 @@ namespace Magpie {
         return handled;
     };
 
+    /**
+     * Brings up the tutorial screen
+     */
     void MagpieGameMode::show_tutorial() {
         std::shared_ptr< TutorialMode > tutorial = std::make_shared< TutorialMode >();
 
@@ -986,6 +1061,6 @@ namespace Magpie {
         tutorial->background = game;
 
         Mode::set_current(tutorial);
-    }
+    };
 
 }

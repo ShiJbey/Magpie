@@ -3,9 +3,8 @@
 #include "base/Load.hpp"
 #include "base/GL.hpp"
 #include "base/MeshBuffer.hpp"
+#include "base/TransformAnimation.hpp"
 #include "level/load_level.hpp"
-
-#include "animation/TransformAnimation.hpp"
 #include "animation/AnimatedModel.hpp"
 #include "base/Sound.hpp"
 

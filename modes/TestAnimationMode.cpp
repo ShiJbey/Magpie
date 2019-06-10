@@ -1,6 +1,6 @@
 #include "TestAnimationMode.hpp"
-#include "../animation/TransformAnimation.hpp"
 
+#include "../base/TransformAnimation.hpp"
 #include "../base/MenuMode.hpp"
 #include "../base/Load.hpp"
 #include "../base/MeshBuffer.hpp"

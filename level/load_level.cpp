@@ -3,6 +3,7 @@
 #include "../base/Load.hpp"
 #include "../AssetLoader.hpp"
 #include "../animation/AnimatedModel.hpp"
+#include "objects/Item.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -218,10 +219,6 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
         {1, "dogTreat_pickup_MSH"}
     };
 
-
-
-
-
     ret->insert({3, floors});
     ret->insert({4, doors});
     ret->insert({5, paintings});
@@ -240,7 +237,6 @@ Load< std::map < uint8_t, std::map< uint8_t, std::string > > > mesh_names(LoadTa
     ret->insert({42, keys});
     ret->insert({57, treats});
     ret->insert({69, geodes});
-
 
     return ret;
 });
@@ -284,7 +280,7 @@ Magpie::LevelData::LevelData(const std::string &filename) {
 
 
 Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, AnimatedModel& model, const ModelData* model_data, std::string model_name, std::string vao_key,
-        Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
+    Scene::Object::ProgramInfo program_info, const MeshBuffer* mesh_buffer) {
 
     Scene::Transform* model_group_transform = nullptr;
 
@@ -519,6 +515,23 @@ std::vector< Scene::Transform* > Magpie::LevelLoader::get_animation_transforms( 
     return animation_transforms;
 };
 
+void add_potential_location(std::map< uint32_t, std::vector< Scene::Transform* > >* location_map, uint32_t room_number, Scene::Transform* parent_trans) {
+    auto room_iter = location_map->find(room_number);
+    if (room_iter != location_map->end()) {
+        std::vector< Scene::Transform* > transforms = room_iter->second;
+        // Add this transform to the vector of potential positions for this room
+        if (std::find(transforms.begin(), transforms.end(), parent_trans) == transforms.end()) {
+            (*location_map)[room_number].push_back(parent_trans);
+        }
+        else {
+            std::cout << "WARNING::MagpieLevel:: Attempting to add a duplicate item location." << std::endl;
+        }
+    }
+    else {
+        location_map->insert({room_number, std::vector< Scene::Transform* >()});
+        (*location_map)[room_number].push_back(parent_trans);
+    }
+};
 
 Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_data, Scene &scene, const MeshBuffer* mesh_buffer,
             std::function< Scene::Object*(Scene &, Scene::Transform *, std::string const &) > const &on_object) {
@@ -528,6 +541,8 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
     ///////////////////////////////////////////////////////
 
     Magpie::MagpieLevel* level = new MagpieLevel(level_data->level_width, level_data->level_length);
+    std::map< uint32_t, std::vector< Scene::Transform* > > potential_wall_locations;
+    std::map< uint32_t, std::vector< Scene::Transform* > > potential_pedestal_locations;
 
     // Lambda Function for Loading static geometry
     auto get_mesh = [&scene, &on_object](uint32_t x, uint32_t y, uint8_t mesh_id, uint8_t customization_id) {
@@ -605,27 +620,19 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 }
 
                 level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f), dir);
-                level->set_movement_matrix_position(x, y, true);
+                level->set_nav_grid_position(x, y, true);
 
                 Scene::Object* obj = get_mesh(x, y, 3, 0);
                 obj->transform->name = "floor_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                level->set_movement_matrix_position(x, y, true);
-                FloorTile*** floor = level->get_floor_matrix();
-                floor[x][y] = new FloorTile(obj, room_number);
+                level->set_nav_grid_position(x, y, true);
+                level->set_floor_tile(new FloorTile(obj, room_number), x, y);
             }
 
             // Check if it is part of a guards path
             if (guard_number != 0) {
                 level->add_guard_path_position(room_number, guard_number, x, y);
-                level->set_movement_matrix_position(x, y, true);
-
-//                Scene::Object* obj = get_mesh(x, y, 3, 0);
-//                obj->transform->name = "floor_" + std::to_string(i);
-//                obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-//                level->set_movement_matrix_position(x, y, true);
-//                FloorTile*** floor = level->get_floor_matrix();
-//                floor[x][y] = new FloorTile(obj, room_number);
+                level->set_nav_grid_position(x, y, true);
             }
 
             // Floor Tile
@@ -633,17 +640,16 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, 3, customization_id);
                 obj->transform->name = "floor_" + std::to_string(i);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                level->set_movement_matrix_position(x, y, true);
-                FloorTile*** floor = level->get_floor_matrix();
-                floor[x][y] = new FloorTile(obj, room_number);
+                level->set_nav_grid_position(x, y, true);
+                level->set_floor_tile(new FloorTile(obj, room_number), x, y);
 
                 // Adds this transform to the vector
                 // of locations where things can be placed
                 // on the floor
-                if (potential_item_location && level->cardboard_box == nullptr) {
+                if (potential_item_location && level->get_cardboard_box() == nullptr) {
                     Scene::Object* cardboardbox_obj = get_mesh(x, y, 25, 1);
                     cardboardbox_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->cardboard_box = new CardboardBox(cardboardbox_obj);
+                    level->set_cardboard_box(new CardboardBox(cardboardbox_obj));
                 }
 
             }
@@ -667,7 +673,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                     door->scene_object = obj;
                     door->set_transform(&obj->transform);
                     (*door->get_transform())->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->back_exit = new BackExit(obj);
+                    level->set_back_exit(new BackExit(obj));
                 }
                 else{
                     create_front_door(*door, scene, customization_id, glm::vec3((float)x, (float)y, 0.0f));
@@ -730,7 +736,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 level->set_wall(new Wall(obj, room_number), x, y);
 
                 if (current_pixel.is_item_location()) {
-                    level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
+                    add_potential_location(&potential_wall_locations, room_number, obj->transform);
                 }
 
 
@@ -864,7 +870,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 }
 
                 if (current_pixel.is_item_location()) {
-                    level->add_potential_location(level->get_potential_wall_locations(), room_number, obj->transform);
+                    add_potential_location(&potential_wall_locations, room_number, obj->transform);
                 }
             }
 
@@ -888,7 +894,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 // of locations where things can be placed
                 // on the floor
                 if (potential_item_location) {
-                    level->add_potential_location(level->get_potential_pedestal_locations(), room_number, obj->transform);
+                    add_potential_location(&potential_pedestal_locations, room_number, obj->transform);
                 }
             }
 
@@ -977,16 +983,16 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                if (customization_id == 0 && level->pink_card == nullptr && potential_item_location) {
+                if (customization_id == 0 && level->get_pink_card() == nullptr && potential_item_location) {
                     Scene::Object* keycard_obj = get_mesh(x, y, 42, 0);
                     keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->pink_card = new KeyCard(Door::ACCESS_LEVEL::PINK, keycard_obj);
+                    level->set_pink_card(new KeyCard(Door::ACCESS_LEVEL::PINK, keycard_obj));
                 }
 
-                if (customization_id == 5 && level->pink_card == nullptr && potential_item_location) {
+                if (customization_id == 5 && level->get_dog_treat() == nullptr && potential_item_location) {
                     Scene::Object* dogTreatPickup_obj = get_mesh(x, y, 57, 1);
                     dogTreatPickup_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->dogTreatPickUp = new DogTreat(dogTreatPickup_obj);
+                    level->set_dog_treat(new DogTreat(dogTreatPickup_obj));
                 }
             }
 
@@ -995,20 +1001,20 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                if (customization_id == 0 && level->green_card == nullptr) {
+                if (customization_id == 0 && level->get_green_card() == nullptr) {
                     Scene::Object* keycard_obj = get_mesh(x, y, 42, 1);
                     keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->green_card = new KeyCard(Door::ACCESS_LEVEL::GREEN, keycard_obj);
+                    level->set_green_card(new KeyCard(Door::ACCESS_LEVEL::GREEN, keycard_obj));
                 }
             }
             //STORAGE
             else if (mesh_id == 25) {
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                if (customization_id == 0 && level->master_key == nullptr) {
+                if (customization_id == 0 && level->get_master_key() == nullptr) {
                     Scene::Object* keycard_obj = get_mesh(x, y, 42, 2);
                     keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-                    level->master_key = new KeyCard(Door::ACCESS_LEVEL::MASTER, keycard_obj);
+                    level->set_master_key(new KeyCard(Door::ACCESS_LEVEL::MASTER, keycard_obj));
                 }
             }
 
@@ -1020,14 +1026,13 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
         }
     }
 
-    for (auto const &room : *(level->get_potential_pedestal_locations())) {
+    for (auto const &room : potential_pedestal_locations) {
         for (auto const &location: room.second) {
             uint32_t cust_id;
             float rand = (float)dist(mt_rand);
             if (rand < 0.5f) cust_id = 0;
             else if (rand < 0.85f) cust_id = 1;
             else cust_id = 2;
-//            uint32_t cust_id = mt_rand() % 3;
 
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 6, cust_id);
             assert(obj != nullptr);
@@ -1042,21 +1047,18 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
         }
     };
 
-    for (auto const &room : *(level->get_potential_wall_locations())) {
+    for (auto const &room : potential_wall_locations) {
         for (auto const &location: room.second) {
             uint32_t cust_id;
             float rand = (float)dist(mt_rand);
             if (rand < 0.5f) cust_id = 0;
             else if (rand < 0.85f) cust_id = 1;
             else cust_id = 2;
-//            uint32_t cust_id = mt_rand() % 3;
 
             Scene::Object* obj = get_mesh((uint32_t)location->position.x, (uint32_t)location->position.y, 5, cust_id);
             assert(obj != nullptr);
             obj->transform->rotation = location->rotation;
-            //obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
             obj->transform->rotation *= glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-            //obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             PixelData pd = level_data->pixel_data[(uint32_t)location->position.y * level_data->level_width + (uint32_t)location->position.x];
             if(pd.is_corner_3()) {
                 obj->transform->rotation *= glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));

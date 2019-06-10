@@ -1,5 +1,6 @@
 #include "MagpieGame.hpp"
 #include "AssetLoader.hpp"
+#include "game_settings.hpp"
 
 Magpie::Player* Magpie::MagpieGame::get_player() {
     return this->player;
@@ -35,20 +36,23 @@ void Magpie::MagpieGame::trigger_escape() {
     this->current_music->stop(1.0f);
 };
 
-float Magpie::MagpieGame::escape_update(float elapsed) {
+void Magpie::MagpieGame::escape_update(float elapsed) {
     if (this->elapsed_in_escape >= 0) {
 
         //start escape stage with delay to let previous UI/sounds fade
         if (this->elapsed_in_escape >= 3.0f && !this->escape_started) {
-            this->escape_started = true;
-            sample_siren->play(this->get_player()->get_position());
-            this->current_music = sample_ambient_faster->play(this->get_player()->get_position(), 0.4f, Sound::Loop);
-            //swap out shader with escape stage shader
+            set_escape_started(true);
+            if (!mute_sound) {
+                sample_siren->play(this->get_player()->get_position());
+                this->current_music = sample_ambient_faster->play(this->get_player()->get_position(), 0.4f, Sound::Loop);
+            }
+
         }
+
         this->elapsed_in_escape += elapsed;
 
-        return this->escape_timer - this->elapsed_in_escape;
+        if (this->ESCAPE_TIME - this->elapsed_in_escape <= 0) {
+            set_game_over(true);
+        };
     }
-
-    return this->escape_timer;
 };

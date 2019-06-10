@@ -96,8 +96,6 @@ namespace Magpie {
 
     struct LevelLoader {
 
-
-
         static Door& create_front_door(Door& door, Scene& scene, uint8_t customization_id, glm::vec3 position);
 
         /**

@@ -1,191 +1,103 @@
 #include "MagpieLevel.hpp"
-#include "objects/FloorTile.hpp"
-#include "objects/Door.hpp"
-#include "../characters/GameAgent.hpp"
 
 #include <algorithm>
 
 Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
+
     this->width = width;
     this->length = length;
 
-    // Set up the movement matrix
-    for (uint32_t x = 0; x < width; x++) {
-        std::vector< bool > col;
-        for (uint32_t y = 0; y < length; y++) {
-            col.push_back(false);
+    // Instantiate the navigation grid, wall grid, and floor grids
+    for (uint32_t row = 0; row < length; ++row) {
+        std::vector< bool > nav_row;
+        std::vector< Wall* > wall_row;
+        std::vector< FloorTile* > floor_row;
+        for (uint32_t col = 0; col < width; ++col) {
+            nav_row.push_back(false);
+            wall_row.push_back(nullptr);
+            floor_row.push_back(nullptr);
         }
-        movement_matrix.push_back(col);
+        nav_grid.push_back(nav_row);
+        wall_grid.push_back(wall_row);
+        floor_grid.push_back(floor_row);
     }
-
-    // Make the floor Matrix
-    floor_matrix = new FloorTile**[width];
-    for (uint32_t x = 0; x < width; x++) {
-        floor_matrix[x] = new FloorTile*[length];
-        for (uint32_t y = 0; y < length; y++) {
-            floor_matrix[x][y] = nullptr;
-        }
-    }
-
-    // Make Door Matrix;
-    door_matrix = new Door**[width];
-    for (uint32_t x = 0; x < width; x++) {
-        door_matrix[x] = new Door*[length];
-        for (uint32_t y = 0; y < length; y++) {
-            door_matrix[x][y] = nullptr;
-        }
-    }
-
-    // Make the wall Matrix
-    wall_matrix = new Wall**[width];
-    for (uint32_t x = 0; x < width; x++) {
-        wall_matrix[x] = new Wall*[length];
-        for (uint32_t y = 0; y < length; y++) {
-            wall_matrix[x][y] = nullptr;
-        }
-    }
-
 };
 
 Magpie::MagpieLevel::~MagpieLevel() {
-    for (uint32_t x = 0; x < width; x++) {
-        for (uint32_t y = 0; y < length; y++) {
-            FloorTile* tile = floor_matrix[x][y];
-            free(tile);
-            floor_matrix[width] = new FloorTile*[length];
-
-        }
-        FloorTile** col = floor_matrix[x];
-        free(col);
-    }
-    free(floor_matrix);
-};
-
-Magpie::FloorTile*** Magpie::MagpieLevel::get_floor_matrix() {
-    return floor_matrix;
+    delete this->green_card;
+    delete this->pink_card;
+    delete this->master_key;
+    delete this->dogTreatPickUp;
+    delete this->cardboard_box;
+    delete this->back_exit;
 };
 
 
 glm::ivec2 Magpie::MagpieLevel::floor_tile_coord(glm::vec3 isect) {
     float x = std::floor(isect.x + 0.5f);
     float y = std::floor(isect.y + 0.5f);
-    bool negative = (x < 0.0f || y < 0.0f);
-    bool outOfRange = (x >= this->width || y >= this->length);
-    if (negative || outOfRange) {
+    if (is_within_bounds(x, y)) {
         //click is negative and impossible or is greater than dims of row and cols of given map
         return glm::ivec2(-1, -1);
     }
     return glm::ivec2(x, y);
 };
 
+bool Magpie::MagpieLevel::is_within_bounds(uint32_t x, uint32_t y) {
+    return is_within_bounds((float)x, (float)y);
+}
+
+bool Magpie::MagpieLevel::is_within_bounds(float x, float y) {
+    float x_shifted = std::floor(x + 0.5f);
+    float y_shifted = std::floor(y + 0.5f);
+    bool negative = (x_shifted < 0.0f || y_shifted < 0.0f);
+    bool outOfRange = (x >= this->width || y >= this->length);
+    return !(negative || outOfRange);
+}
+
 bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, float x, float y) {
-    if ((x >= 0 && x < (float)width) && (y >= 0 && y < (float)length)) {
-        FloorTile* floor_tile = floor_matrix[(uint32_t)x][(uint32_t)y];
-        if (floor_tile == nullptr) {
-            return false;
-        } else {
-            return true;
-            //return current_room == floor_tile->room_number;
-        }
+    if (is_within_bounds(x, y)) {
+        return nav_grid[(uint32_t)y][(uint32_t)x]
+            && floor_grid[(uint32_t)y][(uint32_t)x]->room_number == current_room;
     }
     return false;
 };
 
 bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, uint32_t x, uint32_t y) {
-    if (x < width && y < length) {
-        FloorTile* floor_tile = floor_matrix[x][y];
-        if (floor_tile == nullptr) {
-            return false;
-        } else {
-            return true;
-            //return current_room == floor_tile->room_number;
-        }
-    }
-    // OLD CODE
-    //if (row < movement_matrix.size()) {
-    //    if (col < movement_matrix[row].size()) {
-    //        return this->movement_matrix[row][col];
-    //    }
-    //}
-    return false;
+    return can_move_to(current_room, (float)x, (float)y);
 };
 
 bool Magpie::MagpieLevel::is_wall(float x, float y) {
-    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
-        Wall* wall = wall_matrix[(uint32_t)x][(uint32_t)y];
-        if (wall == nullptr) {
-            return false;
-        } else {
-            return true;
-        }
+    if (is_within_bounds(x, y)) {
+        Wall* wall = wall_grid[(uint32_t)y][(uint32_t)x];
+        return !(wall == nullptr);
     }
     return false;
 };
 
 bool Magpie::MagpieLevel::is_wall(uint32_t x, uint32_t y) {
-    if (x < width && y < length) {
-        Wall* wall = wall_matrix[x][y];
-        if (wall == nullptr) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-    return false;
+    return is_wall((float)x, (float)y);
 };
 
 Magpie::Wall* Magpie::MagpieLevel::get_wall(float x, float y) {
-    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
-        return wall_matrix[(uint32_t)x][(uint32_t)y];
+    if (is_within_bounds(x, y)) {
+        return wall_grid[(uint32_t)y][(uint32_t)x];
     }
     return nullptr;
 };
 
 Magpie::Wall* Magpie::MagpieLevel::get_wall(uint32_t x, uint32_t y) {
-    if (x < width && y < length) {
-        return wall_matrix[x][y];
-    }
-    return nullptr;
+    return get_wall((float)x, (float)y);
 };
 
 void Magpie::MagpieLevel::set_wall(Wall* wall, uint32_t x, uint32_t y) {
-    if (x < width && y < length) {
-        wall_matrix[x][y] = wall;
-    }
+    set_wall(wall, (float)x, (float)y);
 };
 
 void Magpie::MagpieLevel::set_wall(Wall* wall, float x, float y) {
-    if ((x >= 0 && (uint32_t)x < width) && (y >= 0 && (uint32_t)y < length)) {
-        wall_matrix[(uint32_t)x][(uint32_t)y] = wall;
+    if (is_within_bounds(x, y)) {
+        wall_grid[(uint32_t)y][(uint32_t)x] = wall;
     }
-};
-
-uint32_t Magpie::MagpieLevel::get_length() {
-    return this->length;
-};
-
-uint32_t Magpie::MagpieLevel::get_width() {
-    return this->width;
-};
-
-glm::uvec2 Magpie::MagpieLevel::get_dimensions() {
-    return glm::uvec2(width, length);
-};
-
-std::vector< std::vector< bool > >* Magpie::MagpieLevel::get_movement_matrix() {
-    return &movement_matrix;
-};
-
-void Magpie::MagpieLevel::set_movement_matrix_position(uint32_t x, uint32_t y, bool can_walk) {
-    this->movement_matrix[x][y] = can_walk;
-};
-
-std::map< uint32_t, std::vector< Magpie::Painting* > >& Magpie::MagpieLevel::get_paintings() {
-    return paintings;
-};
-
-std::map< uint32_t, std::vector< Magpie::Gem* > >& Magpie::MagpieLevel::get_gems() {
-    return gems;
 };
 
 void Magpie::MagpieLevel::add_painting(uint32_t room_number, Magpie::Painting *painting) {
@@ -227,35 +139,21 @@ void Magpie::MagpieLevel::add_guard_path_position(uint32_t room_number, uint32_t
     }
 };
 
-void Magpie::MagpieLevel::handle_click() {
-
-};
-
 uint32_t Magpie::MagpieLevel::get_tile_room_number(uint32_t x, uint32_t y) {
-    if (x < width && y < length) {
-        return floor_matrix[x][y]->room_number;
-    }
-    return -1U;
+    return get_tile_room_number((float)x, (float)y);
 };
 
 uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
-    if ((x >= 0.0f && x < width) && (y >= 0.0f && y < length)) {
-        return floor_matrix[(uint32_t)x][(uint32_t)y]->room_number;
+    if (is_within_bounds(x, y)) {
+        return floor_grid[(uint32_t)y][(uint32_t)x]->room_number;
     }
     return -1U;
 };
 
-std::vector< Magpie::Door* >* Magpie::MagpieLevel::get_doors() {
-    return &doors;
-};
 
 void Magpie::MagpieLevel::set_player_start_position(glm::vec3 start_position) {
     this->player_start_position = start_position;
 };
-
-glm::vec3 Magpie::MagpieLevel::get_player_start_position() {
-    return this->player_start_position;
-}
 
 void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, GameAgent::DIRECTION dir) {
     auto room_number_iter = guard_start_positions.find(room_number);
@@ -274,8 +172,8 @@ void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_
     }
 };
 
-std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, Magpie::GameAgent::DIRECTION> > >& Magpie::MagpieLevel::get_guard_start_positions() {
-    return guard_start_positions;
+std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, Magpie::GameAgent::DIRECTION> > >* Magpie::MagpieLevel::get_guard_start_positions() {
+    return &(this->guard_start_positions);
 }
 
 std::vector< glm::vec2 > Magpie::MagpieLevel::get_guard_path(uint32_t room_number, uint32_t guard_number) {
@@ -292,45 +190,13 @@ std::vector< glm::vec2 > Magpie::MagpieLevel::get_guard_path(uint32_t room_numbe
     return std::vector< glm::vec2 >();
 };
 
-void Magpie::MagpieLevel::add_potential_location(std::map< uint32_t, std::vector< Scene::Transform* > >* location_map, uint32_t room_number, Scene::Transform* parent_trans) {
-    auto room_iter = location_map->find(room_number);
-    if (room_iter != location_map->end()) {
-        std::vector< Scene::Transform* > transforms = room_iter->second;
-        // Add this transform to the vector of potential positions for this room
-        if (std::find(transforms.begin(), transforms.end(), parent_trans) == transforms.end()) {
-            (*location_map)[room_number].push_back(parent_trans);
-        }
-        else {
-            std::cout << "WARNING::MagpieLevel:: Attempting to add a duplicate item location." << std::endl;
-        }
-    }
-    else {
-        location_map->insert({room_number, std::vector< Scene::Transform* >()});
-        (*location_map)[room_number].push_back(parent_trans);
-    }
-};
-
-std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_floor_locations() {
-    return &potential_floor_locations;
-};
-
-std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_wall_locations() {
-    return &potential_wall_locations;
-};
-
-std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_pedestal_locations() {
-    return &potential_pedestal_locations;
-};
-
-std::map< uint32_t, std::vector< Scene::Transform* > >* Magpie::MagpieLevel::get_potential_table_locations() {
-    return &potential_table_locations;
-};
-
-std::vector< Magpie::DisplayCase* >& Magpie::MagpieLevel::get_displaycases() {
-    return displaycases;
-};
-
 void Magpie::MagpieLevel::add_displaycase(DisplayCase* displaycase) {
     displaycases.push_back(displaycase);
+};
+
+void Magpie::MagpieLevel::set_nav_grid_position(uint32_t x, uint32_t y, bool can_walk) {
+    if (is_within_bounds(x, y)) {
+        this->nav_grid[y][x] = can_walk;
+    }
 };
 

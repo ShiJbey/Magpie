@@ -1,5 +1,7 @@
 #include "AnimatedModel.hpp"
+
 #include "../base/read_chunk.hpp"
+
 #include "../AssetLoader.hpp"
 
 #include <iostream>
@@ -78,7 +80,7 @@ void Magpie::AnimatedModel::set_animation_manager(Magpie::AnimationManager *anim
     this->animation_manager = animation_manager;
 };
 
-void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
+void Magpie::AnimatedModel::set_model_rotation(uint32_t dir) {
     switch(dir) {
         case 3 :
             #ifdef ANIMATED_MODEL_DEBUG_VERBOSE
@@ -105,7 +107,7 @@ void Magpie::AnimatedModel::set_model_orientation(uint32_t dir) {
             (*transform)->rotation = original_rotation;
             break;
         default:
-            std::cerr << "ERROR::AnimatedModel.set_model_orientation:: Invalid orientation" << std::endl;
+            std::cerr << "ERROR::AnimatedModel.set_model_rotation:: Invalid orientation" << std::endl;
             break;
     }
 };

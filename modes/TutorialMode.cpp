@@ -51,7 +51,7 @@ bool TutorialMode::handle_event(SDL_Event const &e, glm::uvec2 const &window_siz
 
 void TutorialMode::update(float elapsed) {
 	if (background) {
-		background->update(elapsed * background_time_scale);
+		//background->update(elapsed * background_time_scale);
 	}
 }
 
@@ -106,7 +106,7 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
     font_height = 0.06f;
     padding = 0.17f;
 	write_line("EARN MONEY BY STEALING ");
-	draw_object("!@#", glm::vec2(anchor.x + aspect, anchor.y + padding - icon_offset), 0.15f);
+	draw_object("!@#", glm::vec2(anchor.x + aspect + (0.1f * aspect), anchor.y + padding - icon_offset), 0.15f);
 	anchor.y -= section_break;
 
 	write_line("PICK UP KEY ITEMS TO UNLOCK NEW SKILLS");

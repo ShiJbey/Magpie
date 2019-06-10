@@ -43,7 +43,7 @@ HighlightProgram::HighlightProgram() {
 		"		float nl = max(0.0, dot(n,l));\n"
 		"		total_light += nl * sun_color;\n"
 		"	}\n"
-        "   fragColor = vec4(color.rgb * total_light + 0.1, color.a);\n"
+        "   fragColor = vec4(vec3(1.0, 1.0, 0.0) * total_light, color.a);\n"
 		"}\n"
 	);
 
