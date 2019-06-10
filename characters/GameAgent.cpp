@@ -64,30 +64,29 @@ void Magpie::GameAgent::append_path(Path new_path) {
     }
 
     // The GameAgent has been given a path and the current path is not complete
-    else {
-        // Remove all locations in the path vector after the current destination
-        // Append this path to the end of the old path and let the magpie continue
-        // as normal
-        std::vector<glm::vec2> modified_path = this->path.get_path();
-        std::vector<glm::vec2> path_to_add = new_path.get_path();
 
-        // Ignore if the new path is taking you to the same place
-        // as your current path
-        if (path_to_add.back() == this->get_path()->get_path().back()) {
-            return;
-        }
+    // Remove all locations in the path vector after the current destination
+    // Append this path to the end of the old path and let the magpie continue
+    // as normal
+    std::vector<glm::vec2> modified_path = this->path.get_path();
+    std::vector<glm::vec2> path_to_add = new_path.get_path();
 
-        // Erase all locations after the next destination
-        modified_path.erase(modified_path.begin() + path_destination_index, modified_path.end());
-
-        // Append all the locations in the given path
-        for(auto &pos : path_to_add) {
-            modified_path.push_back(pos);
-        }
-
-        // Set the path to the newly modified one
-        this->path.set_path(modified_path);
+    // Ignore if the new path is taking you to the same place
+    // as your current path
+    if (path_to_add.back() == this->get_path()->get_path().back()) {
+        return;
     }
+
+    // Erase all locations after the next destination
+    modified_path.erase(modified_path.begin() + path_destination_index, modified_path.end());
+
+    // Append all the locations in the given path
+    for(glm::vec2 pos : path_to_add) {
+        modified_path.push_back(pos);
+    }
+
+    // Set the path to the newly modified one
+    this->path.set_path(modified_path);
 };
 
 Magpie::GameAgent::DIRECTION Magpie::GameAgent::direction_toward(glm::vec2 pos, glm::vec2 dest) {

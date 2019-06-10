@@ -208,7 +208,10 @@ namespace Magpie {
                 if (p.get_path().size() > 0) {
                     potential_player_path = p;
                     highlight_path_tiles();
-                    this->game.get_player()->turn_to(intersect);
+                    if (this->game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE
+                        || this->game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                            this->game.get_player()->turn_to(intersect);
+                    }
                 }
             }
         }

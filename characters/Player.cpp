@@ -23,9 +23,8 @@ void Magpie::Player::walk(float elapsed) {
         // If we are, then update the current destination
         // Move towards the current destination at the movement speed
 
-
         glm::vec2 current_position_v2  = get_position();
-
+        current_destination = path.get_path()[path_destination_index];
         float distance_to_destination = glm::length(current_destination - current_position_v2);
 
         // Consider ourselves to be at the position, snap to it, and return
