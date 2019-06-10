@@ -22,3 +22,5 @@ freetype-2/builds
 freetype-2/docs
 freetype-2/devel
 cmake-build-debug/
+*.ilk
+*.pdb

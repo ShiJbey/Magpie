@@ -284,7 +284,7 @@ Scene::Transform* Magpie::LevelLoader::load_animated_model(Scene& scene, Animate
 
     Scene::Transform* model_group_transform = nullptr;
 
-    model_group_transform = model.load_model(scene, model_data, model_name, [=](Scene &s, Scene::Transform *t, std::string const &m){
+    model_group_transform = model.load_model(scene, model_data, model_name, [&](Scene &s, Scene::Transform *t, std::string const &m){
         Scene::Object *obj = s.new_object(t);
         Scene::Object::ProgramInfo default_program_info;
         default_program_info = program_info;
