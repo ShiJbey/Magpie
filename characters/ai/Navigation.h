@@ -8,23 +8,6 @@
 #include <tuple>
 
 namespace Magpie {
-    class Path {
-    public:
-        Path(){}
-        Path(std::vector<glm::vec2> path);
-        glm::vec2 next();
-        glm::vec2 top();
-        bool isEmpty();
-        std::vector<glm::vec2> get_path() { return this->path; };
-        void set_path(std::vector<glm::vec2> p) {
-            this->path = p;
-            it = this->path.begin();
-        };
-
-    private:
-        std::vector<glm::vec2> path;
-        std::vector<glm::vec2>::iterator it = path.begin();
-    };
 
     class Navigation {
 
@@ -40,8 +23,8 @@ namespace Magpie {
 
         void init(std::vector< std::vector< bool > >* level_navigation_grid);
         void set_navigation_grid(std::vector< std::vector< bool > >* level_navigation_grid);
-        Path findPath(glm::vec2 start, glm::vec2 destination);
-        std::vector<glm::vec2> get_adjacent(glm::vec2 pos);
+        std::vector< glm::vec2 > findPath(glm::vec2 start, glm::vec2 destination);
+        std::vector< glm::vec2 > get_adjacent(glm::vec2 pos);
         bool can_move_to(uint32_t x, uint32_t y);
         void print_navigation_grid();
         void reset_visited_grid();

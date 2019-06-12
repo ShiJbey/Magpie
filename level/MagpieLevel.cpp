@@ -57,8 +57,8 @@ bool Magpie::MagpieLevel::is_within_bounds(float x, float y) {
 
 bool Magpie::MagpieLevel::can_move_to(uint32_t current_room, float x, float y) {
     if (is_within_bounds(x, y)) {
-        return nav_grid[(uint32_t)y][(uint32_t)x]
-            && floor_grid[(uint32_t)y][(uint32_t)x]->room_number == current_room;
+        return nav_grid[(uint32_t)y][(uint32_t)x];
+            //&& floor_grid[(uint32_t)y][(uint32_t)x]->room_number == current_room;
     }
     return false;
 };
@@ -145,7 +145,9 @@ uint32_t Magpie::MagpieLevel::get_tile_room_number(uint32_t x, uint32_t y) {
 
 uint32_t Magpie::MagpieLevel::get_tile_room_number(float x, float y) {
     if (is_within_bounds(x, y)) {
-        return floor_grid[(uint32_t)y][(uint32_t)x]->room_number;
+        if (floor_grid[(uint32_t)y][(uint32_t)x]) {
+            return floor_grid[(uint32_t)y][(uint32_t)x]->room_number;
+        }
     }
     return -1U;
 };

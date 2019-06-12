@@ -41,7 +41,7 @@
 #include <algorithm>
 #include <random>
 
-//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
 
 namespace Magpie {
 
@@ -56,9 +56,13 @@ namespace Magpie {
 
         // Set up the player
         glm::vec3 player_position = game.get_level()->get_player_start_position();
-        create_player(player_position);
+         create_player(player_position);
         game.get_player()->set_current_room(game.get_level()->get_tile_room_number(player_position.x, player_position.y));
         game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
+
+        // Position the camera over the player
+        camera_trans->position.x = game.get_player()->get_position().x;
+        camera_trans->position.y = game.get_player()->get_position().y;
 
         // Instantiate Guards
         auto guard_start = game.get_level()->get_guard_start_positions();
@@ -79,7 +83,7 @@ namespace Magpie {
     };
 
     MagpieGameMode::~MagpieGameMode() {
-
+        // Do Nothing
     };
 
     void MagpieGameMode::update_env_animations(float elapsed) {
@@ -135,10 +139,23 @@ namespace Magpie {
             // Update the player
             game.get_player()->update(elapsed);
 
+
+            if (game.get_level()->get_floor_tile((uint32_t)game.get_player()->get_position().x, (uint32_t)game.get_player()->get_position().y)) {
+                uint32_t destination_room_number = game.get_level()->get_tile_room_number(game.get_player()->get_position().x, game.get_player()->get_position().y);
+
+                if (game.get_player()->get_current_room() != destination_room_number) {
+
+                    game.get_player()->set_current_room(destination_room_number);
+                    make_close_walls_transparent(game.get_player()->get_position().x, game.get_player()->get_position().y);
+
+                }
+            }
+
+
             // Update the guards
-            // for (uint32_t i = 0; i < game.get_guards().size(); i++) {
-            //     game.get_guards()[i]->update(elapsed);
-            // }
+            for (uint32_t i = 0; i < game.get_guards().size(); i++) {
+                game.get_guards()[i]->update(elapsed);
+            }
 
             // Update gems, paintings, keys, etc.
             update_env_animations(elapsed);
@@ -165,8 +182,20 @@ namespace Magpie {
                 game.escape_update(elapsed);
             }
 
-            camera_trans->position.x = game.get_player()->get_position().x;
-            camera_trans->position.y = game.get_player()->get_position().y;
+            #ifndef FREE_FLIGHT
+            // Rubberband the camera when the player moves too far
+            glm::vec2 cam_pos = glm::vec2(camera_trans->position.x, camera_trans->position.y);
+            glm::vec2 player_pos = game.get_player()->get_position();
+            float max_diff = 3.0f;
+            float cam_move_speed = 2.5f;
+            if (glm::length(cam_pos - player_pos) >= max_diff) camera_centered = false;
+            if (glm::length(cam_pos - player_pos) <= 0.5f) camera_centered = true;
+            if (!camera_centered) {
+                glm::vec2 cam_to_player = player_pos - cam_pos;
+                camera_trans->position.x += elapsed * cam_to_player.x;
+                camera_trans->position.y += elapsed * cam_to_player.y;
+            }
+            #endif
 
         }
     };
@@ -201,18 +230,21 @@ namespace Magpie {
             }
             highlighted_tiles.clear();
 
+            // Find a path
+            std::vector< glm::vec2 > p = Navigation::getInstance().findPath(game.get_player()->get_position(), intersect);
+
             // If we can move to the intersection, find a path and highlight it
-            if (game.get_level()->can_move_to(game.get_player()->get_current_room(), intersect.x, intersect.y)) {
-                // Find a path
-                Path p = Navigation::getInstance().findPath(game.get_player()->get_position(), intersect);
-                if (p.get_path().size() > 0) {
-                    potential_player_path = p;
-                    highlight_path_tiles();
-                    if (this->game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE
-                        || this->game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
-                            this->game.get_player()->turn_to(intersect);
-                    }
+            if (game.get_level()->can_move_to(game.get_player()->get_current_room(), intersect.x, intersect.y)
+                && p.size() > 0) {
+
+
+                potential_player_path = p;
+                highlight_path_tiles();
+                if (this->game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE
+                    || this->game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
+                        this->game.get_player()->turn_to(intersect);
                 }
+
             }
         }
 
@@ -470,6 +502,7 @@ namespace Magpie {
         player->set_position(position);
         player->turn_to(glm::vec2(0.0f,0.0f));
         player->set_state((uint32_t)Player::STATE::IDLE);
+        player->set_destination(position);
 
         // Add the player to the game
         game.set_player(player);
@@ -557,12 +590,9 @@ namespace Magpie {
 
         guard->set_starting_point(position);
         guard->turn_to(turn_destination);
-        //guard->set_model_rotation((uint32_t)dir);
-
-        //assert(guard->get_facing_direction() == dir);
-
         guard->set_state((uint32_t)Guard::STATE::IDLE);
-        // Add the guard to the game
+
+        guard->set_destination(position);
         game.add_guard(guard);
 
         return guard;
@@ -643,9 +673,9 @@ namespace Magpie {
      * the colors in the fragment shader.
      */
     void MagpieGameMode::highlight_path_tiles() {
-        std::vector< glm::vec2 > path = potential_player_path.get_path();
-        for (uint32_t i = 0; i < path.size(); i++) {
-            FloorTile* tile = game.get_level()->get_floor_tile((uint32_t)path[i].x, (uint32_t)path[i].y);
+        for (uint32_t i = potential_player_path.size() - 1; i < potential_player_path.size(); i++) {
+            FloorTile* tile = game.get_level()->get_floor_tile((uint32_t)potential_player_path[i].x, (uint32_t)potential_player_path[i].y);
+            if (tile == nullptr) continue;
             Scene::Object::ProgramInfo old_info = tile->scene_object->programs[Scene::Object::ProgramTypeDefault];
             tile->scene_object->programs[Scene::Object::ProgramTypeDefault] = *highlight_program_info.value;
             tile->scene_object->programs[Scene::Object::ProgramTypeDefault].vao = *highlighted_building_meshes_vao;
@@ -965,20 +995,8 @@ namespace Magpie {
                     // Find the position in the next room
                     auto room_iter = door->rooms.find(game.get_player()->get_current_room());
                     if (room_iter!= door->rooms.end()) {
-                        game.get_player()->set_path(Magpie::Navigation::getInstance().findPath(
-                            glm::vec2(game.get_player()->get_position().x, game.get_player()->get_position().y),
-                            glm::vec2(room_iter->second.x, room_iter->second.y)));
 
-                        game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)room_iter->second.x, (float)room_iter->second.y));
-                        make_close_walls_transparent((float)room_iter->second.x, (float)room_iter->second.y);
-
-                        if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
-                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-                        }
-                        else if (game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_IDLE) {
-                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-                        }
-
+                        handle_player_movement(glm::vec3(room_iter->second.x, room_iter->second.y, 0.0f));
 
                         return true;
                     }
@@ -1012,15 +1030,21 @@ namespace Magpie {
      * state as needed.
      */
     bool MagpieGameMode::handle_player_movement(glm::vec3 click_floor_intersect) {
+
         // Only move if the space is in the same room as the player
         if (game.get_level()->can_move_to(game.get_player()->get_current_room(), click_floor_intersect.x, click_floor_intersect.y)) {
 
-            if (potential_player_path.get_path().size() > 0) {
+            std::vector< glm::vec2 > p;
+            if (game.get_player()->get_state() == (uint32_t)Player::STATE::WALKING
+                || game.get_player()->get_state() == (uint32_t)Player::STATE::DISGUISE_WALK) {
+                p = Navigation::getInstance().findPath(game.get_player()->get_current_destination(), click_floor_intersect);
+            }
+            else {
+                p = potential_player_path;
+            }
+            if (p.size() > 0) {
 
-                make_close_walls_transparent((float)click_floor_intersect.x, (float)click_floor_intersect.y);
-                game.get_player()->set_current_room(game.get_level()->get_tile_room_number((float)click_floor_intersect.x, (float)click_floor_intersect.y));
-                game.get_player()->append_path(potential_player_path);
-                printf("Move Click\n");
+                game.get_player()->append_path(p);
 
                 // Change the state of the player
                 if (game.get_player()->get_state() == (uint32_t)Player::STATE::IDLE) {
@@ -1044,6 +1068,7 @@ namespace Magpie {
      */
     bool MagpieGameMode::handle_screen_click(Magpie::Ray click_ray) {
         bool handled = false;
+
         if (!handled) {
             handled =  handle_clickables(click_ray);
         }
@@ -1051,6 +1076,7 @@ namespace Magpie {
         if (!handled) {
             handled = handle_player_movement(get_click_floor_intersect(click_ray, 0.0f));
         }
+
         return handled;
     };
 

@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
 			static auto previous_time = current_time;
 			float elapsed = std::chrono::duration< float >(current_time - previous_time).count();
 			previous_time = current_time;
-			//printf("Elapsed: %f\n", elapsed);
+			printf("Elapsed: %f\n", elapsed);
 			//if frames are taking a very long time to process,
 			//lag to avoid spiral of death:
 			elapsed = std::min(0.15f, elapsed);

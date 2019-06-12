@@ -119,6 +119,7 @@ namespace Magpie {
 
         Scene::Camera* camera = nullptr;
         Scene::Transform* camera_trans = nullptr;
+        bool camera_centered = true;
 
         // Used for updating animations in the scene
         std::vector< AnimatedModel* > animated_scene_objects;
@@ -132,7 +133,7 @@ namespace Magpie {
         std::vector< Wall* > transparent_walls;
         std::vector< FloorTile* > highlighted_tiles;
         FloorTile* destination_tile = nullptr;
-        Path potential_player_path;
+        std::vector< glm::vec2 > potential_player_path;
 
         //UI testing
         UI ui = UI(1, 1);

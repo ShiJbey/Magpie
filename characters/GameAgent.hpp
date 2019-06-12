@@ -33,11 +33,11 @@ namespace Magpie {
         void set_state(uint32_t state);
 
         // Gets and sets the current path of the GameAgent
-        Path* get_path();
-        virtual void set_path(Path path);
+        std::vector< glm::vec2 > get_path();
+        virtual void set_path(std::vector< glm::vec2 > path);
         // Appends a path to the existing path
         // This is used when changing the final destination mid path
-        virtual void append_path(Path new_path);
+        virtual void append_path(std::vector< glm::vec2 > path_to_add);
 
         // Get the direction that the Game Agent is facing
         void set_facing_direction(DIRECTION dir);
@@ -48,6 +48,7 @@ namespace Magpie {
 
         // Sets the destination
         virtual void set_destination(glm::vec2 destination);
+        glm::vec2 get_current_destination() { return this->current_destination; }
 
 
     protected:
@@ -67,7 +68,7 @@ namespace Magpie {
         // Has the GameAgent reached its destination
         bool destination_reached;
         // Path that the GameAgent is following
-        Path path;
+        std::vector< glm::vec2 > path;
         // Index of the current destination within the path
         uint32_t path_destination_index = 0;
 

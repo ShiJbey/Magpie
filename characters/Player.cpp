@@ -24,35 +24,58 @@ void Magpie::Player::walk(float elapsed) {
         // Move towards the current destination at the movement speed
 
         glm::vec2 current_position_v2  = get_position();
-        current_destination = path.get_path()[path_destination_index];
+        current_destination = path[path_destination_index];
         float distance_to_destination = glm::length(current_destination - current_position_v2);
 
+        // Stop them from walking off some random place
+        if (distance_to_destination > 1) {
+            set_position(glm::round(get_position()));
+            this->current_destination = get_position();
+            if (current_state == (uint32_t)Player::STATE::WALKING) {
+                Player::set_state((uint32_t)Player::STATE::IDLE);
+            }
+            else if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
+                Player::set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+            }
+
+            // Clear the path and resent destination index
+            this->path.clear();
+            this->path_destination_index = 0;
+            return;
+        }
+
         // Consider ourselves to be at the position, snap to it, and return
-        if (distance_to_destination < 0.1) {
-            set_position(glm::vec3(current_destination.x, current_destination.y, 0.0f));
+        if (distance_to_destination < 0.001) {
+            set_position(glm::vec3((int)current_destination.x, (int)current_destination.y, 0.0f));
             path_destination_index++;
 
             // Stop Walking because we are at the end of our path
-            if (path_destination_index >= path.get_path().size()) {
+            if (path_destination_index >= path.size()) {
                 if (current_state == (uint32_t)Player::STATE::WALKING) {
                     Player::set_state((uint32_t)Player::STATE::IDLE);
                 }
                 else if (current_state == (uint32_t)Player::STATE::DISGUISE_WALK) {
                     Player::set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
                 }
+
+                // Clear the path and resent destination index
+                this->path.clear();
+                this->path_destination_index = 0;
                 return;
             }
             // Set the destination to the next position in the path and face towards it
             else {
                 previous_destination = current_destination;
-                glm::vec2 next_destination = path.get_path()[path_destination_index];
-                set_destination(next_destination);
-                turn_to(next_destination);
+                current_destination = path[path_destination_index];
+                set_destination(current_destination);
+                turn_to(current_destination);
             }
         }
         // Move towards the current destination
         else {
-            glm::vec2 elapsed_movement = elapsed * movespeed * get_facing_direction_as_vec2();
+            glm::vec2 potential_elapsed_movement = elapsed * movespeed * get_facing_direction_as_vec2();
+            glm::vec2 elapsed_movement = (glm::length(potential_elapsed_movement) <= distance_to_destination) ?
+                potential_elapsed_movement : current_destination - current_position_v2;
             set_position(get_position() + glm::vec3(elapsed_movement.x, elapsed_movement.y, 0.0f));
         }
 };
@@ -66,7 +89,6 @@ void Magpie::Player::turn_to(glm::vec2 loc) {
     );
 
     set_facing_direction(direction_to_loc);
-
     set_model_rotation((uint32_t)direction_to_loc);
 };
 

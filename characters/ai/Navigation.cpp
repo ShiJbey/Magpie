@@ -14,31 +14,6 @@
 #include <iterator>
 
 //////////////////////////////////////////////
-//                   PATH                   //
-//////////////////////////////////////////////
-
-Magpie::Path::Path(std::vector<glm::vec2> path) {
-    this->path = std::move(path);
-    it = this->path.begin();
-}
-
-glm::vec2 Magpie::Path::next() {
-    if (it == path.end()) {
-        std::cerr << "ERROR::Path.next():: Complete path giving additional positions" << std::endl;
-        return glm::vec2(0, 0);
-    }
-    return *(it++);
-}
-
-bool Magpie::Path::isEmpty() {
-    return it == path.end();
-}
-
-glm::vec2 Magpie::Path::top() {
-    return *path.begin();
-}
-
-//////////////////////////////////////////////
 //               NAVIGATION                 //
 //////////////////////////////////////////////
 
@@ -128,7 +103,7 @@ void Magpie::Navigation::set_navigation_grid(std::vector< std::vector< bool > >*
 
 // Implement BFS for path finding
 // https://www.redblobgames.com/pathfinding/tower-defense/
-Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
+std::vector< glm::vec2 > Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination) {
 
     reset_visited_grid();
 
@@ -191,14 +166,14 @@ Magpie::Path Magpie::Navigation::findPath(glm::vec2 start, glm::vec2 destination
     std::reverse(path_vector.begin(), path_vector.end());
 
     #ifdef NAVIGATION_DEBUG_VERBOSE
-    std::cout << "DEBUG::Navigation.findPath():: Generated Path" << std::endl;
+    std::cout << "DEBUG::Navigation.find():: Generated " << std::endl;
     for (glm::vec2 p : path_vector) {
         std::cout << "\t(" << p.x << "," << p.y << ")" << std::endl;
     }
     #endif
 
 
-    return Path(path_vector);
+    return path_vector;
 };
 
 

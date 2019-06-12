@@ -7,12 +7,16 @@ glm::vec2 Magpie::GameAgent::get_facing_direction_as_vec2() {
     switch (this->facing_direction) {
         case DIRECTION::UP:
             return glm::vec2(0, 1);
+            break;
         case DIRECTION::RIGHT:
             return glm::vec2(1, 0);
+            break;
         case DIRECTION::DOWN:
             return glm::vec2(0, -1);
+            break;
         case DIRECTION::LEFT:
             return glm::vec2(-1, 0);
+            break;
         default:
             std::cerr << "ERROR::GameAgent.get_direction_as_vec2():: Invalid this->facing_direction" << std::endl;
             return glm::vec2(-1, -1);
@@ -39,26 +43,39 @@ void Magpie::GameAgent::set_state(uint32_t state) {
     this->current_state = state;
 };
 
-Magpie::Path* Magpie::GameAgent::get_path() {
-    return &(this->path);
+std::vector< glm::vec2 > Magpie::GameAgent::get_path() {
+    return this->path;
 };
 
-void Magpie::GameAgent::set_path(Path path) {
+void Magpie::GameAgent::set_path(std::vector< glm::vec2 > path) {
     this->path = path;
 };
 
-void Magpie::GameAgent::append_path(Path new_path) {
+void Magpie::GameAgent::append_path(std::vector< glm::vec2 > path_to_add) {
 
     // Do nothing for empty path
-    if (new_path.get_path().size() == 0) {
+    if (path_to_add.size() == 0) {
+        return;
+    }
+
+    // Current path is empty
+    if (this->path.size() == 0) {
+        this->path = path_to_add;
+        this->path_destination_index = 0;
+        return;
+    }
+
+    // Ignore if the new path is taking you to the same place
+    // as your current path
+    if (path_to_add.back() == this->path.back()) {
         return;
     }
 
     // The GameAgent has either finished their current path
     // or has not started its current path
-    if (this->path_destination_index >= this->path.get_path().size()
+    if (this->path_destination_index >= this->path.size()
         || this->path_destination_index == 0) {
-        this->path = new_path;
+        this->path = path_to_add;
         this->path_destination_index = 0;
         return;
     }
@@ -68,25 +85,15 @@ void Magpie::GameAgent::append_path(Path new_path) {
     // Remove all locations in the path vector after the current destination
     // Append this path to the end of the old path and let the magpie continue
     // as normal
-    std::vector<glm::vec2> modified_path = this->path.get_path();
-    std::vector<glm::vec2> path_to_add = new_path.get_path();
-
-    // Ignore if the new path is taking you to the same place
-    // as your current path
-    if (path_to_add.back() == this->get_path()->get_path().back()) {
-        return;
-    }
-
-    // Erase all locations after the next destination
-    modified_path.erase(modified_path.begin() + path_destination_index, modified_path.end());
+    std::vector<glm::vec2> modified_path;
+    modified_path.push_back(path[path_destination_index]);
 
     // Append all the locations in the given path
-    for(glm::vec2 pos : path_to_add) {
-        modified_path.push_back(pos);
-    }
+    modified_path.insert(modified_path.end(), path_to_add.begin(), path_to_add.end());
 
     // Set the path to the newly modified one
-    this->path.set_path(modified_path);
+    this->path = modified_path;
+    this->path_destination_index = 0;
 };
 
 Magpie::GameAgent::DIRECTION Magpie::GameAgent::direction_toward(glm::vec2 pos, glm::vec2 dest) {
