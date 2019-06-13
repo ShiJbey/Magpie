@@ -66,7 +66,7 @@ void Magpie::Gem::on_click() {
 
 void Magpie::Gem::update_animation(float elapsed) {
     osc_tick += elapsed;
-    
+
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
 
@@ -108,7 +108,7 @@ void Magpie::Painting::update_animation(float elapsed) {
 
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-        
+
     (*transform)->position.z = std::sin(osc_tick * 3) * 0.05f;
     (*transform)->position.z = std::cos(osc_tick * 5) * 0.05f;
 };
@@ -133,7 +133,7 @@ void Magpie::Geode::update_animation(float elapsed) {
 
     if (osc_tick >= (2.0f * 3.14f))
         osc_tick = 0.0f;
-        
+
     (*transform)->rotation *= glm::angleAxis(glm::radians(std::sin(osc_tick * 3.0f) * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 };
 
@@ -142,7 +142,7 @@ void Magpie::Geode::update_animation(float elapsed) {
 //////////////////////////////////////////////
 
 Magpie::KeyCard::KeyCard(Door::ACCESS_LEVEL access_level): Magpie::KeyCard(access_level, nullptr) {
-    
+
 };
 
 Magpie::KeyCard::KeyCard(Door::ACCESS_LEVEL access_level, Scene::Object* obj_ptr) : Item(obj_ptr) {

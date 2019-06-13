@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 			printf("Elapsed: %f\n", elapsed);
 			//if frames are taking a very long time to process,
 			//lag to avoid spiral of death:
-			elapsed = std::min(0.15f, elapsed);
+			elapsed = std::min(0.1f, elapsed);
 
 			Mode::current->update(elapsed);
 			if (!Mode::current) break;

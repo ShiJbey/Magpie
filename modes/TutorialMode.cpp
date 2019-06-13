@@ -113,12 +113,11 @@ void TutorialMode::draw(glm::uvec2 const &drawable_size) {
 	anchor.x += tab;
 	font_height = 0.04f;
 	padding = 0.2f;
-	write_line("BOXES disguise you from guards");
-    draw_object("$", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);
-    draw_object("D", glm::vec2(start.x + tab/3 + 0.18f, anchor.y + padding - icon_offset), 0.1f);
-	write_line("DOG TREATS distract guards");
-    draw_object("SPACE", glm::vec2(start.x + tab/5, anchor.y + padding - icon_offset), 0.08f);
-	write_line("KEY unlock display cases without breaking them");
+	write_line("Press D to use the BOX disguise");
+    draw_object("$", glm::vec2(start.x + tab * 0.66f, anchor.y + padding - icon_offset), 0.2f);
+	write_line("Use SPACE to drop DOG TREATS to distract guards");
+    draw_object("%", glm::vec2(start.x + tab * 0.70f, anchor.y + padding - icon_offset), 0.08f);
+	write_line("The KEY unlocks display cases");
     draw_object("&(", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);
 	write_line("KEYCARDS unlock doors");
 	draw_object("^)", glm::vec2(start.x + tab/3, anchor.y + padding - icon_offset), 0.2f);

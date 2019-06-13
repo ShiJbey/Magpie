@@ -17,20 +17,19 @@ Magpie::Guard::Guard() {
     movespeed = 1.0f;
 };
 
-void Magpie::Guard::update(float elapsed) {
-    update_state(elapsed);
+void Magpie::Guard::update(float elapsed, MagpieLevel* level) {
+    update_state(elapsed, level);
     animation_manager->update(elapsed);
 };
 
-
 void Magpie::Guard::set_state(uint32_t state) {
     state_duration = 0.0f;
-    previous_state = (enum STATE) state;
+    previous_state = (Guard::STATE) state;
     GameAgent::set_state(state);
     animation_manager->set_current_state(state);
 
     if (!mute_sound) {
-        switch((enum STATE) state) {
+        switch((Guard::STATE) state) {
             case STATE::CAUTIOUS:
                 sample_guard_cautious->play(get_position());
                 break;
@@ -46,14 +45,14 @@ void Magpie::Guard::set_state(uint32_t state) {
     }
 };
 
-void Magpie::Guard::update_state(float elapsed) {
+void Magpie::Guard::update_state(float elapsed, MagpieLevel* level) {
 
     state_duration += elapsed;
 
     // Check the guard's sight
-    enum SIGHT view_state = (enum SIGHT) check_view();
+    SIGHT view_state = (SIGHT) check_view(level);
 
-    switch ((enum STATE) current_state) {
+    switch ((STATE) current_state) {
         case STATE::IDLE:
             handle_state_idle(view_state);
             break;
@@ -61,7 +60,7 @@ void Magpie::Guard::update_state(float elapsed) {
             handle_state_patrolling(view_state, elapsed);
             break;
         case STATE::CAUTIOUS:
-            handle_state_cautious(view_state);
+            handle_state_cautious(view_state, elapsed);
             break;
         case STATE::ALERT:
             handle_state_alert(view_state);
@@ -72,32 +71,55 @@ void Magpie::Guard::update_state(float elapsed) {
         case STATE::CONFUSED:
             handle_state_confused(view_state);
             break;
+        case STATE::EATING:
+            handle_state_eating(view_state, level);
         default:
             break;
     }
 };
 
-// IDLE State
-void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
+// Base state for all guards doing nothing
+// Guards if guards are not stationary (have more than 1 patrol point),
+// then they will attempt to leave this state after a brief time
+void Magpie::Guard::handle_state_idle(SIGHT view_state) {
 
+    // Magpie has been seen close by
     if (view_state == SIGHT::MAGPIE_ALERT) {
         //std::cout << "IDLE -> ALERT" << std::endl;
         previous_state = STATE::IDLE;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
+
+        // Add a path to the interest poitnt
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(interest_point.x, interest_point.y)
+            );
+        append_path(p);
         return;
     }
 
+    // Saw something, but its too far to tell what it is
     if (view_state == SIGHT::MAGPIE_NOTICE) {
         //std::cout << "IDLE -> NOTICE" << std::endl;
         previous_state = STATE::IDLE;
-        set_state((uint32_t) STATE::CAUTIOUS);
+        set_state((uint32_t) STATE::CONFUSED);
         interest_point = player->get_position();
+        // Add a path to the interest poitnt
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(interest_point.x, interest_point.y)
+            );
+        append_path(p);
         return;
     }
 
+    // Attempt to move to the next patrol point
     if (state_duration > 1.5f) {
         if (patrol_points.size() <= 1) return;
+
         patrol_point_index = (patrol_point_index + 1) % patrol_points.size();
 
         glm::vec2 next_patrol_point = patrol_points[patrol_point_index];
@@ -107,106 +129,156 @@ void Magpie::Guard::handle_state_idle(enum SIGHT view_state) {
                     glm::vec2(next_patrol_point.x, next_patrol_point.y)
             );
 
-        set_path(p);
+        append_path(p);
         previous_state = STATE::IDLE;
         set_state((uint32_t) STATE::PATROLING);
     }
-}
+};
 
-void Magpie::Guard::handle_state_patrolling(enum SIGHT view_state, float elapsed){
-    walk(elapsed);
+// Patroling is the standard walking state. Guards can only
+// leave the patroling state when they either:
+// 1) Reach the end of their path (PATROL -> IDLE)
+// 2) See the Magpie (PATROL -> [ALERT, CAUTIOUS])
+void Magpie::Guard::handle_state_patrolling(SIGHT view_state, float elapsed){
 
+    if (view_state == SIGHT::TREAT) {
+        previous_state = STATE::CHASING;
+        set_state((uint32_t) STATE::EATING);
+        return;
+    }
+
+    // Magpie has been seen close by
     if (view_state == SIGHT::MAGPIE_ALERT) {
         //std::cout << "PATROL -> ALERT" << std::endl;
         previous_state = STATE::PATROLING;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
+        // Add a path to the interest poitnt
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(interest_point.x, interest_point.y)
+            );
+        append_path(p);
         return;
     }
 
+    // Saw something, but its too far to tell what it is
     if (view_state == SIGHT::MAGPIE_NOTICE) {
         //std::cout << "PATROL -> CAUTIOUS" << std::endl;
         previous_state = STATE::PATROLING;
-        set_state((uint32_t) STATE::CAUTIOUS);
+        set_state((uint32_t) STATE::CONFUSED);
         interest_point = player->get_position();
+        // Add a path to the interest poitnt
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(interest_point.x, interest_point.y)
+            );
+        append_path(p);
         return;
     }
+
+    // Continue moving to the next patrol point
+    walk(elapsed);
+
 };
 
-void Magpie::Guard::handle_state_cautious(enum SIGHT view_state) {
+// While in the Cautious state, the guard moves towards the interest point
+// This state is paired with a slightly altered walking animation
+// Guard leave this state by reaching the interest point or by
+// spotting the Magpie
+void Magpie::Guard::handle_state_cautious(SIGHT view_state, float elapsed) {
+
+    if (view_state == SIGHT::TREAT) {
+        previous_state = STATE::CHASING;
+        set_state((uint32_t) STATE::EATING);
+        return;
+    }
+
     if (view_state == SIGHT::MAGPIE_ALERT) {
         //std::cout << "CAUTIOUS-> ALERT" << std::endl;
         previous_state = STATE::CAUTIOUS;
         set_state((uint32_t) STATE::ALERT);
         interest_point = player->get_position();
+        // Add a path to the interest poitnt
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(interest_point.x, interest_point.y)
+            );
+        append_path(p);
         return;
     }
+
+    // Move towards the interest point where the guard may have
+    // seen something
+    walk(elapsed);
+
 }
 
-void Magpie::Guard::handle_state_alert(enum SIGHT view_state) {
-    if (state_duration > 1.5f) {
+// When the guard sees the Magpie, it
+// enters this state, which is paired with a (!) animation
+// This state automatically moves to the CHASING state after
+// the animation is complete
+void Magpie::Guard::handle_state_alert(SIGHT view_state) {
+    if (animation_manager->get_current_animation()->animation_player->done()) {
         //std::cout << "ALERT->CHASING" << std::endl;
         previous_state = STATE::ALERT;
         set_state((uint32_t) STATE::CHASING);
         movespeed = 2.5f;
-        Magpie::Guard::set_destination(glm::vec2(player->get_position()));
     }
-}
+};
 
-void Magpie::Guard::handle_state_chasing(enum SIGHT view_state, float elapsed) {
-    if (view_state == SIGHT::NOTHING) {
+// Chasing is paired with a runnning animation and a higher movespeed
+// The guard will stay in this state for a certain period of time, chasing
+// the player. If the player is not caught then it moves to idle when reaching
+// the end of its path.
+void Magpie::Guard::handle_state_chasing(SIGHT view_state, float elapsed) {
+
+    if (view_state == SIGHT::TREAT) {
         previous_state = STATE::CHASING;
-        // std::cout << "CHASING -> CONFUSED" << std::endl;
-        set_state((uint32_t) STATE::CONFUSED);
-        movespeed = 1.0f;
+        set_state((uint32_t) STATE::EATING);
         return;
     }
 
+    // Continue to update the path to the player's current position
+    if (state_duration < 1.5f || view_state == SIGHT::MAGPIE_ALERT) {
+        std::vector< glm::vec2 > p =
+            Magpie::Navigation::getInstance().findPath(
+                    glm::vec2(get_position().x, get_position().y),
+                    glm::vec2(player->get_position().x, player->get_position().y)
+            );
+        append_path(p);
+        return;
+    }
+
+    // Move along the path to the player's last known position
+    walk(elapsed);
+};
+
+// When the guard sees something, but is not sure what it saw, it
+// enters this state, which is paired with a (?) animation
+// This state automatically moves to the CAUTIOUS state after
+// the animation is complete
+void Magpie::Guard::handle_state_confused(SIGHT view_state) {
     if (state_duration > 1.0f) {
-        previous_state = STATE::CHASING;
-        set_state((uint32_t) STATE::CONFUSED);
-        std::vector< glm::vec2 > p =
-            Magpie::Navigation::getInstance().findPath(
-                    glm::vec2(get_position().x, get_position().y),
-                    glm::vec2(player->get_position().x, player->get_position().y)
-            );
-        append_path(p);
-        return;
-    }
-}
-
-void Magpie::Guard::handle_state_confused(enum SIGHT view_state) {
-
-    if (view_state == SIGHT::MAGPIE_ALERT) {
-        //std::cout << "CONFUSED -> ALERT" << std::endl;
-        previous_state = STATE::CONFUSED;
-        set_state((uint32_t) STATE::ALERT);
-        std::vector< glm::vec2 > p =
-            Magpie::Navigation::getInstance().findPath(
-                    glm::vec2(get_position().x, get_position().y),
-                    glm::vec2(player->get_position().x, player->get_position().y)
-            );
-        append_path(p);
-        return;
-    }
-
-    if (view_state == SIGHT::MAGPIE_NOTICE) {
-        //std::cout << "CONFUSED -> NOTICE" << std::endl;
         previous_state = STATE::CONFUSED;
         set_state((uint32_t) STATE::CAUTIOUS);
-        std::vector< glm::vec2 > p =
-            Magpie::Navigation::getInstance().findPath(
-                    glm::vec2(get_position().x, get_position().y),
-                    glm::vec2(player->get_position().x, player->get_position().y)
-            );
-        append_path(p);
-        return;
     }
+};
 
-    if (state_duration > 4.0f) {
-        previous_state = STATE::CONFUSED;
-        set_state((uint32_t) STATE::PATROLING);
-        return;
+// This handler is coupled with an eating animation and occurs
+// when the guard is standing on top of a treat
+void Magpie::Guard::handle_state_eating(SIGHT view_state, Magpie::MagpieLevel* level) {
+    DogTreat* treat = level->get_treat(glm::round(get_position()));
+    if (treat != nullptr) {
+        level->set_treat(glm::round(get_position()), nullptr);
+        treat->get_scene_object()->active = false;
+    }
+    if (state_duration > 1.0f) {
+        previous_state = STATE::EATING;
+        set_state((uint32_t) STATE::IDLE);
     }
 };
 
@@ -222,11 +294,18 @@ void Magpie::Guard::turn_to(glm::vec2 loc) {
     set_model_rotation((uint32_t)direction_to_destination);
 };
 
-uint32_t Magpie::Guard::check_view() {
+uint32_t Magpie::Guard::check_view(MagpieLevel* level) {
 
     // The guard sees nothing if the player is disguised
     if (player->is_disguised()) {
         return (uint32_t)SIGHT::NOTHING;
+    }
+
+    // Check if the guard is standing on a donut
+    glm::vec2 rounded_position = glm::round(get_position());
+    DogTreat* treat = level->get_treat(rounded_position);
+    if (treat != nullptr) {
+        return (uint32_t) SIGHT::TREAT;
     }
 
     // Check at various distances in the direction that the guard
@@ -339,7 +418,6 @@ void Magpie::Guard::set_patrol_points(std::vector<glm::vec2> points) {
     this->patrol_points = result;
 };
 
-
 void Magpie::Guard::set_model_rotation(uint32_t dir) {
     switch (dir) {
         case (uint32_t)GameAgent::DIRECTION::RIGHT :
@@ -377,7 +455,7 @@ void Magpie::Guard::walk(float elapsed) {
     if (distance_to_destination > 1) {
         set_position(glm::round(get_position()));
         Guard::set_state((uint32_t)Guard::STATE::IDLE);
-
+        movespeed = 1.0f;
         // Clear the path and resent destination index
         this->path.clear();
         this->path_destination_index = 0;
@@ -393,7 +471,7 @@ void Magpie::Guard::walk(float elapsed) {
         // Stop Walking because we are at the end of our path
         if (path_destination_index >= path.size()) {
             Guard::set_state((uint32_t)Guard::STATE::IDLE);
-
+            movespeed = 1.0f;
             // Clear the path and resent destination index
             this->path.clear();
             this->path_destination_index = 0;

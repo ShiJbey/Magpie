@@ -12,14 +12,17 @@ Magpie::MagpieLevel::MagpieLevel(uint32_t width, uint32_t length) {
         std::vector< bool > nav_row;
         std::vector< Wall* > wall_row;
         std::vector< FloorTile* > floor_row;
+        std::vector< DogTreat* > treat_row;
         for (uint32_t col = 0; col < width; ++col) {
             nav_row.push_back(false);
             wall_row.push_back(nullptr);
             floor_row.push_back(nullptr);
+            treat_row.push_back(nullptr);
         }
         nav_grid.push_back(nav_row);
         wall_grid.push_back(wall_row);
         floor_grid.push_back(floor_row);
+        treat_grid.push_back(treat_row);
     }
 };
 
@@ -157,7 +160,7 @@ void Magpie::MagpieLevel::set_player_start_position(glm::vec3 start_position) {
     this->player_start_position = start_position;
 };
 
-void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, GameAgent::DIRECTION dir) {
+void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, uint32_t dir) {
     auto room_number_iter = guard_start_positions.find(room_number);
     if (room_number_iter != guard_start_positions.end()) {
         auto guard_number_iter = room_number_iter->second.find(guard_number);
@@ -169,12 +172,12 @@ void Magpie::MagpieLevel::add_guard_start_position(uint32_t room_number, uint32_
         }
     }
     else {
-        guard_start_positions.insert({room_number, std::map<uint32_t, std::pair<glm::vec3, GameAgent::DIRECTION>>()});
+        guard_start_positions.insert({room_number, std::map<uint32_t, std::pair<glm::vec3, uint32_t>>()});
         guard_start_positions[room_number].insert(std::make_pair(guard_number, std::make_pair(start_position, dir)));
     }
 };
 
-std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, Magpie::GameAgent::DIRECTION> > >* Magpie::MagpieLevel::get_guard_start_positions() {
+std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, uint32_t> > >* Magpie::MagpieLevel::get_guard_start_positions() {
     return &(this->guard_start_positions);
 }
 
@@ -199,6 +202,19 @@ void Magpie::MagpieLevel::add_displaycase(DisplayCase* displaycase) {
 void Magpie::MagpieLevel::set_nav_grid_position(uint32_t x, uint32_t y, bool can_walk) {
     if (is_within_bounds(x, y)) {
         this->nav_grid[y][x] = can_walk;
+    }
+};
+
+Magpie::DogTreat* Magpie::MagpieLevel::get_treat(glm::vec2 location) {
+    if (is_within_bounds(location.x, location.y)) {
+        return this->treat_grid[(uint32_t)location.y][(uint32_t)location.x];
+    }
+    return nullptr;
+};
+
+void Magpie::MagpieLevel::set_treat(glm::vec2 location, DogTreat* treat) {
+    if (is_within_bounds(location.x, location.y)) {
+        treat_grid[(uint32_t)location.y][(uint32_t)location.x] = treat;
     }
 };
 

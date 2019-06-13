@@ -4,7 +4,6 @@
 #include "objects/FloorTile.hpp"
 #include "objects/Wall.hpp"
 #include "objects/Item.hpp"
-#include "../characters/GameAgent.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
@@ -66,12 +65,17 @@ namespace Magpie {
         std::map< uint32_t, std::vector< Magpie::Painting* > >* get_paintings() { return &(this->paintings); }
         std::map< uint32_t, std::vector< Magpie::Gem* > >* get_gems() { return &(this->gems); }
 
+        // Treat checking for guards
+        std::vector< std::vector< DogTreat* > >* get_treat_grid() { return &(this->treat_grid); }
+        DogTreat* get_treat(glm::vec2 location);
+        void set_treat(glm::vec2 location, DogTreat* treat);
+
         // Modify the starting position of the Player
         glm::vec3 get_player_start_position() { return this->player_start_position; }
         void set_player_start_position(glm::vec3 start_position);
 
         // Retreives gard path information
-        std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, GameAgent::DIRECTION> > >* get_guard_start_positions();
+        std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, uint32_t > > >* get_guard_start_positions();
         std::vector< glm::vec2 > get_guard_path(uint32_t room_number, uint32_t guard_number);
 
         // Sets a value in the nav_grid indicating if Game Characters can walk on it
@@ -79,13 +83,14 @@ namespace Magpie {
 
         // Getters and Setters for Key Items
         KeyCard* get_green_card() { return this->green_card; }
-        KeyCard* get_pink_card() { return this->green_card; }
+        KeyCard* get_pink_card() { return this->pink_card; }
         KeyCard* get_master_key() { return this->master_key; }
         DogTreat* get_dog_treat() { return this->dogTreatPickUp; }
         CardboardBox* get_cardboard_box() { return this->cardboard_box; }
         BackExit* get_back_exit() { return this->back_exit; }
+
         void set_green_card(KeyCard* card) { this->green_card = card; }
-        void set_pink_card(KeyCard* card) { this->green_card = card; }
+        void set_pink_card(KeyCard* card) { this->pink_card = card; }
         void set_master_key(KeyCard* card) { this->master_key = card; }
         void set_dog_treat(DogTreat* treat) { this->dogTreatPickUp = treat; }
         void set_cardboard_box(CardboardBox* box) { this->cardboard_box = box; }
@@ -95,7 +100,7 @@ namespace Magpie {
         void add_displaycase(DisplayCase* displaycase);
         void add_painting(uint32_t room_number, Painting* painting);
         void add_gem(uint32_t room_number, Gem* gem);
-        void add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, GameAgent::DIRECTION dir);
+        void add_guard_start_position(uint32_t room_number, uint32_t guard_number, glm::vec3 start_position, uint32_t dir);
         void add_guard_path_position(uint32_t room_number, uint32_t guard_number, uint32_t x, uint32_t y);
 
     protected:
@@ -110,7 +115,7 @@ namespace Magpie {
         glm::vec3 player_start_position = glm::vec3(-9999.0f, -9999.0f, -9999.0f);
 
         // Maps room_numbers to maps of guard numbers to starting positions
-        std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, GameAgent::DIRECTION > > > guard_start_positions;
+        std::map< uint32_t, std::map< uint32_t, std::pair<glm::vec3, uint32_t > > > guard_start_positions;
 
         // Map Guard IDs to the vector of positions making up this guard's path
         std::map< uint32_t, std::vector< glm::vec2 > > guard_paths;
@@ -126,6 +131,8 @@ namespace Magpie {
         std::vector< std::vector< Door* > > door_grid;
         // 2D vector of bools indicating where Game Characters may move
         std::vector< std::vector< bool > > nav_grid;
+        // 2D vector of DogTreats in the game
+        std::vector< std::vector< DogTreat* > > treat_grid;
         // All the doors in the level
         std::vector< Door* > doors;
 

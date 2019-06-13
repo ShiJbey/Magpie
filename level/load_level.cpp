@@ -619,7 +619,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                         break;
                 }
 
-                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f), dir);
+                level->add_guard_start_position(room_number, guard_number, glm::vec3((float)x, (float)y, 0.0f), (uint32_t)dir);
                 level->set_nav_grid_position(x, y, true);
 
                 Scene::Object* obj = get_mesh(x, y, 3, 0);
@@ -983,7 +983,7 @@ Magpie::MagpieLevel* Magpie::LevelLoader::load(const Magpie::LevelData* level_da
                 Scene::Object* obj = get_mesh(x, y, mesh_id, customization_id);
                 obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-                if (customization_id == 0 && level->get_pink_card() == nullptr && potential_item_location) {
+                if (customization_id == 0u && level->get_pink_card() == nullptr && potential_item_location) {
                     Scene::Object* keycard_obj = get_mesh(x, y, 42, 0);
                     keycard_obj->transform->rotation *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
                     level->set_pink_card(new KeyCard(Door::ACCESS_LEVEL::PINK, keycard_obj));

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GameAgent.hpp"
 #include "../animation/AnimatedModel.hpp"
-#include "Player.hpp"
+#include "../level/objects/Item.hpp"
+#include "../level/MagpieLevel.hpp"
 
 namespace Magpie {
     class Guard: public AnimatedModel, public GameAgent {
@@ -33,23 +33,25 @@ namespace Magpie {
         Guard();
 
         virtual void walk(float elapsed) override;
-        void update(float elapsed);
+        void update(float elapsed) {}
+        void update(float elapsed, MagpieLevel* level);
         // Updates atrtibutes related to the state of the Guard
-        virtual void update_state(float elapsed);
+        virtual void update_state(float elapsed, MagpieLevel* level);
         // Updates the state of the guard and the guards animation
         void set_state(uint32_t state);
 
         // State handlers
-        void handle_state_idle(enum SIGHT);
-        void handle_state_patrolling(enum SIGHT, float elapsed);
-        void handle_state_cautious(enum SIGHT);
-        void handle_state_alert(enum SIGHT);
-        void handle_state_chasing(enum SIGHT, float elapsed);
-        void handle_state_confused(enum SIGHT);
+        void handle_state_idle(SIGHT view_state);
+        void handle_state_patrolling(SIGHT view_state, float elapsed);
+        void handle_state_cautious(SIGHT view_state, float elapsed);
+        void handle_state_alert(SIGHT view_state);
+        void handle_state_chasing(SIGHT view_state, float elapsed);
+        void handle_state_confused(SIGHT view_state);
+        void handle_state_eating(SIGHT view_state, MagpieLevel* level);
 
         // Checks to see if the player or any distracting
         // items are within the view of the, guard
-        uint32_t check_view();
+        uint32_t check_view(MagpieLevel* level);
 
         void set_patrol_points(std::vector<glm::vec2>);
 

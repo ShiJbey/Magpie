@@ -68,7 +68,7 @@ namespace Magpie {
         auto guard_start = game.get_level()->get_guard_start_positions();
         for (auto i : *guard_start) {
             for (auto i2 : i.second) {
-               Guard* guard = create_guard(i2.second.first, i2.second.second);
+               Guard* guard = create_guard(i2.second.first, (GameAgent::DIRECTION)i2.second.second);
                auto path = game.get_level()->get_guard_path(i.first, i2.first);
                guard->set_patrol_points(path);
             }
@@ -139,7 +139,7 @@ namespace Magpie {
             // Update the player
             game.get_player()->update(elapsed);
 
-
+            // Make the walls of the room the player is in transparent
             if (game.get_level()->get_floor_tile((uint32_t)game.get_player()->get_position().x, (uint32_t)game.get_player()->get_position().y)) {
                 uint32_t destination_room_number = game.get_level()->get_tile_room_number(game.get_player()->get_position().x, game.get_player()->get_position().y);
 
@@ -151,10 +151,9 @@ namespace Magpie {
                 }
             }
 
-
             // Update the guards
             for (uint32_t i = 0; i < game.get_guards().size(); i++) {
-                game.get_guards()[i]->update(elapsed);
+                game.get_guards()[i]->update(elapsed, game.get_level());
             }
 
             // Update gems, paintings, keys, etc.
@@ -258,41 +257,53 @@ namespace Magpie {
                 ui.stateChanger('i');
                 return true;
             }
-            else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE && game.get_player()->has_dog_treats) {
-                if (game.get_player()->can_place_treat()) {
-                    //printf("Dropping the load!\n");
-                    if (!mute_sound)
-                        sample_treat->play(game.get_player()->get_position());
-                    dog_treats.push_back(drop_treat(game.get_player()->get_position()));
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+                if (game.get_player()->has_dog_treats) {
+                    if (game.get_player()->can_place_treat()) {
+                        //printf("Dropping the load!\n");
+                        if (!mute_sound)
+                            sample_treat->play(game.get_player()->get_position());
 
-                    game.get_player()->reset_treat_cooldown();
+                        DogTreat* treat = drop_treat(glm::round(game.get_player()->get_position()));
+                        game.get_level()->set_treat(glm::round(game.get_player()->get_position()), treat);
+                        game.get_player()->reset_treat_cooldown();
+                    }
+                    else {
+                        if (!mute_sound) {
+                            sample_cooldown->play(game.get_player()->get_position());
+                        }
+                        animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    }
                 }
                 else {
-                    if (!mute_sound) {
-                        sample_cooldown->play(game.get_player()->get_position());
-                    }
-                    //animated_text_objects.push_back(FloatingNotificationText("Making more treats...", ransom_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.75f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
+                    animated_text_objects.push_back(FloatingNotificationText("Find dog treats", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
+
             }
-            else if (evt.key.keysym.scancode == SDL_SCANCODE_D && game.get_player()->has_cardboard_box) {
-                //printf("Swapping disguise\n");
-                switch(game.get_player()->get_state()) {
-                    case (uint32_t)Player::STATE::IDLE:
-                        if (!mute_sound)
-                            sample_magpie_disguise->play(game.get_player()->get_position());
-                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
-                        break;
-                    case (uint32_t)Player::STATE::WALKING:
-                        if (!mute_sound)
-                            sample_magpie_disguise->play(game.get_player()->get_position());
-                        game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
-                        break;
-                    case (uint32_t)Player::STATE::DISGUISE_IDLE:
-                        game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
-                        break;
-                    case (uint32_t)Player::STATE::DISGUISE_WALK:
-                        game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
-                        break;
+            else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+                if (game.get_player()->has_cardboard_box) {
+                    //printf("Swapping disguise\n");
+                    switch(game.get_player()->get_state()) {
+                        case (uint32_t)Player::STATE::IDLE:
+                            if (!mute_sound)
+                                sample_magpie_disguise->play(game.get_player()->get_position());
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_IDLE);
+                            break;
+                        case (uint32_t)Player::STATE::WALKING:
+                            if (!mute_sound)
+                                sample_magpie_disguise->play(game.get_player()->get_position());
+                            game.get_player()->set_state((uint32_t)Player::STATE::DISGUISE_WALK);
+                            break;
+                        case (uint32_t)Player::STATE::DISGUISE_IDLE:
+                            game.get_player()->set_state((uint32_t)Player::STATE::IDLE);
+                            break;
+                        case (uint32_t)Player::STATE::DISGUISE_WALK:
+                            game.get_player()->set_state((uint32_t)Player::STATE::WALKING);
+                            break;
+                    }
+                }
+                else {
+                    animated_text_objects.push_back(FloatingNotificationText("Find a Box", tutorial_font.value, glm::vec2(screen_dimensions.x / 2.0f - 30.0f, screen_dimensions.y / 2.0f + 30.0f), 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.0f));
                 }
             }
             else if (evt.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
@@ -439,7 +450,6 @@ namespace Magpie {
 
         screen_dimensions = glm::vec2((float)drawable_size.x, (float)drawable_size.y);
     };
-
 
     Player* MagpieGameMode::create_player(glm::vec3 position) {
 
