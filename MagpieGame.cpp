@@ -31,23 +31,17 @@ void Magpie::MagpieGame::set_level(Magpie::MagpieLevel* level) {
 };
 
 void Magpie::MagpieGame::trigger_escape() {
-    if (this->elapsed_in_escape >= 0) return;
+    // Starts the escape sequence
+    this->escape_started = true;
     this->elapsed_in_escape = 0;
     this->current_music->stop(1.0f);
+    if (!mute_sound) {
+        sample_siren->play(this->get_player()->get_position());
+    }
+    this->current_music = sample_ambient_faster->play(this->get_player()->get_position(), 0.4f, Sound::Loop);
 };
 
 void Magpie::MagpieGame::escape_update(float elapsed) {
-    if (this->elapsed_in_escape >= 0) {
-
-        //start escape stage with delay to let previous UI/sounds fade
-        if (this->elapsed_in_escape >= 3.0f && !this->escape_started) {
-            set_escape_started(true);
-            if (!mute_sound) {
-                sample_siren->play(this->get_player()->get_position());
-                this->current_music = sample_ambient_faster->play(this->get_player()->get_position(), 0.4f, Sound::Loop);
-            }
-
-        }
 
         this->elapsed_in_escape += elapsed;
 
@@ -55,5 +49,4 @@ void Magpie::MagpieGame::escape_update(float elapsed) {
             set_game_over(true);
             set_player_won(false);
         };
-    }
 };

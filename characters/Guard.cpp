@@ -312,11 +312,6 @@ void Magpie::Guard::turn_to(glm::vec2 loc) {
 
 uint32_t Magpie::Guard::check_view(MagpieLevel* level) {
 
-    // The guard sees nothing if the player is disguised
-    if (player->is_disguised()) {
-        return (uint32_t)SIGHT::NOTHING;
-    }
-
     // Check if the guard is standing on a donut
     glm::vec2 rounded_position = glm::round(get_position());
     DogTreat* treat = level->get_treat(rounded_position);
@@ -324,56 +319,86 @@ uint32_t Magpie::Guard::check_view(MagpieLevel* level) {
         return (uint32_t) SIGHT::TREAT;
     }
 
+    // Check that the player and guard are in the same room
+    uint32_t player_room = player->get_current_room();
+    uint32_t guard_room = -1U;
+    FloorTile* tile = level->get_floor_tile((uint32_t)get_position().x, (uint32_t)get_position().y);
+    if (tile != nullptr) {
+        guard_room = tile->room_number;
+        if (guard_room != player_room) {
+            return (uint32_t)SIGHT::NOTHING;
+        }
+    }
+
+    // The guard sees nothing if the player is disguised
+    if (player->is_disguised()) {
+        return (uint32_t)SIGHT::NOTHING;
+    }
+
+
+
     // Check at various distances in the direction that the guard
     // is facing.
-    glm::vec3 vector_to_player = player->get_position() - get_position();
+    glm::vec3 vector_to_player = glm::round(player->get_position() - get_position());
     float distance_to_player = glm::length(vector_to_player);
     float alert_distance = 2.0f;
-    float notice_distance = 4.0f;
+    float notice_distance = 5.0f;
 
-    if (this->facing_direction == DIRECTION::LEFT && glm::round(vector_to_player.y) == 0) {
-        if (distance_to_player <= alert_distance) {
+    if (this->facing_direction == DIRECTION::LEFT) {
+        // The payer should be to the left of the guard
+        // and they should not be more than 1unit away in
+        // the y-direction
+        if (vector_to_player.x <= -1.0f && abs(vector_to_player.y) <= 1.0) {
+            if (abs(vector_to_player.x) <= alert_distance) {
             return (uint32_t) SIGHT::MAGPIE_ALERT;
-        }
-        else if (distance_to_player <= notice_distance) {
-            return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
+            else if (abs(vector_to_player.x) <= notice_distance) {
+                return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
         }
     }
 
-    else if (this->facing_direction == DIRECTION::RIGHT
-        && glm::round(vector_to_player.y) == 0 && vector_to_player.x < 0) {
-
-        if (abs(distance_to_player) <= alert_distance) {
+    if (this->facing_direction == DIRECTION::RIGHT) {
+        // The payer should be to the left of the guard
+        // and they should not be more than 1unit away in
+        // the y-direction
+        if (vector_to_player.x >= 1.0f && abs(vector_to_player.y) <= 1.0) {
+            if (vector_to_player.x <= alert_distance) {
             return (uint32_t) SIGHT::MAGPIE_ALERT;
-        }
-        else if (abs(distance_to_player) <= notice_distance) {
-            return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
+            else if (vector_to_player.x <= notice_distance) {
+                return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
         }
     }
 
-    else if (this->facing_direction == DIRECTION::UP
-        && glm::round(vector_to_player.x) == 0 && vector_to_player.y > 0) {
-
-        if (abs(distance_to_player) <= alert_distance) {
+    if (this->facing_direction == DIRECTION::UP) {
+        // The payer should be to the left of the guard
+        // and they should not be more than 1unit away in
+        // the y-direction
+        if (vector_to_player.y >= 1.0f && abs(vector_to_player.x) <= 1.0) {
+            if (vector_to_player.y <= alert_distance) {
             return (uint32_t) SIGHT::MAGPIE_ALERT;
-        }
-        else if (abs(distance_to_player) <= notice_distance) {
-            return (uint32_t) SIGHT::MAGPIE_NOTICE;
-        }
-    }
-    else if (this->facing_direction == DIRECTION::DOWN
-        && glm::round(vector_to_player.x) == 0 && vector_to_player.y < 0) {
-
-        if (abs(distance_to_player) <= alert_distance) {
-            return (uint32_t) SIGHT::MAGPIE_ALERT;
-        }
-        else if (abs(distance_to_player) <= notice_distance) {
-            return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
+            else if (vector_to_player.y <= notice_distance) {
+                return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
         }
     }
 
-
-
+    if (this->facing_direction == DIRECTION::DOWN) {
+        // The payer should be to the left of the guard
+        // and they should not be more than 1unit away in
+        // the y-direction
+        if (vector_to_player.y <= -1.0f && abs(vector_to_player.x) <= 1.0) {
+            if (abs(vector_to_player.y) <= alert_distance) {
+            return (uint32_t) SIGHT::MAGPIE_ALERT;
+            }
+            else if (abs(vector_to_player.y) <= notice_distance) {
+                return (uint32_t) SIGHT::MAGPIE_NOTICE;
+            }
+        }
+    }
 
     // The guard also sees nothing if they just dont see anything
     return (uint32_t)SIGHT::NOTHING;

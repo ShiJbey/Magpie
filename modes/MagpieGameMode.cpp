@@ -411,6 +411,7 @@ namespace Magpie {
 
             if (game.has_escape_started()) {
                 // Turn everything red
+                glUseProgram(vertex_color_program->program);
                 glUniform3fv(vertex_color_program->sun_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
                 glUniform3fv(vertex_color_program->sky_color_vec3, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
             }
@@ -433,8 +434,8 @@ namespace Magpie {
 
                     float aspect = viewport[2] / float(viewport[3]);
                     float y_anchor = 0.7f;
-                    float x_anchor = -0.4f * aspect;
-                    float font_height = 0.08f;
+                    float x_anchor = -0.8f * aspect;
+                    float font_height = 0.06f;
 
                     float target_font_size = viewport[3] * font_height;
                     float font_scale = target_font_size / 64.f;
@@ -442,7 +443,7 @@ namespace Magpie {
                     float window_y_anchor = ((y_anchor + 1) / 2) * viewport[3];
 
                     uint32_t escape_time_remaining = (uint32_t)std::ceil(game.ESCAPE_TIME - game.get_elapsed_in_escape());
-                    RenderText(tutorial_font.value, "ESCAPE TO THE BACK! " + std::to_string(escape_time_remaining),
+                    RenderText(tutorial_font.value, "ESCAPE TO THE BACK EXIT! " + std::to_string(escape_time_remaining),
                             window_x_anchor, window_y_anchor, font_scale, glm::vec3(1.0f, 0.2f, 0.2f));
                 }
             }
