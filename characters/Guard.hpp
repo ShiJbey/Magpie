@@ -61,6 +61,14 @@ namespace Magpie {
 
         void turn_to(glm::vec2 loc);
 
+        void set_stationary_facing_direction(uint32_t dir) {
+            this->stationary_facing_direction = (DIRECTION) dir;
+        }
+
+        uint32_t get_stationary_facing_direction(){
+            return (uint32_t) this->stationary_facing_direction;
+        }
+
         virtual void set_model_rotation(uint32_t dir) override;
 
         // Loads Guard character model data
@@ -84,5 +92,8 @@ namespace Magpie {
         glm::vec2 interest_point;
         // What patrol point is the Guard navigating toward
         int patrol_point_index = 0;
+        // Saves the direction that stationary guards are
+        // sipposed to turn towards
+        DIRECTION stationary_facing_direction;
     };
 }

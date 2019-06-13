@@ -41,7 +41,7 @@
 #include <algorithm>
 #include <random>
 
-#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
+//#define FREE_FLIGHT // Enables the user to move the camera using the arrow keys
 
 namespace Magpie {
 
@@ -600,6 +600,9 @@ namespace Magpie {
 
         guard->set_starting_point(position);
         guard->turn_to(turn_destination);
+
+        guard->set_stationary_facing_direction((uint32_t) guard->get_facing_direction());
+
         guard->set_state((uint32_t)Guard::STATE::IDLE);
 
         guard->set_destination(position);
