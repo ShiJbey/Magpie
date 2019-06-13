@@ -86,7 +86,7 @@ void Magpie::GameAgent::append_path(std::vector< glm::vec2 > path_to_add) {
     // Append this path to the end of the old path and let the magpie continue
     // as normal
     std::vector<glm::vec2> modified_path;
-    modified_path.push_back(path[path_destination_index]);
+    //modified_path.push_back(path[path_destination_index]);
 
     // Append all the locations in the given path
     modified_path.insert(modified_path.end(), path_to_add.begin(), path_to_add.end());

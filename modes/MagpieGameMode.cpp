@@ -154,7 +154,16 @@ namespace Magpie {
             // Update the guards
             for (uint32_t i = 0; i < game.get_guards().size(); i++) {
                 game.get_guards()[i]->update(elapsed, game.get_level());
+                if (glm::round(game.get_guards()[i]->get_position())
+                    == glm::round(game.get_player()->get_position())) {
+
+                    game.set_game_over(true);
+                    game.set_player_won(false);
+                }
+
             }
+
+
 
             // Update gems, paintings, keys, etc.
             update_env_animations(elapsed);
@@ -997,6 +1006,7 @@ namespace Magpie {
                     sample_door->play(game.get_player()->get_position());
                 }
                 game.set_game_over(true);
+                game.set_player_won(true);
             }
         }
 

@@ -53,6 +53,7 @@ void Magpie::MagpieGame::escape_update(float elapsed) {
 
         if (this->ESCAPE_TIME - this->elapsed_in_escape <= 0) {
             set_game_over(true);
+            set_player_won(false);
         };
     }
 };

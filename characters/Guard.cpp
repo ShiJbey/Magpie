@@ -230,7 +230,7 @@ void Magpie::Guard::handle_state_cautious(SIGHT view_state, float elapsed) {
     // seen something
     walk(elapsed);
 
-}
+};
 
 // When the guard sees the Magpie, it
 // enters this state, which is paired with a (!) animation
@@ -238,7 +238,6 @@ void Magpie::Guard::handle_state_cautious(SIGHT view_state, float elapsed) {
 // the animation is complete
 void Magpie::Guard::handle_state_alert(SIGHT view_state) {
     if (animation_manager->get_current_animation()->animation_player->done()) {
-        //std::cout << "ALERT->CHASING" << std::endl;
         previous_state = STATE::ALERT;
         set_state((uint32_t) STATE::CHASING);
         movespeed = 2.5f;
@@ -250,7 +249,7 @@ void Magpie::Guard::handle_state_alert(SIGHT view_state) {
 // the player. If the player is not caught then it moves to idle when reaching
 // the end of its path.
 void Magpie::Guard::handle_state_chasing(SIGHT view_state, float elapsed) {
-
+    // Stop if there is foor
     if (view_state == SIGHT::TREAT) {
         previous_state = STATE::CHASING;
         set_state((uint32_t) STATE::EATING);
@@ -258,7 +257,9 @@ void Magpie::Guard::handle_state_chasing(SIGHT view_state, float elapsed) {
     }
 
     // Continue to update the path to the player's current position
-    if (state_duration < 2.0f || view_state == SIGHT::MAGPIE_ALERT) {
+    if ((path.size() == 0 || path_destination_index == path.size() - 1)
+        && state_duration < 3.0f) {
+
         std::vector< glm::vec2 > p =
             Magpie::Navigation::getInstance().findPath(
                     glm::round(get_position()),
