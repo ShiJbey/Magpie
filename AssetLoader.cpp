@@ -1,8 +1,8 @@
 #include "AssetLoader.hpp"
-#include "data_path.hpp"
-#include "vertex_color_program.hpp"
-#include "highlight_program.hpp"
-#include "transparent_program.hpp"
+#include "base/data_path.hpp"
+#include "base/vertex_color_program.hpp"
+#include "shaders/highlight_program.hpp"
+#include "shaders/transparent_program.hpp"
 
 namespace Magpie {
 
@@ -362,19 +362,19 @@ namespace Magpie {
     });
 
     // LEVEL DATA
-    Load< Magpie::LevelData > sample_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > sample_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/sample-map.lvl"));
     });
 
-    Load< Magpie::LevelData > demo_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > demo_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/demo-map.lvl"));
     });
 
-    Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > demo_map_simple(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/demo-map-simple.lvl"));
     });
 
-    Load< Magpie::LevelData > final_map(LoadTagDefault, []() { 
+    Load< Magpie::LevelData > final_map(LoadTagDefault, []() {
         return new LevelData(data_path("levels/floorplans/final-map.lvl"));
     });
 
@@ -394,7 +394,7 @@ namespace Magpie {
         info->mvp_mat4 = highlight_program->object_to_clip_mat4;
         info->mv_mat4x3 = highlight_program->object_to_light_mat4x3;
         info->itmv_mat3 = highlight_program->normal_to_light_mat3;
-        return info;    
+        return info;
     });
 
     Load< Scene::Object::ProgramInfo > transparent_program_info(LoadTagDefault, []() {
@@ -405,5 +405,106 @@ namespace Magpie {
         info->itmv_mat3 = transparent_program->normal_to_light_mat3;
         return info;
     });
-    
+
+    // SOUNDS
+    Load< Sound::Sample > sample_ambient(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Ambiet Track.wav"));
+    });
+
+    Load< Sound::Sample > sample_ambient_faster(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Ambient_Faster.wav"));
+    });
+
+    Load< Sound::Sample > sample_glass(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Break_Glass.wav"));
+    });
+
+    Load< Sound::Sample > sample_door(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Door_1.wav"));
+    });
+
+    Load< Sound::Sample > sample_pickup(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Pickup.wav"));
+    });
+
+    Load< Sound::Sample > sample_point1(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Point.wav"));
+    });
+
+    Load< Sound::Sample > sample_point2(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Point_2.wav"));
+    });
+
+    Load< Sound::Sample > sample_point3(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Point_3.wav"));
+    });
+
+    Load< Sound::Sample > sample_point4(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Point_4.wav"));
+    });
+
+    Load< Sound::Sample > sample_steal1(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Steal.wav"));
+    });
+
+    Load< Sound::Sample > sample_steal2(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Steal_2.wav"));
+    });
+
+    Load< Sound::Sample > sample_unlock1(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Unlock_1.wav"));
+    });
+
+    Load< Sound::Sample > sample_unlock2(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Unlock_2.wav"));
+    });
+
+    Load< Sound::Sample > sample_unlock3(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Unlock_3.wav"));
+    });
+
+    Load< Sound::Sample > sample_fail(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Pick_Fail.wav"));
+    });
+
+    Load< Sound::Sample > sample_siren(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Gaurd_Siren.wav"));
+    });
+
+    Load< Sound::Sample > sample_treat(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Drop_Treat.wav"));
+    });
+
+    Load< Sound::Sample > sample_cooldown(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/SFX/Magpie_Can_t_Treat.wav"));
+    });
+
+    Load< Sound::Sample > sample_magpie_disguise(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Magpie/Magpie_Box.wav"));
+    });
+
+    Load< Sound::Sample > sample_magpie_walk1(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Magpie/Magpie_Walk_1.wav"));
+    });
+
+    Load< Sound::Sample > sample_magpie_walk2(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Magpie/Magpie_Walk_2.wav"));
+    });
+
+    Load< Sound::Sample > sample_guard_alert(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Guard/Guard_Alert.wav"));
+    });
+
+    Load< Sound::Sample > sample_guard_cautious(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Guard/Guard_Caution.wav"));
+    });
+
+    Load< Sound::Sample > sample_guard_confused(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Guard/Guard_Confused.wav"));
+    });
+
+    Load< Sound::Sample > sample_guard_munch(LoadTagDefault, [](){
+        return new Sound::Sample(data_path("sounds/Guard/Guard_Munching.wav"));
+    });
+
 }

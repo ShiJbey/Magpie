@@ -1,0 +1,9 @@
+# Jamfile in the $(TOP)/level/ directory
+
+SubDir TOP level ;
+
+LOCATE_TARGET = $(TOP)/objs ; #put objects in 'objs' directory
+
+Objects MagpieLevel.cpp load_level.cpp ;
+
+SubInclude TOP level objects ;

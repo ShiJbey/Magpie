@@ -1,5 +1,6 @@
 #include "Signalable.hpp"
 
+// Checks if there is a signal in the queue
 bool Magpie::Signalable::has_signal() {
     return signal_queue.size() > 0;
 };
@@ -18,7 +19,7 @@ void Magpie::Signalable::broadcast_to_group(uint32_t sig_num) {
     }
 };
 
-// Sends messsage to a specific signalable object
+// Sends message to a specific signalable object
 void Magpie::Signalable::send_signal(Signalable* receiver, uint32_t sig_num) {
     receiver->signal_queue.emplace_back(object_id, group_id, sig_num);
 };

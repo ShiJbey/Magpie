@@ -1,19 +1,18 @@
 //Mode.hpp declares the "Mode::current" static member variable, which is used to decide where event-handling, updating, and drawing events go:
-#include "Mode.hpp"
+#include "base/Mode.hpp"
 
 //Load.hpp is included because of the call_load_functions() call:
-#include "Load.hpp"
-
-//The 'GameMode' mode plays the game:
-#include "MagpieGamemode.hpp"
+#include "base/Load.hpp"
 
 //The 'Sound' header has functions for managing sound:
-#include "Sound.hpp"
+#include "base/Sound.hpp"
 
 //GL.hpp will include a non-namespace-polluting set of opengl prototypes:
-#include "GL.hpp"
+#include "base/GL.hpp"
 
-#include "startmenu.hpp"
+//Game specific headers
+#include "modes/MagpieGamemode.hpp"
+#include "menus/startmenu.hpp"
 
 //Includes for libSDL:
 #include <SDL.h>
@@ -36,20 +35,9 @@ int main(int argc, char **argv) {
 	try {
 #endif
 	struct {
-		//TODO: this is where you set the title and size of your game window
 		std::string title = "Magpie";
 		glm::uvec2 size = glm::uvec2(640, 400);
 	} config;
-
-	/*
-	//----- start connection to server ----
-	if (argc != 3) {
-		std::cout << "Usage:\n\t./client <host> <port>" << std::endl;
-		return 1;
-	}
-
-	Client client(argv[1], argv[2]);
-	*/
 
 	//------------  initialization ------------
 
@@ -120,8 +108,8 @@ int main(int argc, char **argv) {
 
 	//------------ create game mode + make current --------------
 
-	//Mode::set_current(std::make_shared< Magpie::MagpieGameMode >(/*client*/));
-	Mode::set_current(std::make_shared< Magpie::StartMenu >(/*client*/));
+	//Mode::set_current(std::make_shared< Magpie::MagpieGameMode >());
+	Mode::set_current(std::make_shared< Magpie::StartMenu >());
 
 	//------------ main loop ------------
 
@@ -169,7 +157,7 @@ int main(int argc, char **argv) {
 			static auto previous_time = current_time;
 			float elapsed = std::chrono::duration< float >(current_time - previous_time).count();
 			previous_time = current_time;
-
+			printf("Elapsed: %f\n", elapsed);
 			//if frames are taking a very long time to process,
 			//lag to avoid spiral of death:
 			elapsed = std::min(0.1f, elapsed);

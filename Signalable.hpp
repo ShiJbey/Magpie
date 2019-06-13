@@ -5,10 +5,19 @@
 #include <cstdint>
 
 namespace Magpie {
+
+    /**
+     * Signals are sent and consumed by Signalable objects in the game world.
+     * Signals can be used to trigger game events and gives entities within
+     * the game a means by which to communicate
+     */
     class Signal {
     public:
-        //Signal(uint32_t _sender_id, uint32_t _group_id, uint32_t _sig_num): sender_id(_sender_id), group_id(group_id), sig_num(_sig_num) { }
-        Signal(uint32_t _sender_id, uint32_t _group_id, uint32_t _sig_num){ }
+        Signal(uint32_t _sender_id, uint32_t _group_id, uint32_t _sig_num){
+            this->sender_id = _sender_id;
+            this->group_id = _group_id;
+            this->sig_num = _sig_num;
+        }
         uint32_t get_sender_id() { return this->sender_id; }
         uint32_t get_group_id() { return this->group_id; }
         uint32_t get_signal_number() { return this->sig_num; }
@@ -38,8 +47,11 @@ namespace Magpie {
         // Getters
         uint32_t get_object_id() { return this->object_id; }
         uint32_t get_group_id() { return this->group_id; }
+
     protected:
+        // Identifies this specific object
         uint32_t object_id;
+        // Identifies what group of objects this object belongs to
         uint32_t group_id;
         // The "signal mailbox" for this object
         std::deque< Signal > signal_queue;
